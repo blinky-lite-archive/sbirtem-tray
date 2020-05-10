@@ -1,4 +1,4 @@
-# basic blinky-lite tray
+# vad-kul-tray
 ## need to add .env file with the following
 PROJECT=blinky-lite<br/>
 MQTTCLIENTID=basic-tray-01<br/>
