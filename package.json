@@ -20,6 +20,7 @@
   },
   "homepage": "",
   "dependencies": {
+    "i2c-bus": "^5.2.0",
     "node-red": "^1.0.3",
     "node-red-contrib-auth": "^0.1.7",
     "node-red-dashboard": "^2.19.3",
