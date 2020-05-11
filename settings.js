@@ -18,6 +18,8 @@
 // to make it available:
 //var fs = require("fs");
 var i2c = require("i2c-bus");
+var fs  = require("fs");
+var jpeg  = require("jpeg-js");
 
 module.exports = {
     // the tcp port that the Node-RED web server is listening on
@@ -208,7 +210,9 @@ module.exports = {
         // octalbonescript:require('octalbonescript'),
         // jfive:require("johnny-five"),
         // j5board:require("johnny-five").Board({repl:false})
-        i2c:require("i2c-bus")
+        i2c : require("i2c-bus"),
+        fs  : require("fs"),
+        jpeg: require("jpeg-js")
     },
 
     // The following property can be used to order the categories in the editor

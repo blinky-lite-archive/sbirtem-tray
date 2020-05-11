@@ -256,8 +256,8 @@
         "qos": "0",
         "retain": "false",
         "broker": "79250bf3.365cc4",
-        "x": 1010,
-        "y": 400,
+        "x": 1350,
+        "y": 440,
         "wires": []
     },
     {
@@ -415,8 +415,8 @@
         "func": "msg.payload.linkQuality.value     = global.get('linkQuality');\nmsg.payload.signalLevel.value     = global.get('signalLevel');\nscalarAlarmScan(msg.payload, 'reading');\nflow.set('device', msg.payload); \nmsg.topic = global.get('project') + '/' + flow.get('cubeInfo').deviceType + '/' + flow.get('cubeInfo').name + '/reading';\nreturn msg;\n\nfunction getActionArray(device, type, actionType)\n{\n    var actionArray = [];\n    var keys = Object.keys(device);\n    for (var ii = 0; ii < keys.length; ++ii)\n    {\n        if (device[keys[ii]].hasOwnProperty('type'))\n        {\n            if (device[keys[ii]].type == type)\n            {\n                if (device[keys[ii]].action == actionType)\n                {\n                    actionArray.push(device[keys[ii]]);\n                }\n            }\n        }\n    }\n    return actionArray;\n}\nfunction scalarAlarmScan(device, actionType)\n{\n    var actionArray = getActionArray(device, 'scalar', actionType);\n    if (actionArray.length > 0)\n    {\n        for (var ii = 0; ii < actionArray.length; ++ii)\n        {\n            actionArray[ii].alarm.value = 0;\n            if (!isNaN(actionArray[ii].value))\n            {\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.low)  actionArray[ii].alarm.value = 1;\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.lolo) actionArray[ii].alarm.value = 3;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.high) actionArray[ii].alarm.value = 2;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.hihi) actionArray[ii].alarm.value = 4;\n            }\n        }\n    }\n}\n",
         "outputs": 1,
         "noerr": 0,
-        "x": 780,
-        "y": 400,
+        "x": 1120,
+        "y": 440,
         "wires": [
             [
                 "a3ff8e5.b79de7"
@@ -447,11 +447,12 @@
         "func": "var mqttArray = msg.topic.split('/');\nvar device = \n{\n    project     : mqttArray[0],\n    deviceType  : mqttArray[1],\n    name        : mqttArray[2],\n    prop        : mqttArray[3],\n};\nreturn {topic : msg.topic, payload:{topic:'readings', mqttDevice : device, payload:msg.payload}};",
         "outputs": 1,
         "noerr": 0,
-        "x": 1010,
-        "y": 460,
+        "x": 1350,
+        "y": 500,
         "wires": [
             [
-                "107beeed.934ed1"
+                "107beeed.934ed1",
+                "5ac97acb.4504c4"
             ]
         ]
     },
@@ -462,8 +463,8 @@
         "name": "/app/websocket",
         "server": "44b51478.9c022c",
         "client": "",
-        "x": 1220,
-        "y": 460,
+        "x": 1560,
+        "y": 500,
         "wires": []
     },
     {
@@ -474,8 +475,8 @@
         "links": [
             "c2b927f.87df7d8"
         ],
-        "x": 1115,
-        "y": 500,
+        "x": 1455,
+        "y": 540,
         "wires": [
             [
                 "107beeed.934ed1"
@@ -1106,13 +1107,13 @@
         "fieldType": "msg",
         "format": "javascript",
         "syntax": "mustache",
-        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var graph3d = null;\n        var pixelTemp = null;\n\n        var threedPlotOptions = \n        {\n            width: '850px',\n            height: '600px',\n            style: 'surface',\n            showPerspective: false,\n            showLegend: true,\n            showGrid: false,\n            showShadow: false,\n            keepAspectRatio: false,\n            verticalRatio: 0.6,\n            showZAxis: false,\n            zLabel: 'Temp',\n            xLabel: 'X',\n            yLabel: 'Y',\n            tooltip: true,\n            axisColor: '#000000',\n//            zMin:20,\n//            zMax:35\n        };\n\n        var archiveRequestList = [];\n        var archiveList = [];\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n             drawSpectrogram();\n\n        }\n        function onWebSocketOpen()\n        {\n        }\n        function onWebSocketClose()\n        {\n            \n        }\n        function onWebSocketMessage(msg)\n        {\n//            console.log(msg);\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        updateSpectrogram();\n                    }\n                    break;\n                case 'getArchiveValues':\n                    if (msg.userID == userID)\n                    {\n                        if ((msg.payload.device.deviceType == restfulDevice.deviceType) && (msg.payload.device.name == restfulDevice.name) )\n                            putArchiveValues(msg.payload);\n                    }\n                    break;\n                case 'getJwtToken':\n                    if (msg.userID == userID) loadJwtToken(msg);\n                    break;\n                case 'settingAcknowledge':\n                    if (msg.userID == userID)\n                    {\n                        if (msg.payload != 'Success!') acknowledgeDialog('Acknowledge', 'Setting', msg.payload);\n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n        function setScalarValue(settingValue, attrName)\n        {\n            var settingAttr = device[attrName];\n            if ( (settingAttr.alarm.limits.lolo <= settingValue) && (settingValue <= settingAttr.alarm.limits.hihi) )\n            {\n                settingAttr.value = settingValue;\n                var mqttMessage = \n                {\n                    topic   : mqttDevice.project + '/' +  mqttDevice.deviceType + '/' +  mqttDevice.name + '/setting',\n                    payload :  device\n                };\n                checkLogin(sendSettingToMqtt, mqttMessage);\n            } \n            else\n            {\n                acknowledgeDialog('Acknowledge', 'Error', 'Entry outside range! (' + settingAttr.alarm.limits.lolo.toString() + '-' + settingAttr.alarm.limits.hihi.toString() + ' ' + settingAttr.unit);\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            $('#linkQualityId').text(device.linkQuality.value);\n            $('#signalLevelId').text(device.signalLevel.value);\n        }\n",
+        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var graph3d = null;\n        var pixelTemp = null;\n\n        var threedPlotOptions = \n        {\n            width: '850px',\n            height: '600px',\n            style: 'surface',\n            showPerspective: false,\n            showLegend: true,\n            showGrid: false,\n            showShadow: false,\n            keepAspectRatio: false,\n            verticalRatio: 0.6,\n            showZAxis: false,\n            zLabel: 'Temp',\n            xLabel: 'X',\n            yLabel: 'Y',\n            tooltip: true,\n            axisColor: '#000000',\n//            zMin:20,\n//            zMax:35\n        };\n\n        var archiveRequestList = [];\n        var archiveList = [];\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n//             drawSpectrogram();\n\n        }updatePixelMaxBarChart\n        function onWebSocketOpen()\n        {\n        }\n        function onWebSocketClose()\n        {\n            \n        }\n        function onWebSocketMessage(msg)\n        {\n//            console.log(msg);\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        updatePixelMaxBarChart();\n//                        updateSpectrogram();\n                    }\n                    break;\n                case 'getArchiveValues':\n                    if (msg.userID == userID)\n                    {\n                        if ((msg.payload.device.deviceType == restfulDevice.deviceType) && (msg.payload.device.name == restfulDevice.name) )\n                            putArchiveValues(msg.payload);\n                    }\n                    break;\n                case 'getJwtToken':\n                    if (msg.userID == userID) loadJwtToken(msg);\n                    break;\n                case 'settingAcknowledge':\n                    if (msg.userID == userID)\n                    {\n                        if (msg.payload != 'Success!') acknowledgeDialog('Acknowledge', 'Setting', msg.payload);\n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            $('#linkQualityId').text(device.linkQuality.value);\n            $('#signalLevelId').text(device.signalLevel.value);\n            $('#raspistillImg').attr('src','img/raspistill/raspistill.jpg?t=' + new Date().getTime().toString() );\n            var plow = device.pixelMin.value;\n            var phigh = device.pixelMax.value;\n            if (device.tempAutoScale.value < 1)\n            {\n                plow = device.pixelMax.alarm.limits.lolo;\n                phigh = device.pixelMax.alarm.limits.hihi;\n            }\n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var pbox = Math.round(((phigh - plow) * (ibox / 8.0) + plow) * 10.0) / 10.0;\n                $('#box' + (ibox + 1).toString()).text(pbox.toString());\n            }\n\n        }\n        function updatePixelMaxBarChart()\n        {\n            var pixelMaxBarConfig = \n                {\n                    lolo            : device.pixelMax.alarm.limits.lolo, \n                    low             : device.pixelMax.alarm.limits.low, \n                    high            : device.pixelMax.alarm.limits.high, \n                    hihi            : device.pixelMax.alarm.limits.hihi, \n                    value           : device.pixelMax.value, \n                    unit            : device.pixelMax.unit, \n                    textsize        : 38,\n                    label           : 'pixelMax', \n                    lowColor        : '#00ff00', \n                    mediumColor     : '#ffff00',\n                    highColor       : 'ff0000', \n                    backgroundColor : '#9eb5c7', \n                    labelColor      : '#000000', \n                    gridColor       : '#ffffff',\n                    height          : 300, \n                    htmlId          : 'pixelMaxBarPlot'\n                };\n            setHorzBarWidget(pixelMaxBarConfig);\n        }\n",
         "output": "str",
         "x": 650,
         "y": 240,
         "wires": [
             [
-                "530eb678.8873e8"
+                "b88d5de6.98fee"
             ]
         ]
     },
@@ -1125,13 +1126,13 @@
         "fieldType": "msg",
         "format": "javascript",
         "syntax": "mustache",
-        "template": "{{{payload.script.global}}}\n{{{payload.script.spectrogram}}}\n{{{payload.script.dangerZone}}}\n",
+        "template": "{{{payload.script.global}}}\n{{{payload.script.spectrogram}}}\n{{{payload.script.horzbarWidget}}}\n{{{payload.script.editDevice}}}\n{{{payload.script.dangerZone}}}\n",
         "output": "str",
         "x": 640,
-        "y": 400,
+        "y": 440,
         "wires": [
             [
-                "7fef0c19.4ed014"
+                "6d863907.47af88"
             ]
         ]
     },
@@ -1144,7 +1145,7 @@
         "fieldType": "msg",
         "format": "html",
         "syntax": "mustache",
-        "template": "    <div width=\"100%\">\n        <div class='row' style='padding-bottom: 25px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.dashboard}}}\n            </div>\n        </div>\n    </div>",
+        "template": "    <div width=\"100%\">\n        <div class='row' style='padding-bottom: 25px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.pixelMaxBar}}}\n            </div>\n        </div>\n        <div class='row' style='padding-bottom: 25px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.spectrogram}}}\n            </div>\n        </div>\n    </div>\n",
         "output": "str",
         "x": 950,
         "y": 400,
@@ -1158,14 +1159,14 @@
         "id": "7fef0c19.4ed014",
         "type": "template",
         "z": "c4285970.3276d8",
-        "name": "html.dashboard",
-        "field": "payload.html.dashboard",
+        "name": "html.spectrogram",
+        "field": "payload.html.spectrogram",
         "fieldType": "msg",
         "format": "html",
         "syntax": "mustache",
-        "template": "<!-- Dashboard HTML -->\n                <div class='card'>\n                    <p class='card-title'>Temperature</p>\n                    <div class='card-body' align=\"center\">\n                        <div class='row' style='padding-bottom: 25px;'>\n                            <div class=\"container-fluid spectrogram\" align=\"center\" id=\"spectrogram\"></div>\n                        </div>\n                   </div>\n                </div>\n",
+        "template": "<!-- Dashboard HTML -->\n                <div class='card'>\n                    <p class='card-title'>Temperature</p>\n                    <div class='card-body' align=\"center\">\n                        <div class='row' style='padding-bottom: 25px;'>\n                            <div class=\"container-fluid \" align=\"center\">\n                                <table width='800px'>\n                                    <tr>\n                                        <td>\n                                            <img src='img/raspistill/raspistill.jpg' id=\"raspistillImg\" width='800' height='600'/>\n                                        </td>\n                                    </tr>\n                                    <tr>\n                                        <td>\n                                            \n                                        </td>\n                                    </tr>\n                                </table>\n                            </div>\n                            <div class=\"container-fluid \" align=\"center\">\n                                <table  width='900px'>\n                                    <tr>\n                                        <td width=\"100px\">\n                                            <div style=\"width:100px;height:50px;background-color:#0000ff\"></div>\n                                        </td>\n                                        <td width=\"100px\">\n                                            <div style=\"width:100px;height:50px;background-color:#0088ff\"></div>\n                                        </td>\n                                        <td width=\"100px\">\n                                            <div style=\"width:100px;height:50px;background-color:#00ffff\"></div>\n                                        </td>\n                                        <td width=\"100px\">\n                                            <div style=\"width:100px;height:50px;background-color:#00ff88\"></div>\n                                        </td>\n                                        <td width=\"100px\">\n                                            <div style=\"width:100px;height:50px;background-color:#00ff00\"></div>\n                                        </td>\n                                        <td width=\"100px\">\n                                            <div style=\"width:100px;height:50px;background-color:#88ff00\"></div>\n                                        </td>\n                                        <td width=\"100px\">\n                                            <div style=\"width:100px;height:50px;background-color:#ffff00\"></div>\n                                        </td>\n                                        <td width=\"100px\">\n                                            <div style=\"width:100px;height:50px;background-color:#ff8800\"></div>\n                                        </td>\n                                        <td width=\"100px\">\n                                            <div style=\"width:100px;height:50px;background-color:#ff0000\"></div>\n                                        </td>\n                                    </tr>\n                                    <tr>\n                                        <td align='center' width=\"100px\">\n                                            <span id='box1'>1</span>\n                                        </td>\n                                        <td align='center' width=\"100px\">\n                                            <span id='box2'>2</span>\n                                        </td>\n                                        <td align='center' width=\"100px\">\n                                            <span id='box3'>3</span>\n                                        </td>\n                                        <td align='center' width=\"100px\">\n                                            <span id='box4'>4</span>\n                                        </td>\n                                        <td align='center' width=\"100px\">\n                                            <span id='box5'>5</span>\n                                        </td>\n                                        <td align='center' width=\"100px\">\n                                            <span id='box6'>6</span>\n                                        </td>\n                                        <td align='center' width=\"100px\">\n                                            <span id='box7'>7</span>\n                                        </td>\n                                        <td align='center' width=\"100px\">\n                                            <span id='box8'>8</span>\n                                        </td>\n                                        <td align='center' width=\"100px\">\n                                            <span id='box9'>9</span>\n                                        </td>\n                                    </tr>\n                                </table>\n                            </div>\n                        </div>\n                        <div class='row' style='padding-bottom: 25px;'>\n                            <div class=\"container-fluid\" align=\"center\" id=\"spectrogram\"></div>\n                        </div>\n                   </div>\n                </div>\n",
         "output": "str",
-        "x": 980,
+        "x": 990,
         "y": 280,
         "wires": [
             [
@@ -1185,7 +1186,7 @@
         "template": "// dangerZone JavaScript\n        function restartTray()\n        {\n            optionDialog('Danger! Will Robinson, Danger!', 'Restart Tray', 'This should not be done lightly', ['Reset Tray','Cancel'], [function (){restartTrayButtonPress();}, function (){$( \"#optionDialog\" ).dialog( \"close\" );}]);\n        }\n        function restartTrayButtonPress()\n        {\n            $( \"#optionDialog\" ).dialog( \"close\" );\n            var mqttMessage = \n            {\n                topic   : restfulDevice.project + '/' +  restfulDevice.deviceType + '/' +  restfulDevice.name + '/restartTray',\n                payload :  1\n            };\n            checkLogin(sendSettingToMqtt, mqttMessage);\n        }\n",
         "output": "str",
         "x": 670,
-        "y": 360,
+        "y": 400,
         "wires": [
             [
                 "c1034be9.37f0a8"
@@ -1447,15 +1448,15 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "repeat": "1",
+        "repeat": "",
         "crontab": "",
         "once": true,
         "onceDelay": "5",
-        "x": 110,
-        "y": 400,
+        "x": 130,
+        "y": 440,
         "wires": [
             [
-                "c77babd7.d7f578"
+                "4e5c46c5.5583d8"
             ]
         ]
     },
@@ -1464,14 +1465,14 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Read AMG8833",
-        "func": "var i2c=global.get(\"i2c\");\nvar i2c1 = null;\ni2c1 = i2c.openSync(1);\nvar dataView     = new DataView(new ArrayBuffer(2));\nvar device = flow.get('device');\nfor (var ii = 0; ii < 64; ++ii)\n{\n    var byte1 = i2c1.readByteSync(0x69, 128 + 2 * ii);\n    var byte2 = i2c1.readByteSync(0x69, 128 + 2 * ii + 1);\n    dataView.setUint8(0, byte2);\n    dataView.setUint8(1, byte1);\n    var temperature = dataView.getInt16(0);\n    if(temperature & (1 << 11))\n    {\n        temperature = ~temperature;\n        temperature = temperature + 1;\n        temperature = temperature & 4095;\n        temperature = temperature * -1;\n    }\n    device.pixelTemp.value[0][ii] = ii;\n    device.pixelTemp.value[1][ii] = temperature  * 0.25;\n}\ni2c1.closeSync();\n\nreturn {topic:'data',payload:device};\n ",
+        "func": "var i2c=global.get(\"i2c\");\nvar i2c1 = null;\ni2c1 = i2c.openSync(1);\nvar dataView     = new DataView(new ArrayBuffer(2));\nvar device = flow.get('device');\ndevice.pixelMin.value = 10000;\ndevice.pixelMax.value = -10000;\nfor (var ii = 0; ii < 64; ++ii)\n{\n    var byte1 = i2c1.readByteSync(0x69, 128 + 2 * ii);\n    var byte2 = i2c1.readByteSync(0x69, 128 + 2 * ii + 1);\n    dataView.setUint8(0, byte2);\n    dataView.setUint8(1, byte1);\n    var temperature = dataView.getInt16(0);\n    if(temperature & (1 << 11))\n    {\n        temperature = ~temperature;\n        temperature = temperature + 1;\n        temperature = temperature & 4095;\n        temperature = temperature * -1;\n    }\n    device.pixelTemp.value[0][ii] = ii;\n    device.pixelTemp.value[1][ii] = (temperature  * 0.25) * device.tempScaleFactor.value + device.tempOffset.value;\n    if (device.pixelMin.value > device.pixelTemp.value[1][ii]) device.pixelMin.value = device.pixelTemp.value[1][ii];\n    if (device.pixelMax.value < device.pixelTemp.value[1][ii]) device.pixelMax.value = device.pixelTemp.value[1][ii];\n}\ni2c1.closeSync();\nreturn {topic:'data',payload:device};\n ",
         "outputs": 1,
         "noerr": 0,
-        "x": 300,
-        "y": 400,
+        "x": 740,
+        "y": 440,
         "wires": [
             [
-                "9115ea87.0ca208"
+                "82565828.43a208"
             ]
         ]
     },
@@ -1506,7 +1507,140 @@
         "template": "// spectrogram Javascript\n        function initializeDataArray()\n        {   \n            pixelTemp = [];\n            var ix = 0;\n            var iy = 0;\n            for (var ipt = 0; ipt < 64; ++ipt)\n            {\n                pixelTemp[ipt] =\n                {\n                    'x': ix,\n                    'y': iy,\n                    'z': 0,\n                    'style': 0\n                };\n                ++iy;\n                if (iy > 7)\n                {\n                    iy = 0;\n                    ++ix;\n                }\n            }\n        }\n        function drawSpectrogram()\n        {\n            var container = document.getElementById('spectrogram');\n            initializeDataArray();\n//            threedPlotOptions.zMax = 40.0;\n//            threedPlotOptions.zMin = -10.0;\n            \n            graph3d = new vis.Graph3d(container, pixelTemp, threedPlotOptions);\n            var horzAngle = 0 * 3.1415927 / 180.0;\n            var vertAngle = 90 * 3.1415927 / 180.0;\n            graph3d.setCameraPosition({'horizontal': horzAngle, 'vertical': vertAngle, 'distance': 2.0});\n         }\n        function updateSpectrogram()\n        {\n            var ix = 0;\n            var iy = 0;\n            for (var ipt = 0; ipt < 64; ++ipt)\n            {\n                pixelTemp[ipt] =\n                {\n                    'x': ix,\n                    'y': iy,\n                    'z': device.pixelTemp.value[1][ipt],\n                    'style': 0\n                };\n                ++iy;\n                if (iy > 7)\n                {\n                    iy = 0;\n                    ++ix;\n                }\n            }\n            graph3d.setData(pixelTemp);\n        }\n",
         "output": "str",
         "x": 670,
+        "y": 320,
+        "wires": [
+            [
+                "da5b4a1e.c62d78"
+            ]
+        ]
+    },
+    {
+        "id": "84a9b3c6.82737",
+        "type": "exec",
+        "z": "5f562f66.a301e",
+        "command": "raspistill",
+        "addpay": true,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "raspistill",
+        "x": 520,
+        "y": 440,
+        "wires": [
+            [
+                "c77babd7.d7f578"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "4e5c46c5.5583d8",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Prep raspistill command",
+        "func": "var cmd = ' -t 1 -rot 90 -ifx emboss -h 120 -w 160 -o html-static/img/raspistill/raspistill.jpg';\nmsg.payload = cmd;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 330,
+        "y": 440,
+        "wires": [
+            [
+                "84a9b3c6.82737"
+            ]
+        ]
+    },
+    {
+        "id": "82565828.43a208",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Prep image",
+        "func": "var fs = global.get(\"fs\");\nvar jpeg = global.get(\"jpeg\");\nvar imgFileName = 'html-static/img/raspistill/raspistill.jpg'\nvar jpegData = fs.readFileSync(imgFileName);\nvar rawImageData = jpeg.decode(jpegData);\nvar device = flow.get('device');\n\nvar wThermalOverWcam = device.wThermalOverWcam.value;\nvar wOffsetOverWcam  = device.wOffsetOverWcam.value;\n\nvar hThermalOverHcam = device.hThermalOverHcam.value;\nvar hOffsetOverHcam = device.hOffsetOverHcam.value;\n\nvar pixelTemp = msg.payload.pixelTemp.value[1];\nvar pixelTempMin = device.pixelMin.value;\nvar deltaPixelTemp = device.pixelMax.value - device.pixelMin.value;\nif (device.tempAutoScale.value < 1)\n{\n    pixelTempMin = device.pixelMax.alarm.lolo;\n    deltaPixelTemp = device.pixelMax.alarm.hihi - device.pixelMax.alarm.lolo;\n}\n\nvar npts = rawImageData.width * rawImageData.height;\nfor (var ii = 0;  ii < npts; ++ii)\n{\n    var xy = getXY(ii);\n    var ixtherm = Math.floor(8.0 * (xy[0] - rawImageData.width * wOffsetOverWcam) / (rawImageData.width * wThermalOverWcam));\n    var iytherm = Math.floor(8.0 * (xy[1] - rawImageData.height * hOffsetOverHcam) / (rawImageData.height * hThermalOverHcam));\n    var intensity = (getPixelTemp(ixtherm, iytherm) - pixelTempMin) / (deltaPixelTemp);\n    var rgb = [158,181,199];\n    var color = 255;\n    if ((0 <= intensity) && (intensity <= 1))\n    {\n        rgb = getRGB(intensity);\n        color = Math.floor(rawImageData.data[4 * ii + 0] * 1.5);\n        if (color > 255) color = 255;\n    }\n    rawImageData.data[4 * ii + 0] = Math.floor(color * rgb[0] / 255);\n    rawImageData.data[4 * ii + 1] = Math.floor(color * rgb[1] / 255);\n    rawImageData.data[4 * ii + 2] = Math.floor(color * rgb[2] / 255);\n    rawImageData.data[4 * ii + 3] = Math.floor(255);\n}\njpegImageData = jpeg.encode(rawImageData, 100);\nfs.writeFile(imgFileName,jpegImageData.data,function(){});\n\n\nreturn msg;\nfunction getPixelIndex(x, y)\n{\n    return (rawImageData.height - y) * rawImageData.width + x;\n}\nfunction getXY(ipt)\n{\n    var y = Math.floor(ipt / rawImageData.width);\n    var x = ipt - y * rawImageData.width;\n    y = rawImageData.height - 1 - y;\n    return [x , y];\n}\nfunction getPixelTemp(ixTherm, iyTherm)\n{\n    if (ixTherm < 0) return -10000.0;\n    if (ixTherm > 7) return -10000.0;\n    if (iyTherm < 0) return -10000.0;\n    if (iyTherm > 7) return -10000.0;\n    return pixelTemp[ixTherm * 8 + iyTherm];\n}\n\nfunction getRGB(intensity)\n{\n  var rgb = [0,0,0];\n  if ( (0 <= intensity) && (intensity <= 0.25) )\n  {\n    rgb[0] = 0;\n    rgb[1] = Math.floor(255 * intensity * 4);    \n    rgb[2] = 255;\n  }\n  if ( (0.25 < intensity) && (intensity <= 0.50) )\n  {\n    rgb[0] = 0;\n    rgb[1] = 255;    \n    rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n  }\n  if ( (0.50 < intensity) && (intensity <= 0.75) )\n  {\n    rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n    rgb[1] = 255;    \n    rgb[2] = 0;\n  }\n  if ( (0.75 < intensity) && (intensity <= 1.0) )\n  {\n    rgb[0] = 255;\n    rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n    rgb[2] = 0;\n  }\n  return rgb;\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 910,
+        "y": 440,
+        "wires": [
+            [
+                "9115ea87.0ca208"
+            ]
+        ]
+    },
+    {
+        "id": "5ac97acb.4504c4",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "3",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 900,
+        "y": 560,
+        "wires": [
+            [
+                "4e5c46c5.5583d8"
+            ]
+        ]
+    },
+    {
+        "id": "b88d5de6.98fee",
+        "type": "template",
+        "z": "c4285970.3276d8",
+        "name": "script.horzbarWidget",
+        "field": "payload.script.horzbarWidget",
+        "fieldType": "msg",
+        "format": "javascript",
+        "syntax": "mustache",
+        "template": "// Horz Bar Widget\n        function setHorzBarWidget(barConfig)\n        {\n            var lowValue = 0;\n            var mediumValue = 0;\n            var highValue = 0;\n        \n            var lowColor = barConfig.backgroundColor;\n            var mediumColor = barConfig.backgroundColor;\n            var highColor = barConfig.backgroundColor;\n            var valueColor = barConfig.backgroundColor; \n            \n            if ( barConfig.value <= barConfig.lolo)\n            {\n                lowValue = barConfig.lolo;\n                lowColor = barConfig.lowColor;\n                valueColor = lowColor;\n            }\n            if ( (barConfig.lolo <= barConfig.value) && (barConfig.value < barConfig.low) )\n            {\n                lowValue = barConfig.value;\n                lowColor = barConfig.lowColor;\n                valueColor = lowColor;\n            }\n            if ( (barConfig.low  <= barConfig.value) && (barConfig.value < barConfig.high) )\n            {\n                lowValue = barConfig.low;\n                mediumValue = barConfig.value - barConfig.low; \n                lowColor = barConfig.mediumColor;\n                mediumColor = barConfig.mediumColor;\n                valueColor = mediumColor;\n        \n            }\n            if ( (barConfig.high <= barConfig.value) && (barConfig.value < barConfig.hihi) )\n            {\n                lowValue = barConfig.low;\n                mediumValue = barConfig.high - barConfig.low;\n                highValue = barConfig.value - barConfig.high;\n                lowColor = barConfig.highColor;\n                mediumColor = barConfig.highColor;\n                highColor = barConfig.highColor;\n                valueColor = highColor;\n            }\n            if ( barConfig.hihi <= barConfig.value)\n            {\n                lowValue = barConfig.low;\n                mediumValue = barConfig.high - barConfig.low; \n                highValue = barConfig.hihi - barConfig.high; \n                lowColor = barConfig.highColor;\n                mediumColor = barConfig.highColor;\n                highColor = barConfig.highColor;\n                valueColor = highColor;\n            }\n            \n            var lowBar = \n            {\n                y: ['', '-'],\n                x: [ barConfig.low, lowValue],\n                type: 'bar',\n                orientation: 'h',\n                showlegend: false,\n                marker:{color: [barConfig.lowColor, lowColor]},\n              width: [0.1, 1.0],\n            };\n            var mediumBar = \n            {\n                y: ['', '-'],\n                x: [barConfig.high - barConfig.low, mediumValue],\n                type: 'bar',\n                orientation: 'h',\n                showlegend: false,\n                marker:{color: [barConfig.mediumColor, mediumColor]},\n              width: [0.1, 1.0],\n            };\n            var highBar = \n            {\n                y: ['', '-'],\n                x: [barConfig.hihi - barConfig.high, highValue],\n                orientation: 'h',\n                type: 'bar',\n                showlegend: false,\n                marker:{color: [barConfig.highColor, highColor]},\n              width: [0.1, 1.0],\n            };\n            var layout = \n                {\n                    barmode: 'stack',\n                    plot_bgcolor:barConfig.backgroundColor,\n                    paper_bgcolor:barConfig.backgroundColor,\n                    margin: \n                        {\n                            t: 70, //top margin\n                            l: 20, //left margin\n                            r: 20, //right margin\n                            b: 70 //bottom margin\n                        },\n \n                    height: barConfig.height,\n                    title: \n                        {\n                            text: barConfig.value.toString() + ' ' + barConfig.unit,\n                            font: {color: valueColor, size:barConfig.textsize},\n                        },\n                    yaxis: \n                        {\n                            tickfont: {color:valueColor, size:barConfig.textsize}\n                        },\n                    xaxis: \n                        {\n                            range: [barConfig.lolo, barConfig.hihi],\n                            tickfont: {color:barConfig.labelColor, size:barConfig.textsize},\n                            gridcolor       : barConfig.gridColor\n\n                        },\n                };\n           Plotly.newPlot(barConfig.htmlId, [lowBar, mediumBar, highBar], layout, {'displayModeBar': false});\n        }\n        \n        \n        \n        \n        \n    \n",
+        "output": "str",
+        "x": 680,
         "y": 280,
+        "wires": [
+            [
+                "530eb678.8873e8"
+            ]
+        ]
+    },
+    {
+        "id": "6d863907.47af88",
+        "type": "template",
+        "z": "c4285970.3276d8",
+        "name": "html.pixelMaxBar",
+        "field": "payload.html.pixelMaxBar",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "                <div class='card'>\n                    <div class='row'>\n                        <div class='col-md-2'>\n                        </div>\n                        <div class='col-md-8'>\n                            <p class='card-title'>Max Temperature</p>\n                         </div>\n                        <div class='col-md-2'>\n                            <button class='btn btn-block card-button big-text' id=\"pixelMaxButton\" onclick=\"editDevice('pixelMax')\" >Edit</button>\n                        </div>\n                    </div>\n                    <div class='card-body' align=\"center\">\n                        <div class='row'>\n                            <div class='col-md-12'>\n                                <div id=\"pixelMaxBarPlot\" width=\"100%\" ></div>\n                           </div>\n                        </div>\n                    </div>\n                </div>\n                <div id=\"editDeviceDialog\" title=\"Edit Device\" class='card'>\n                    <p class='card-title' id='editDeviceDialogAttribute'>Attribute</p>\n                    <div class='card-body'>\n                        <table>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">LoLo</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"loloAlarm\" type=\"text\" value=\"0\" /></td>\n                            </tr>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">LOW</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"lowAlarm\" type=\"text\" value=\"0\" /></td>\n                            </tr>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">HIGH</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"highAlarm\" type=\"text\" value=\"0\" /></td>\n                            </tr>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">HiHi</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"hihiAlarm\" type=\"text\" value=\"0\" /></td>\n                            </tr>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">Notify Name</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"notifyName\" type=\"text\" value=\"\" /></td>\n                            </tr>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">Notify Number</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"notifyNumber\" type=\"text\" value=\"\" /></td>\n                            </tr>\n                        </table>\n                    </div>\n                </div>",
+        "output": "str",
+        "x": 990,
+        "y": 240,
+        "wires": [
+            [
+                "7fef0c19.4ed014"
+            ]
+        ]
+    },
+    {
+        "id": "da5b4a1e.c62d78",
+        "type": "template",
+        "z": "c4285970.3276d8",
+        "name": "script.editDevice",
+        "field": "payload.script.editDevice",
+        "fieldType": "msg",
+        "format": "javascript",
+        "syntax": "mustache",
+        "template": "// Edit Temp JavaScript\n       $( function() \n        {\n            $( \"#editDeviceDialog\" ).dialog(\n                {\n//                    closeOnEscape: false,\n//                    open: function(event, ui) {$(\".ui-dialog-titlebar-close\", ui.dialog | ui).hide();},\n                    width:    640,\n                    autoOpen: false,\n                    buttons:\n                    [\n                        {\n                            text: \"Set\",\n                            click: function() {setDevice(); $( this ).dialog( \"close\" );},\n                            showText: false\n                        },\n                        {\n                            text: \"Cancel\",\n                            click: function() \n                            {\n                                $( this ).dialog( \"close\" ); \n                            },\n                            showText: false\n                        }\n                    ]\n                });\n        } );\n        function editDevice(attrName)\n        {\n            $( \"#editDeviceDialog\" ).dialog( \"option\", \"title\", \"Edit\"); \n            editedAttribute = attrName;\n            $( \"#editDeviceDialogAttribute\").html(attrName);\n\n            var attr = device[attrName];\n            $( \"#loloAlarm\").val(attr.alarm.limits.lolo);\n            $( \"#lowAlarm\").val(attr.alarm.limits.low);\n            $( \"#highAlarm\").val(attr.alarm.limits.high);\n            $( \"#hihiAlarm\").val(attr.alarm.limits.hihi);\n            $( \"#notifyName\").val(attr.alarm.notify.name);\n            $( \"#notifyNumber\").val(attr.alarm.notify.number);\n\n            $( \"#editDeviceDialog\" ).dialog( \"open\" );\n        }\n        function setDevice()\n        {\n            var attr = device[editedAttribute];\n            if (isNaN($('#loloAlarm').val()) \n                || isNaN($('#lowAlarm').val()) \n                || isNaN($('#highAlarm').val()) \n                || isNaN($('#hihiAlarm').val()))\n            {\n                acknowledgeDialog('Error', 'Entry not a number!', editedAttribute);\n                editedAttribute = '';\n                return;\n            }\n            editedAttribute = '';\n\n            attr.alarm.limits.lolo = Number($( \"#loloAlarm\").val());\n            attr.alarm.limits.low = Number($( \"#lowAlarm\").val());\n            attr.alarm.limits.high = Number($( \"#highAlarm\").val());\n            attr.alarm.limits.hihi = Number($( \"#hihiAlarm\").val());\n            attr.alarm.notify.number =  $( \"#notifyNumber\").val();\n            attr.alarm.notify.name = $( \"#notifyName\").val();\n            var mqttMessage = \n            {\n                topic   : mqttDevice.project + '/' +  mqttDevice.deviceType + '/' +  mqttDevice.name + '/setting',\n                payload :  device\n            };\n            checkLogin(sendSettingToMqtt, mqttMessage);\n        }\n",
+        "output": "str",
+        "x": 660,
+        "y": 360,
         "wires": [
             [
                 "e2fa40e5.9c393"
