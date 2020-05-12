@@ -213,28 +213,6 @@
         }
     },
     {
-        "id": "79250bf3.365cc4",
-        "type": "mqtt-broker",
-        "z": "",
-        "name": "MQTT Broker",
-        "broker": "$(MQTTSERVERIP)",
-        "port": "1883",
-        "clientid": "$(MQTTCLIENTID)",
-        "usetls": false,
-        "compatmode": true,
-        "keepalive": "60",
-        "cleansession": true,
-        "birthTopic": "",
-        "birthQos": "0",
-        "birthPayload": "",
-        "closeTopic": "",
-        "closeQos": "0",
-        "closePayload": "",
-        "willTopic": "",
-        "willQos": "0",
-        "willPayload": ""
-    },
-    {
         "id": "44b51478.9c022c",
         "type": "websocket-listener",
         "z": "",
@@ -249,52 +227,6 @@
         "secret": "$(JWTKEYSECRET)"
     },
     {
-        "id": "93049b70.2dc5c8",
-        "type": "mqtt out",
-        "z": "5f562f66.a301e",
-        "name": "Publish Readings",
-        "topic": "",
-        "qos": "0",
-        "retain": "false",
-        "broker": "79250bf3.365cc4",
-        "x": 1350,
-        "y": 440,
-        "wires": []
-    },
-    {
-        "id": "8cda9011.eab33",
-        "type": "mqtt in",
-        "z": "5f562f66.a301e",
-        "name": "Subscribe Settings",
-        "topic": "+/+/+/setting",
-        "qos": "0",
-        "datatype": "auto",
-        "broker": "79250bf3.365cc4",
-        "x": 110,
-        "y": 140,
-        "wires": [
-            [
-                "dc36009e.fdeeb"
-            ]
-        ]
-    },
-    {
-        "id": "dc36009e.fdeeb",
-        "type": "json",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "property": "payload",
-        "action": "",
-        "pretty": false,
-        "x": 270,
-        "y": 140,
-        "wires": [
-            [
-                "6c43015c.a827c"
-            ]
-        ]
-    },
-    {
         "id": "5902d0c0.241a6",
         "type": "file",
         "z": "5f562f66.a301e",
@@ -304,7 +236,7 @@
         "createDir": false,
         "overwriteFile": "true",
         "encoding": "none",
-        "x": 1050,
+        "x": 1090,
         "y": 140,
         "wires": [
             []
@@ -384,7 +316,7 @@
         "func": "var jsonPretty = JSON.stringify(msg.payload,null,2);\nvar filename = flow.get('cubeInfo').deviceType + '-' + flow.get('cubeInfo').name + '.json';\nreturn {topic: msg.payload, payload:jsonPretty, 'filename':filename};",
         "outputs": 1,
         "noerr": 0,
-        "x": 870,
+        "x": 910,
         "y": 140,
         "wires": [
             [
@@ -400,7 +332,7 @@
         "func": "scalarAlarmScan(msg.payload, 'setting');\nflow.set('device', msg.payload); \nflow.set('newSetting', 1); \nreturn msg;\n\nfunction getActionArray(device, type, actionType)\n{\n    var actionArray = [];\n    var keys = Object.keys(device);\n    for (var ii = 0; ii < keys.length; ++ii)\n    {\n        if (device[keys[ii]].hasOwnProperty('type'))\n        {\n            if (device[keys[ii]].type == type)\n            {\n                if (device[keys[ii]].action == actionType)\n                {\n                    actionArray.push(device[keys[ii]]);\n                }\n            }\n        }\n    }\n    return actionArray;\n}\nfunction scalarAlarmScan(device, actionType)\n{\n    var actionArray = getActionArray(device, 'scalar', actionType);\n    if (actionArray.length > 0)\n    {\n        for (var ii = 0; ii < actionArray.length; ++ii)\n        {\n            actionArray[ii].alarm.value = 0;\n            if (!isNaN(actionArray[ii].value))\n            {\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.low)  actionArray[ii].alarm.value = 1;\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.lolo) actionArray[ii].alarm.value = 3;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.high) actionArray[ii].alarm.value = 2;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.hihi) actionArray[ii].alarm.value = 4;\n            }\n        }\n    }\n}\n",
         "outputs": 1,
         "noerr": 0,
-        "x": 680,
+        "x": 720,
         "y": 140,
         "wires": [
             [
@@ -695,39 +627,6 @@
         ]
     },
     {
-        "id": "ea57f5c0.b55618",
-        "type": "mqtt in",
-        "z": "5f562f66.a301e",
-        "name": "Restart Tray",
-        "topic": "+/+/+/restartTray",
-        "qos": "0",
-        "datatype": "auto",
-        "broker": "79250bf3.365cc4",
-        "x": 90,
-        "y": 260,
-        "wires": [
-            [
-                "808c8dcc.1f0ac"
-            ]
-        ]
-    },
-    {
-        "id": "808c8dcc.1f0ac",
-        "type": "json",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "property": "payload",
-        "action": "",
-        "pretty": false,
-        "x": 230,
-        "y": 260,
-        "wires": [
-            [
-                "225946b1.9e8b3a"
-            ]
-        ]
-    },
-    {
         "id": "960991fa.0fafe",
         "type": "function",
         "z": "5f562f66.a301e",
@@ -828,7 +727,7 @@
         "func": "var mqttArray = msg.topic.split('/');\nif (mqttArray[0] != global.get('project')) return null;\nif (mqttArray[1] != flow.get('cubeInfo').deviceType) return null;\nif (mqttArray[2] != flow.get('cubeInfo').name) return null;\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 470,
+        "x": 510,
         "y": 140,
         "wires": [
             [
@@ -844,7 +743,7 @@
         "func": "var mqttArray = msg.topic.split('/');\nif (mqttArray[0] != global.get('project')) return null;\nif (mqttArray[1] != flow.get('cubeInfo').deviceType) return null;\nif (mqttArray[2] != flow.get('cubeInfo').name) return null;\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 470,
+        "x": 510,
         "y": 260,
         "wires": [
             [
@@ -1649,5 +1548,35 @@
                 "e2fa40e5.9c393"
             ]
         ]
+    },
+    {
+        "id": "8716c046.c8b27",
+        "type": "comment",
+        "z": "5f562f66.a301e",
+        "name": "Add MQTT  Publish node here",
+        "info": "no topic - set by upstream node",
+        "x": 1400,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "4bb7f8c1.5a1b88",
+        "type": "comment",
+        "z": "5f562f66.a301e",
+        "name": "Add MQTT  Subscribe node  and json parser here",
+        "info": "topic is +/+/+/setting",
+        "x": 200,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "9efd4ee8.21deb",
+        "type": "comment",
+        "z": "5f562f66.a301e",
+        "name": "Add MQTT  Output  node to Restart Tray and json parser",
+        "info": "topic is +/+/+/restartTray",
+        "x": 220,
+        "y": 260,
+        "wires": []
     }
 ]
