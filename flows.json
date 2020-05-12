@@ -1543,7 +1543,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Prep raspistill command",
-        "func": "var cmd = ' -t 1 -rot 90 -ifx emboss -h 120 -w 160 -o html-static/img/raspistill/raspistill.jpg';\nmsg.payload = cmd;\nreturn msg;",
+        "func": "var cmd = ' -t 1 -rot 90 -ifx emboss -h 120 -w 160 -o html-static/img/raspistill/raspistill.jpg';\n//var cmd = ' -t 1 -rot 90 -ifx emboss -h 240 -w 320 -o html-static/img/raspistill/raspistill.jpg';\nmsg.payload = cmd;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "x": 330,
