@@ -352,7 +352,8 @@
         "y": 440,
         "wires": [
             [
-                "a3ff8e5.b79de7"
+                "a3ff8e5.b79de7",
+                "5ac97acb.4504c4"
             ]
         ]
     },
@@ -380,12 +381,11 @@
         "func": "var mqttArray = msg.topic.split('/');\nvar device = \n{\n    project     : mqttArray[0],\n    deviceType  : mqttArray[1],\n    name        : mqttArray[2],\n    prop        : mqttArray[3],\n};\nreturn {topic : msg.topic, payload:{topic:'readings', mqttDevice : device, payload:msg.payload}};",
         "outputs": 1,
         "noerr": 0,
-        "x": 1350,
-        "y": 500,
+        "x": 1370,
+        "y": 480,
         "wires": [
             [
-                "107beeed.934ed1",
-                "5ac97acb.4504c4"
+                "107beeed.934ed1"
             ]
         ]
     },
@@ -396,8 +396,8 @@
         "name": "/app/websocket",
         "server": "44b51478.9c022c",
         "client": "",
-        "x": 1560,
-        "y": 500,
+        "x": 1580,
+        "y": 480,
         "wires": []
     },
     {
@@ -409,7 +409,7 @@
             "c2b927f.87df7d8"
         ],
         "x": 1455,
-        "y": 540,
+        "y": 620,
         "wires": [
             [
                 "107beeed.934ed1"
@@ -1009,7 +1009,7 @@
         "fieldType": "msg",
         "format": "javascript",
         "syntax": "mustache",
-        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var graph3d = null;\n        var pixelTemp = null;\n\n        var threedPlotOptions = \n        {\n            width: '850px',\n            height: '600px',\n            style: 'surface',\n            showPerspective: false,\n            showLegend: true,\n            showGrid: false,\n            showShadow: false,\n            keepAspectRatio: false,\n            verticalRatio: 0.6,\n            showZAxis: false,\n            zLabel: 'Temp',\n            xLabel: 'X',\n            yLabel: 'Y',\n            tooltip: true,\n            axisColor: '#000000',\n//            zMin:20,\n//            zMax:35\n        };\n\n        var archiveRequestList = [];\n        var archiveList = [];\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n//             drawSpectrogram();\n\n        }updatePixelMaxBarChart\n        function onWebSocketOpen()\n        {\n        }\n        function onWebSocketClose()\n        {\n            \n        }\n        function onWebSocketMessage(msg)\n        {\n//            console.log(msg);\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        updatePixelMaxBarChart();\n//                        updateSpectrogram();\n                    }\n                    break;\n                case 'getArchiveValues':\n                    if (msg.userID == userID)\n                    {\n                        if ((msg.payload.device.deviceType == restfulDevice.deviceType) && (msg.payload.device.name == restfulDevice.name) )\n                            putArchiveValues(msg.payload);\n                    }\n                    break;\n                case 'getJwtToken':\n                    if (msg.userID == userID) loadJwtToken(msg);\n                    break;\n                case 'settingAcknowledge':\n                    if (msg.userID == userID)\n                    {\n                        if (msg.payload != 'Success!') acknowledgeDialog('Acknowledge', 'Setting', msg.payload);\n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            $('#linkQualityId').text(device.linkQuality.value);\n            $('#signalLevelId').text(device.signalLevel.value);\n            $('#raspistillImg').attr('src','img/raspistill/raspistill.jpg?t=' + new Date().getTime().toString() );\n            var plow = device.pixelMin.value;\n            var phigh = device.pixelMax.value;\n            if (device.tempAutoScale.value < 1)\n            {\n                plow = device.pixelMax.alarm.limits.lolo;\n                phigh = device.pixelMax.alarm.limits.hihi;\n            }\n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var pbox = Math.round(((phigh - plow) * (ibox / 8.0) + plow) * 10.0) / 10.0;\n                $('#box' + (ibox + 1).toString()).text(pbox.toString());\n            }\n            if (device.tempAutoScale.value == 1)\n            {\n                $('#autoScaleButton').text(\"Auto Scale\");\n            }\n            else\n            {\n                $('#autoScaleButton').text(\"Fixed Scale\");\n            }\n\n        }\n        function updatePixelMaxBarChart()\n        {\n            var pixelMaxBarConfig = \n                {\n                    lolo            : device.pixelMax.alarm.limits.lolo, \n                    low             : device.pixelMax.alarm.limits.low, \n                    high            : device.pixelMax.alarm.limits.high, \n                    hihi            : device.pixelMax.alarm.limits.hihi, \n                    value           : device.pixelMax.value, \n                    unit            : device.pixelMax.unit, \n                    textsize        : 38,\n                    label           : 'pixelMax', \n                    lowColor        : '#0000ff', \n                    mediumColor     : '#00ff00',\n                    highColor       : '#ff0000', \n                    backgroundColor : '#9eb5c7', \n                    labelColor      : '#000000', \n                    gridColor       : '#ffffff',\n                    height          : 200, \n                    htmlId          : 'pixelMaxBarPlot'\n                };\n            setHorzBarWidget(pixelMaxBarConfig);\n        }\n        function toggleAutoScale()\n        {\n            if (device.tempAutoScale.value == 1)\n            {\n                device.tempAutoScale.value = 0;\n                $('#autoScaleButton').text(\"Fixed Scale\");\n            }\n            else\n            {\n               device.tempAutoScale.value = 1;\n               $('#autoScaleButton').text(\"Auto Scale\");\n            }\n            var mqttMessage = \n            {\n                topic   : mqttDevice.project + '/' +  mqttDevice.deviceType + '/' +  mqttDevice.name + '/setting',\n                payload :  device\n            };\n            checkLogin(sendSettingToMqtt, mqttMessage);\n        }",
+        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var graph3d = null;\n        var pixelTemp = null;\n        var calibrateDialogOpen = false;\n\n        var threedPlotOptions = \n        {\n            width: '850px',\n            height: '600px',\n            style: 'surface',\n            showPerspective: false,\n            showLegend: true,\n            showGrid: false,\n            showShadow: false,\n            keepAspectRatio: false,\n            verticalRatio: 0.6,\n            showZAxis: false,\n            zLabel: 'Temp',\n            xLabel: 'X',\n            yLabel: 'Y',\n            tooltip: true,\n            axisColor: '#000000',\n//            zMin:20,\n//            zMax:35\n        };\n\n        var archiveRequestList = [];\n        var archiveList = [];\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n//             drawSpectrogram();\n\n        }updatePixelMaxBarChart\n        function onWebSocketOpen()\n        {\n        }\n        function onWebSocketClose()\n        {\n            \n        }\n        function onWebSocketMessage(msg)\n        {\n//            console.log(msg);\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        updatePixelMaxBarChart();\n//                        updateSpectrogram();\n                    }\n                    break;\n                case 'getArchiveValues':\n                    if (msg.userID == userID)\n                    {\n                        if ((msg.payload.device.deviceType == restfulDevice.deviceType) && (msg.payload.device.name == restfulDevice.name) )\n                            putArchiveValues(msg.payload);\n                    }\n                    break;\n                case 'getJwtToken':\n                    if (msg.userID == userID) loadJwtToken(msg);\n                    break;\n                case 'settingAcknowledge':\n                    if (msg.userID == userID)\n                    {\n                        if (msg.payload != 'Success!') acknowledgeDialog('Acknowledge', 'Setting', msg.payload);\n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            $('#linkQualityId').text(device.linkQuality.value);\n            $('#signalLevelId').text(device.signalLevel.value);\n            $('#raspistillImg').attr('src','img/raspistill/raspistill.jpg?t=' + new Date().getTime().toString() );\n            var plow = device.pixelMin.value;\n            var phigh = device.pixelMax.value;\n            if (device.tempAutoScale.value < 1)\n            {\n                plow = device.pixelMax.alarm.limits.lolo;\n                phigh = device.pixelMax.alarm.limits.hihi;\n            }\n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var pbox = Math.round(((phigh - plow) * (ibox / 8.0) + plow) * 10.0) / 10.0;\n                $('#box' + (ibox + 1).toString()).text(pbox.toString());\n            }\n            if (device.tempAutoScale.value == 1)\n            {\n                $('#autoScaleButton').text(\"Auto Scale\");\n            }\n            else\n            {\n                $('#autoScaleButton').text(\"Fixed Scale\");\n            }\n            if (!calibrateDialogOpen)\n            {\n                $( \"#calibrateTemp\").val(device.calTemp.value);\n            }\n\n        }\n        function updatePixelMaxBarChart()\n        {\n            var pixelMaxBarConfig = \n                {\n                    lolo            : device.pixelMax.alarm.limits.lolo, \n                    low             : device.pixelMax.alarm.limits.low, \n                    high            : device.pixelMax.alarm.limits.high, \n                    hihi            : device.pixelMax.alarm.limits.hihi, \n                    value           : device.pixelMax.value, \n                    unit            : device.pixelMax.unit, \n                    textsize        : 38,\n                    label           : 'pixelMax', \n                    lowColor        : '#0000ff', \n                    mediumColor     : '#00ff00',\n                    highColor       : '#ff0000', \n                    backgroundColor : '#9eb5c7', \n                    labelColor      : '#000000', \n                    gridColor       : '#ffffff',\n                    height          : 200, \n                    htmlId          : 'pixelMaxBarPlot'\n                };\n            setHorzBarWidget(pixelMaxBarConfig);\n        }\n        function toggleAutoScale()\n        {\n            if (device.tempAutoScale.value == 1)\n            {\n                device.tempAutoScale.value = 0;\n                $('#autoScaleButton').text(\"Fixed Scale\");\n            }\n            else\n            {\n               device.tempAutoScale.value = 1;\n               $('#autoScaleButton').text(\"Auto Scale\");\n            }\n            var mqttMessage = \n            {\n                topic   : mqttDevice.project + '/' +  mqttDevice.deviceType + '/' +  mqttDevice.name + '/setting',\n                payload :  device\n            };\n            checkLogin(sendSettingToMqtt, mqttMessage);\n        }",
         "output": "str",
         "x": 650,
         "y": 240,
@@ -1028,10 +1028,10 @@
         "fieldType": "msg",
         "format": "javascript",
         "syntax": "mustache",
-        "template": "{{{payload.script.global}}}\n{{{payload.script.spectrogram}}}\n{{{payload.script.horzbarWidget}}}\n{{{payload.script.editDevice}}}\n{{{payload.script.dangerZone}}}\n",
+        "template": "{{{payload.script.global}}}\n{{{payload.script.spectrogram}}}\n{{{payload.script.horzbarWidget}}}\n{{{payload.script.editDevice}}}\n{{{payload.script.calibrate}}}\n{{{payload.script.dangerZone}}}\n",
         "output": "str",
         "x": 640,
-        "y": 440,
+        "y": 480,
         "wires": [
             [
                 "6d863907.47af88"
@@ -1066,7 +1066,7 @@
         "fieldType": "msg",
         "format": "html",
         "syntax": "mustache",
-        "template": "<!-- Dashboard HTML -->\n                <div class='card'>\n                    <p class='card-title'>Temperature</p>\n                    <div class='card-body' align=\"center\">\n                        <div class='row' style='padding-bottom: 25px;'>\n                            <div class=\"container-fluid \" align=\"center\">\n                                <table width='800px'>\n                                    <tr>\n                                        <td>\n                                            <img src='img/raspistill/raspistill.jpg' id=\"raspistillImg\" width='800' height='600'/>\n                                        </td>\n                                    </tr>\n                                    <tr>\n                                        <td>\n                                            \n                                        </td>\n                                    </tr>\n                                </table>\n                            </div>\n                            <div class=\"container-fluid \" align=\"center\" style='padding-top: 0px;'>\n                                <table  width='792'>\n                                    <tr>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#0000ff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#0088ff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#00ffff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#00ff88\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#00ff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#88ff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#ffff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#ff8800\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#ff0000\"></div>\n                                        </td>\n                                    </tr>\n                                    <tr>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box1'>1</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box2'>2</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box3'>3</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box4'>4</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box5'>5</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box6'>6</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box7'>7</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box8'>8</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box9'>9</span>\n                                        </td>\n                                    </tr>\n                                </table>\n                            </div>\n                            <div class=\"container-fluid \" align=\"center\" style='padding-top: 0px;'>\n                                <table  width='800'>\n                                    <tr>\n                                        <td width=\"200px\"></td>\n                                        <td width=\"400px\">\n                                            <button class='btn btn-block card-button big-text' id=\"autoScaleButton\" onclick=\"toggleAutoScale()\" >Auto Scale</button>\n                                        </td>\n                                        <td width=\"200px\"></td>\n                                    </tr>\n                                </table>\n                            </div>\n                        </div>\n                        <div class='row' style='padding-bottom: 25px;'>\n                            <div class=\"container-fluid\" align=\"center\" id=\"spectrogram\"></div>\n                        </div>\n                   </div>\n                </div>\n",
+        "template": "<!-- Dashboard HTML -->\n                <div class='card'>\n                    <p class='card-title'>Temperature</p>\n                    <div class='card-body' align=\"center\">\n                        <div class='row' style='padding-bottom: 25px;'>\n                            <div class=\"container-fluid \" align=\"center\">\n                                <table width='800px'>\n                                    <tr>\n                                        <td>\n                                            <img src='img/raspistill/raspistill.jpg' id=\"raspistillImg\" width='800' height='600'/>\n                                        </td>\n                                    </tr>\n                                    <tr>\n                                        <td>\n                                            \n                                        </td>\n                                    </tr>\n                                </table>\n                            </div>\n                            <div class=\"container-fluid \" align=\"center\" style='padding-top: 0px;'>\n                                <table  width='792'>\n                                    <tr>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#0000ff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#0088ff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#00ffff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#00ff88\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#00ff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#88ff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#ffff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#ff8800\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#ff0000\"></div>\n                                        </td>\n                                    </tr>\n                                    <tr>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box1'>1</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box2'>2</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box3'>3</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box4'>4</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box5'>5</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box6'>6</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box7'>7</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box8'>8</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box9'>9</span>\n                                        </td>\n                                    </tr>\n                                </table>\n                            </div>\n                            <div class=\"container-fluid \" align=\"center\" style='padding-top: 0px;'>\n                                <table  width='800'>\n                                    <tr>\n                                        <td width=\"200px\"></td>\n                                        <td width=\"400px\" style='padding-top: 20px;'>\n                                            <button class='btn btn-block card-button big-text' id=\"autoScaleButton\" onclick=\"toggleAutoScale()\" >Auto Scale</button>\n                                        </td>\n                                        <td width=\"200px\"></td>\n                                    </tr>\n                                    <tr>\n                                        <td width=\"200px\"></td>\n                                        <td width=\"400px\"  style='padding-top: 20px;'>\n                                            <button class='btn btn-block card-button big-text' id=\"calibrateButton\" onclick=\"initCalibrateDialog()\" >Calibrate</button>\n                                        </td>\n                                        <td width=\"200px\"></td>\n                                    </tr>\n                                </table>\n                            </div>\n                        </div>\n                        <div class='row' style='padding-bottom: 25px;'>\n                            <div class=\"container-fluid\" align=\"center\" id=\"spectrogram\"></div>\n                        </div>\n                   </div>\n                </div>\n                <div id=\"calibrateDialog\" title=\"Calibrate\" class='card'>\n                    <p class='card-title' id='editDeviceDialogAttribute'>Calibrate</p>\n                    <div class='card-body'>\n                        <table>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">Temperature (C)</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"calibrateTemp\" type=\"text\" value=\"0\" /></td>\n                            </tr>\n                        </table>\n                    </div>\n                </div>\n",
         "output": "str",
         "x": 990,
         "y": 280,
@@ -1088,7 +1088,7 @@
         "template": "// dangerZone JavaScript\n        function restartTray()\n        {\n            optionDialog('Danger! Will Robinson, Danger!', 'Restart Tray', 'This should not be done lightly', ['Reset Tray','Cancel'], [function (){restartTrayButtonPress();}, function (){$( \"#optionDialog\" ).dialog( \"close\" );}]);\n        }\n        function restartTrayButtonPress()\n        {\n            $( \"#optionDialog\" ).dialog( \"close\" );\n            var mqttMessage = \n            {\n                topic   : restfulDevice.project + '/' +  restfulDevice.deviceType + '/' +  restfulDevice.name + '/restartTray',\n                payload :  1\n            };\n            checkLogin(sendSettingToMqtt, mqttMessage);\n        }\n",
         "output": "str",
         "x": 670,
-        "y": 400,
+        "y": 440,
         "wires": [
             [
                 "c1034be9.37f0a8"
@@ -1367,14 +1367,17 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Read AMG8833",
-        "func": "var i2c=global.get(\"i2c\");\nvar i2c1 = null;\ni2c1 = i2c.openSync(1);\nvar dataView     = new DataView(new ArrayBuffer(2));\nvar device = flow.get('device');\ndevice.pixelMin.value = 10000;\ndevice.pixelMax.value = -10000;\nfor (var ii = 0; ii < 64; ++ii)\n{\n    var byte1 = i2c1.readByteSync(0x69, 128 + 2 * ii);\n    var byte2 = i2c1.readByteSync(0x69, 128 + 2 * ii + 1);\n    dataView.setUint8(0, byte2);\n    dataView.setUint8(1, byte1);\n    var temperature = dataView.getInt16(0);\n    if(temperature & (1 << 11))\n    {\n        temperature = ~temperature;\n        temperature = temperature + 1;\n        temperature = temperature & 4095;\n        temperature = temperature * -1;\n    }\n    device.pixelTemp.value[0][ii] = ii;\n    device.pixelTemp.value[1][ii] = (temperature  * 0.25) * device.tempScaleFactor.value + device.tempOffset.value;\n    if (device.pixelMin.value > device.pixelTemp.value[1][ii]) device.pixelMin.value = device.pixelTemp.value[1][ii];\n    if (device.pixelMax.value < device.pixelTemp.value[1][ii]) device.pixelMax.value = device.pixelTemp.value[1][ii];\n}\ni2c1.closeSync();\nreturn {topic:'data',payload:device};\n ",
-        "outputs": 1,
+        "func": "var i2c=global.get(\"i2c\");\nvar i2c1 = null;\ni2c1 = i2c.openSync(1);\nvar dataView     = new DataView(new ArrayBuffer(2));\nvar device = flow.get('device');\nfor (var ii = 0; ii < 64; ++ii)\n{\n    device.pixelTemp.value[0][ii] = ii;\n    device.pixelTemp.value[1][ii] = 0.0;\n}\nvar numAvgs = device.numAvgs.value;\nfor (var iavg = 0; iavg < numAvgs; ++iavg)\n{\n    for (var ii = 0; ii < 64; ++ii)\n    {\n        var byte1 = i2c1.readByteSync(0x69, 128 + 2 * ii);\n        var byte2 = i2c1.readByteSync(0x69, 128 + 2 * ii + 1);\n        dataView.setUint8(0, byte2);\n        dataView.setUint8(1, byte1);\n        var temperature = dataView.getInt16(0);\n        if(temperature & (1 << 11))\n        {\n            temperature = ~temperature;\n            temperature = temperature + 1;\n            temperature = temperature & 4095;\n            temperature = temperature * -1;\n        }\n        device.pixelTemp.value[1][ii] =  device.pixelTemp.value[1][ii] + (temperature  * 0.25);\n    }\n}\ni2c1.closeSync();\nfor (var ii = 0; ii < 64; ++ii)\n{\n    device.pixelTemp.value[1][ii] = device.pixelTemp.value[1][ii] / numAvgs;\n}\nvar writeCallData = false;\nif (device.calTempOn.value == 1)\n{\n    for (var ii = 0; ii < 64; ++ii)\n    {\n        device.tempOffset.value[1][ii] = device.pixelTemp.value[1][ii] - device.calTemp.value;\n    }\n    writeCallData = true;\n    device.calTempOn.value = 0;\n}\n\ndevice.pixelMin.value = 10000;\ndevice.pixelMax.value = -10000;\nfor (var ii = 0; ii < 64; ++ii)\n{\n    device.pixelTemp.value[1][ii] = device.pixelTemp.value[1][ii] - device.tempOffset.value[1][ii];\n    if (device.pixelMin.value > device.pixelTemp.value[1][ii]) device.pixelMin.value = device.pixelTemp.value[1][ii];\n    if (device.pixelMax.value < device.pixelTemp.value[1][ii]) device.pixelMax.value = device.pixelTemp.value[1][ii];\n}\ndevice.pixelMin.value = Math.round(device.pixelMin.value * 10.0) / 10;\ndevice.pixelMax.value = Math.round(device.pixelMax.value * 10.0) / 10;\n\nif (writeCallData)\n{\n    return [{topic:'data',payload:device},{topic:'calData',payload:device}];\n}\nelse\n{\n    return [{topic:'data',payload:device},null];\n}\nreturn [null,null];\n ",
+        "outputs": 2,
         "noerr": 0,
         "x": 740,
         "y": 440,
         "wires": [
             [
                 "82565828.43a208"
+            ],
+            [
+                "ca0be9dd.49e4d8"
             ]
         ]
     },
@@ -1458,7 +1461,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Prep image",
-        "func": "var fs = global.get(\"fs\");\nvar jpeg = global.get(\"jpeg\");\nvar imgFileName = 'html-static/img/raspistill/raspistill.jpg'\nvar jpegData = fs.readFileSync(imgFileName);\nvar rawImageData = jpeg.decode(jpegData);\nvar device = flow.get('device');\n\nvar wThermalOverWcam = device.wThermalOverWcam.value;\nvar wOffsetOverWcam  = device.wOffsetOverWcam.value;\n\nvar hThermalOverHcam = device.hThermalOverHcam.value;\nvar hOffsetOverHcam = device.hOffsetOverHcam.value;\n\nvar pixelTemp = msg.payload.pixelTemp.value[1];\nvar pixelTempMin = device.pixelMin.value;\nvar deltaPixelTemp = device.pixelMax.value - device.pixelMin.value;\nif (device.tempAutoScale.value < 1)\n{\n    pixelTempMin = device.pixelMax.alarm.limits.lolo;\n    deltaPixelTemp = device.pixelMax.alarm.limits.hihi - device.pixelMax.alarm.limits.lolo;\n}\n\nvar npts = rawImageData.width * rawImageData.height;\nfor (var ii = 0;  ii < npts; ++ii)\n{\n    var xy = getXY(ii);\n    var ixtherm = Math.floor(8.0 * (xy[0] - rawImageData.width * wOffsetOverWcam) / (rawImageData.width * wThermalOverWcam));\n    var iytherm = Math.floor(8.0 * (xy[1] - rawImageData.height * hOffsetOverHcam) / (rawImageData.height * hThermalOverHcam));\n    var intensity = (getPixelTemp(ixtherm, iytherm) - pixelTempMin) / (deltaPixelTemp);\n    var rgb = [158,181,199];\n    var color = 255;\n    if ((0 <= intensity) && (intensity <= 1))\n    {\n        rgb = getRGB(intensity);\n        color = Math.floor(rawImageData.data[4 * ii + 0] * 1.5);\n        if (color > 255) color = 255;\n    }\n    rawImageData.data[4 * ii + 0] = Math.floor(color * rgb[0] / 255);\n    rawImageData.data[4 * ii + 1] = Math.floor(color * rgb[1] / 255);\n    rawImageData.data[4 * ii + 2] = Math.floor(color * rgb[2] / 255);\n    rawImageData.data[4 * ii + 3] = Math.floor(255);\n}\njpegImageData = jpeg.encode(rawImageData, 100);\nfs.writeFile(imgFileName,jpegImageData.data,function(){});\n\n\nreturn msg;\nfunction getPixelIndex(x, y)\n{\n    return (rawImageData.height - y) * rawImageData.width + x;\n}\nfunction getXY(ipt)\n{\n    var y = Math.floor(ipt / rawImageData.width);\n    var x = ipt - y * rawImageData.width;\n    y = rawImageData.height - 1 - y;\n    return [x , y];\n}\nfunction getPixelTemp(ixTherm, iyTherm)\n{\n    if (ixTherm < 0) return -10000.0;\n    if (ixTherm > 7) return -10000.0;\n    if (iyTherm < 0) return -10000.0;\n    if (iyTherm > 7) return -10000.0;\n    return pixelTemp[ixTherm * 8 + iyTherm];\n}\n\nfunction getRGB(intensity)\n{\n  var rgb = [0,0,0];\n  if ( (0 <= intensity) && (intensity <= 0.25) )\n  {\n    rgb[0] = 0;\n    rgb[1] = Math.floor(255 * intensity * 4);    \n    rgb[2] = 255;\n  }\n  if ( (0.25 < intensity) && (intensity <= 0.50) )\n  {\n    rgb[0] = 0;\n    rgb[1] = 255;    \n    rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n  }\n  if ( (0.50 < intensity) && (intensity <= 0.75) )\n  {\n    rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n    rgb[1] = 255;    \n    rgb[2] = 0;\n  }\n  if ( (0.75 < intensity) && (intensity <= 1.0) )\n  {\n    rgb[0] = 255;\n    rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n    rgb[2] = 0;\n  }\n  return rgb;\n}\n",
+        "func": "var fs = global.get(\"fs\");\nvar jpeg = global.get(\"jpeg\");\nvar imgFileName = 'html-static/img/raspistill/raspistill.jpg'\nvar jpegData = fs.readFileSync(imgFileName);\nvar rawImageData = jpeg.decode(jpegData);\nvar device = flow.get('device');\n\nvar wThermalOverWcam = device.wThermalOverWcam.value;\nvar wOffsetOverWcam  = device.wOffsetOverWcam.value;\n\nvar hThermalOverHcam = device.hThermalOverHcam.value;\nvar hOffsetOverHcam = device.hOffsetOverHcam.value;\n\nvar pixelTemp = msg.payload.pixelTemp.value[1];\nvar pixelTempMin = device.pixelMin.value;\nvar deltaPixelTemp = device.pixelMax.value - device.pixelMin.value;\nif (device.tempAutoScale.value < 1)\n{\n    pixelTempMin = device.pixelMax.alarm.limits.lolo;\n    deltaPixelTemp = device.pixelMax.alarm.limits.hihi - device.pixelMax.alarm.limits.lolo;\n}\nif (deltaPixelTemp < 0.1) deltaPixelTemp = 0.1;\n\nvar npts = rawImageData.width * rawImageData.height;\nfor (var ii = 0;  ii < npts; ++ii)\n{\n    var xy = getXY(ii);\n    var ixtherm = Math.floor(8.0 * (xy[0] - rawImageData.width * wOffsetOverWcam) / (rawImageData.width * wThermalOverWcam));\n    var iytherm = Math.floor(8.0 * (xy[1] - rawImageData.height * hOffsetOverHcam) / (rawImageData.height * hThermalOverHcam));\n    var intensity = (getPixelTemp(ixtherm, iytherm) - pixelTempMin) / (deltaPixelTemp);\n    var rgb = [158,181,199];\n    var color = 255;\n    if ((0 <= intensity) && (intensity <= 1))\n    {\n        rgb = getRGB(intensity);\n        color = Math.floor(rawImageData.data[4 * ii + 0] * 1.5);\n        if (color > 255) color = 255;\n    }\n    rawImageData.data[4 * ii + 0] = Math.floor(color * rgb[0] / 255);\n    rawImageData.data[4 * ii + 1] = Math.floor(color * rgb[1] / 255);\n    rawImageData.data[4 * ii + 2] = Math.floor(color * rgb[2] / 255);\n    rawImageData.data[4 * ii + 3] = Math.floor(255);\n}\njpegImageData = jpeg.encode(rawImageData, 100);\nfs.writeFile(imgFileName,jpegImageData.data,function(){});\n\n\nreturn msg;\nfunction getPixelIndex(x, y)\n{\n    return (rawImageData.height - y) * rawImageData.width + x;\n}\nfunction getXY(ipt)\n{\n    var y = Math.floor(ipt / rawImageData.width);\n    var x = ipt - y * rawImageData.width;\n    y = rawImageData.height - 1 - y;\n    return [x , y];\n}\nfunction getPixelTemp(ixTherm, iyTherm)\n{\n    if (ixTherm < 0) return -10000.0;\n    if (ixTherm > 7) return -10000.0;\n    if (iyTherm < 0) return -10000.0;\n    if (iyTherm > 7) return -10000.0;\n    return pixelTemp[ixTherm * 8 + iyTherm];\n}\n\nfunction getRGB(intensity)\n{\n  var rgb = [0,0,0];\n  if ( (0 <= intensity) && (intensity <= 0.25) )\n  {\n    rgb[0] = 0;\n    rgb[1] = Math.floor(255 * intensity * 4);    \n    rgb[2] = 255;\n  }\n  if ( (0.25 < intensity) && (intensity <= 0.50) )\n  {\n    rgb[0] = 0;\n    rgb[1] = 255;    \n    rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n  }\n  if ( (0.50 < intensity) && (intensity <= 0.75) )\n  {\n    rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n    rgb[1] = 255;    \n    rgb[2] = 0;\n  }\n  if ( (0.75 < intensity) && (intensity <= 1.0) )\n  {\n    rgb[0] = 255;\n    rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n    rgb[2] = 0;\n  }\n  return rgb;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "x": 910,
@@ -1484,11 +1487,11 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 900,
-        "y": 560,
+        "x": 1340,
+        "y": 540,
         "wires": [
             [
-                "4e5c46c5.5583d8"
+                "ad9b4221.45487"
             ]
         ]
     },
@@ -1545,7 +1548,7 @@
         "y": 360,
         "wires": [
             [
-                "e2fa40e5.9c393"
+                "4954216e.192a5"
             ]
         ]
     },
@@ -1577,6 +1580,81 @@
         "info": "topic is +/+/+/restartTray",
         "x": 220,
         "y": 260,
+        "wires": []
+    },
+    {
+        "id": "4954216e.192a5",
+        "type": "template",
+        "z": "c4285970.3276d8",
+        "name": "script.calibrate",
+        "field": "payload.script.calibrate",
+        "fieldType": "msg",
+        "format": "javascript",
+        "syntax": "mustache",
+        "template": "// Edit calibrate JavaScript\n       $( function() \n        {\n            $( \"#calibrateDialog\" ).dialog(\n                {\n//                    closeOnEscape: false,\n//                    open: function(event, ui) {$(\".ui-dialog-titlebar-close\", ui.dialog | ui).hide();},\n                    width:    640,\n                    autoOpen: false,\n                    buttons:\n                    [\n                        {\n                            text: \"Set\",\n                            click: function() {runCalibration(); $( this ).dialog( \"close\" );},\n                            showText: false\n                        },\n                        {\n                            text: \"Cancel\",\n                            click: function() \n                            {\n                                $( this ).dialog( \"close\" ); \n                            },\n                            showText: false\n                        }\n                    ]\n                });\n        } );\n        function initCalibrateDialog()\n        {\n            $( \"#calibrateDialog\" ).dialog( \"option\", \"title\", \"Edit\"); \n            $( \"#calibrateDialog\" ).dialog( \"open\" );\n            calibrateDialogOpen = true;\n        }\n        function runCalibration()\n        {\n            device.calTempOn.value = 1;\n            device.calTemp.value = $( \"#calibrateTemp\").val();\n            var mqttMessage = \n            {\n                topic   : mqttDevice.project + '/' +  mqttDevice.deviceType + '/' +  mqttDevice.name + '/setting',\n                payload :  device\n            };\n            checkLogin(sendSettingToMqtt, mqttMessage);\n            calibrateDialogOpen = false;\n        }\n",
+        "output": "str",
+        "x": 660,
+        "y": 400,
+        "wires": [
+            [
+                "e2fa40e5.9c393"
+            ]
+        ]
+    },
+    {
+        "id": "ad9b4221.45487",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "Image ready for display",
+        "links": [
+            "9512b703.fd3e28"
+        ],
+        "x": 1435,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "9512b703.fd3e28",
+        "type": "link in",
+        "z": "5f562f66.a301e",
+        "name": "Get Image again",
+        "links": [
+            "ad9b4221.45487"
+        ],
+        "x": 155,
+        "y": 480,
+        "wires": [
+            [
+                "4e5c46c5.5583d8"
+            ]
+        ]
+    },
+    {
+        "id": "1683eabd.3ea855",
+        "type": "link in",
+        "z": "5f562f66.a301e",
+        "name": "Write new Cal Data",
+        "links": [
+            "ca0be9dd.49e4d8"
+        ],
+        "x": 555,
+        "y": 180,
+        "wires": [
+            [
+                "7461da25.d86ac4"
+            ]
+        ]
+    },
+    {
+        "id": "ca0be9dd.49e4d8",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "new cal data to write",
+        "links": [
+            "1683eabd.3ea855"
+        ],
+        "x": 875,
+        "y": 480,
         "wires": []
     }
 ]
