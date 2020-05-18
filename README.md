@@ -1,4 +1,5 @@
 # Vad Kul Thermal Camera
+![vad-kul-montage](Vad-Kul-Montage.jpg)  
 The Vad Kul Camera is an open-source and inexpensive thermal camera based on a Raspberry Pi equipped with a camera module and an AMG8833 thermopile array.
 ## Parts
 - [Raspberry Pi 3A+ (or equivalent)](https://www.electrokit.com/en/product/raspberry-pi-3-model-a/)
