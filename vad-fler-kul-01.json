@@ -1,0 +1,87 @@
+{
+  "deviceType": "vad-kul",
+  "name": "01",
+  "arcPeriod": 60000,
+  "timeStamp": 1584283380359,
+  "lastArchive": 1584283329231,
+  "linkQuality": {
+    "action": "reading",
+    "type": "scalar",
+    "value": 51,
+    "unit": "/70",
+    "alarm": {
+      "value": 0,
+      "limits": {
+        "lolo": 30,
+        "low": 40,
+        "high": 71,
+        "hihi": 80
+      },
+      "notify": {
+        "name": "",
+        "number": "",
+        "time": 0
+      }
+    }
+  },
+  "signalLevel": {
+    "action": "reading",
+    "type": "scalar",
+    "value": -59,
+    "unit": "dBm",
+    "alarm": {
+      "value": 0,
+      "limits": {
+        "lolo": -70,
+        "low": -60,
+        "high": 0,
+        "hihi": 30
+      },
+      "notify": {
+        "name": "",
+        "number": "",
+        "time": 0
+      }
+    }
+  },
+  "pixelMin": {
+    "action": "reading",
+    "type": "scalar",
+    "value": 20.8,
+    "unit": "C",
+    "alarm": {
+      "value": 0,
+      "limits": {
+        "lolo": -10,
+        "low": 0,
+        "high": 30,
+        "hihi": 40
+      },
+      "notify": {
+        "name": "",
+        "number": "",
+        "time": 0
+      }
+    }
+  },
+  "pixelMax": {
+    "action": "reading",
+    "type": "scalar",
+    "value": 21.2,
+    "unit": "C",
+    "alarm": {
+      "value": 1,
+      "limits": {
+        "lolo": 20,
+        "low": 27,
+        "high": 35,
+        "hihi": 40
+      },
+      "notify": {
+        "name": "",
+        "number": "",
+        "time": 0
+      }
+    }
+  }
+ }

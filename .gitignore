@@ -16,5 +16,7 @@ node_modules
 .sessions.json
 .config.json
 *.backup
+*.exe
+*.o
 
 
