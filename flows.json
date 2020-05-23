@@ -124,6 +124,57 @@
         "env": []
     },
     {
+        "id": "d09903d9.5e846",
+        "type": "subflow",
+        "name": "App CSS (2)",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 60,
+                "y": 80,
+                "wires": [
+                    {
+                        "id": "d056fa82.f1c0b8"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 320,
+                "y": 80,
+                "wires": [
+                    {
+                        "id": "d056fa82.f1c0b8",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": []
+    },
+    {
+        "id": "693396dc.e76208",
+        "type": "subflow",
+        "name": "App HTML (2)",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 60,
+                "y": 80,
+                "wires": [
+                    {
+                        "id": "41f95d7.11018a4"
+                    }
+                ]
+            }
+        ],
+        "out": [],
+        "env": []
+    },
+    {
         "id": "6ad7c930.1a06b8",
         "type": "ui_base",
         "theme": {
@@ -225,6 +276,28 @@
         "z": "",
         "name": "blinky-lite-core-jwt-key",
         "secret": "$(JWTKEYSECRET)"
+    },
+    {
+        "id": "516aef81.a2867",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "MQTT Broker",
+        "broker": "$(MQTTSERVERIP)",
+        "port": "1883",
+        "clientid": "$(MQTTCLIENTID)",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
     },
     {
         "id": "5902d0c0.241a6",
@@ -348,8 +421,8 @@
         "func": "msg.payload.linkQuality.value     = global.get('linkQuality');\nmsg.payload.signalLevel.value     = global.get('signalLevel');\nscalarAlarmScan(msg.payload, 'reading');\nflow.set('device', msg.payload); \nmsg.topic = global.get('project') + '/' + flow.get('cubeInfo').deviceType + '/' + flow.get('cubeInfo').name + '/reading';\nreturn msg;\n\nfunction getActionArray(device, type, actionType)\n{\n    var actionArray = [];\n    var keys = Object.keys(device);\n    for (var ii = 0; ii < keys.length; ++ii)\n    {\n        if (device[keys[ii]].hasOwnProperty('type'))\n        {\n            if (device[keys[ii]].type == type)\n            {\n                if (device[keys[ii]].action == actionType)\n                {\n                    actionArray.push(device[keys[ii]]);\n                }\n            }\n        }\n    }\n    return actionArray;\n}\nfunction scalarAlarmScan(device, actionType)\n{\n    var actionArray = getActionArray(device, 'scalar', actionType);\n    if (actionArray.length > 0)\n    {\n        for (var ii = 0; ii < actionArray.length; ++ii)\n        {\n            actionArray[ii].alarm.value = 0;\n            if (!isNaN(actionArray[ii].value))\n            {\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.low)  actionArray[ii].alarm.value = 1;\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.lolo) actionArray[ii].alarm.value = 3;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.high) actionArray[ii].alarm.value = 2;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.hihi) actionArray[ii].alarm.value = 4;\n            }\n        }\n    }\n}\n",
         "outputs": 1,
         "noerr": 0,
-        "x": 1120,
-        "y": 440,
+        "x": 740,
+        "y": 560,
         "wires": [
             [
                 "a3ff8e5.b79de7"
@@ -380,8 +453,8 @@
         "func": "var mqttArray = msg.topic.split('/');\nvar device = \n{\n    project     : mqttArray[0],\n    deviceType  : mqttArray[1],\n    name        : mqttArray[2],\n    prop        : mqttArray[3],\n};\nreturn {topic : msg.topic, payload:{topic:'readings', mqttDevice : device, payload:msg.payload}};",
         "outputs": 1,
         "noerr": 0,
-        "x": 1370,
-        "y": 480,
+        "x": 970,
+        "y": 560,
         "wires": [
             [
                 "107beeed.934ed1"
@@ -395,8 +468,8 @@
         "name": "/websocket",
         "server": "44b51478.9c022c",
         "client": "",
-        "x": 1570,
-        "y": 480,
+        "x": 1190,
+        "y": 560,
         "wires": []
     },
     {
@@ -407,8 +480,8 @@
         "links": [
             "c2b927f.87df7d8"
         ],
-        "x": 1455,
-        "y": 620,
+        "x": 1075,
+        "y": 660,
         "wires": [
             [
                 "107beeed.934ed1"
@@ -695,7 +768,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Cube Custom Info",
-        "func": "var cubeInfo = \n{\n    deviceType  : 'vad-fler-kul',\n    name        : '01',\n};\nflow.set('cubeInfo', cubeInfo);\n\nreturn null;",
+        "func": "var cubeInfo = \n{\n    deviceType  : 'vad-kul-flir-lepton',\n    name        : '01',\n};\nflow.set('cubeInfo', cubeInfo);\n\nreturn null;",
         "outputs": 0,
         "noerr": 0,
         "x": 370,
@@ -960,7 +1033,7 @@
         "type": "function",
         "z": "c4285970.3276d8",
         "name": "Set Name And Device Type",
-        "func": "msg.payload['script'] = {};\nmsg.payload['script']['name'] = '01'\nmsg.payload['script']['deviceType'] = 'vad-fler-kul';\nmsg.payload['script']['project'] = global.get('project');\nreturn msg;\n",
+        "func": "msg.payload['script'] = {};\nmsg.payload['script']['name'] = '01'\nmsg.payload['script']['deviceType'] = 'vad-kul-flir-lepton';\nmsg.payload['script']['project'] = global.get('project');\nreturn msg;\n",
         "outputs": 1,
         "noerr": 0,
         "x": 300,
@@ -980,7 +1053,7 @@
         "fieldType": "msg",
         "format": "html",
         "syntax": "mustache",
-        "template": "Vad Fler Kul {{{payload.script.name}}}",
+        "template": "Vad Kul Flir Lepton {{{payload.script.name}}}",
         "output": "str",
         "x": 240,
         "y": 320,
@@ -1008,7 +1081,7 @@
         "fieldType": "msg",
         "format": "javascript",
         "syntax": "mustache",
-        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var pixelTemp = null;\n\n        var archiveRequestList = [];\n        var archiveList = [];\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n\n        }\n        function onWebSocketOpen()\n        {\n        }\n        function onWebSocketClose()\n        {\n            \n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                    }\n                    break;\n                case 'imgData':\n                    processImage(msg.payload.data);\n                    break;\n                case 'getArchiveValues':\n                    if (msg.userID == userID)\n                    {\n                        if ((msg.payload.device.deviceType == restfulDevice.deviceType) && (msg.payload.device.name == restfulDevice.name) )\n                            putArchiveValues(msg.payload);\n                    }\n                    break;\n                case 'getJwtToken':\n                    if (msg.userID == userID) loadJwtToken(msg);\n                    break;\n                case 'settingAcknowledge':\n                    if (msg.userID == userID)\n                    {\n                        if (msg.payload != 'Success!') acknowledgeDialog('Acknowledge', 'Setting', msg.payload);\n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            $('#linkQualityId').text(device.linkQuality.value);\n            $('#signalLevelId').text(device.signalLevel.value);\n            $('#raspistillImg').attr('src','img/raspistill/raspistill.jpg?t=' + new Date().getTime().toString() );\n            var plow = device.pixelMin.value;\n            var phigh = device.pixelMax.value;\n            if (device.tempAutoScale.value < 1)\n            {\n                plow = device.pixelMax.alarm.limits.lolo;\n                phigh = device.pixelMax.alarm.limits.hihi;\n            }\n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var pbox = Math.round(((phigh - plow) * (ibox / 8.0) + plow) * 10.0) / 10.0;\n                $('#box' + (ibox + 1).toString()).text(pbox.toString());\n            }\n            if (device.tempAutoScale.value == 1)\n            {\n                $('#autoScaleButton').text(\"Auto Scale\");\n            }\n            else\n            {\n                $('#autoScaleButton').text(\"Fixed Scale\");\n            }\n            if (!calibrateDialogOpen)\n            {\n                $( \"#calibrateTemp\").val(device.calTemp.value);\n            }\n\n        }\n        function updatePixelMaxBarChart()\n        {\n            var pixelMaxBarConfig = \n                {\n                    lolo            : device.pixelMax.alarm.limits.lolo, \n                    low             : device.pixelMax.alarm.limits.low, \n                    high            : device.pixelMax.alarm.limits.high, \n                    hihi            : device.pixelMax.alarm.limits.hihi, \n                    value           : device.pixelMax.value, \n                    unit            : device.pixelMax.unit, \n                    textsize        : 38,\n                    label           : 'pixelMax', \n                    lowColor        : '#0000ff', \n                    mediumColor     : '#00ff00',\n                    highColor       : '#ff0000', \n                    backgroundColor : '#9eb5c7', \n                    labelColor      : '#000000', \n                    gridColor       : '#ffffff',\n                    height          : 200, \n                    htmlId          : 'pixelMaxBarPlot'\n                };\n            setHorzBarWidget(pixelMaxBarConfig);\n        }\n        function toggleAutoScale()\n        {\n            if (device.tempAutoScale.value == 1)\n            {\n                device.tempAutoScale.value = 0;\n                $('#autoScaleButton').text(\"Fixed Scale\");\n            }\n            else\n            {\n               device.tempAutoScale.value = 1;\n               $('#autoScaleButton').text(\"Auto Scale\");\n            }\n            var mqttMessage = \n            {\n                topic   : mqttDevice.project + '/' +  mqttDevice.deviceType + '/' +  mqttDevice.name + '/setting',\n                payload :  device\n            };\n            checkLogin(sendSettingToMqtt, mqttMessage);\n        }\n        function processImage(imgData)\n        {\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var imgArray = [];\n            var dataView     = new DataView(new ArrayBuffer(2));\n            for (var irow = 0; irow < 4800; ++irow)\n            {\n                    dataView.setUint8(0, imgData[irow * 2]);\n                    dataView.setUint8(1, imgData[irow * 2 + 1]);\n                    imgArray[irow] = dataView.getUint16(0);\n            }\n            var minval = imgArray[0];\n            var maxval = imgArray[0];\n            for (var irow = 0; irow < 4800; ++irow)\n            {\n                    if ( minval > imgArray[irow]) minval = imgArray[irow];\n                    if ( maxval < imgArray[irow]) maxval = imgArray[irow];\n            }\n//            if (minval < 10000) return; //bad image\n            var pixelMin = minval;\n            var pixelMax = maxval;\n            var pixelDelta = pixelMax - pixelMin;\n            var x = 0;\n            var y = 590;\n            for (var irow = 0; irow < 4800; ++irow)\n            {\n                    imgArray[irow] = Math.floor(256.0 * (imgArray[irow] - pixelMin) / pixelDelta);\n                    if (imgArray[irow] < 0)   imgArray[irow] = 0;\n                    if (imgArray[irow] > 255) imgArray[irow] = 255;\n                    var intensity = imgArray[irow] / 255.0;\n                    var rgb = getRGB(intensity);\n                    if (intensity > 0.98)\n                    {\n                        rgb[0] = 255;\n                        rgb[1] = 255;\n                        rgb[2] = 255;\n                    }\n                    canvasContext.fillStyle = 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                    canvasContext.fillRect(x, y, 10, 10);\n                    x = x + 10;\n                    if (x > 790)\n                    {\n                        x = 0;\n                        y = y - 10;\n                    }\n            }\n            var pixelMin = (minval - 27315) / 100;\n            var pixelMax = (maxval - 27315) / 100;\n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var pbox = Math.round(((pixelMax - pixelMin) * (ibox / 8.0) + pixelMin) * 10.0) / 10.0;\n                $('#box' + (ibox + 1).toString()).text(pbox.toString());\n            }\n\n        }\n        function getRGB(intensity)\n        {\n          var rgb = [0,0,0];\n          if ( (0 <= intensity) && (intensity <= 0.25) )\n          {\n            rgb[0] = 0;\n            rgb[1] = Math.floor(255 * intensity * 4);    \n            rgb[2] = 255;\n          }\n          if ( (0.25 < intensity) && (intensity <= 0.50) )\n          {\n            rgb[0] = 0;\n            rgb[1] = 255;    \n            rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n          }\n          if ( (0.50 < intensity) && (intensity <= 0.75) )\n          {\n            rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n            rgb[1] = 255;    \n            rgb[2] = 0;\n          }\n          if ( (0.75 < intensity) && (intensity <= 1.0) )\n          {\n            rgb[0] = 255;\n            rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n            rgb[2] = 0;\n          }\n          return rgb;\n        }\n",
+        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var pixelTemp = null;\n\n        var archiveRequestList = [];\n        var archiveList = [];\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n\n        }\n        function onWebSocketOpen()\n        {\n        }\n        function onWebSocketClose()\n        {\n            \n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        updatePixelMaxBarChart();\n                    }\n                    break;\n                case 'getArchiveValues':\n                    if (msg.userID == userID)\n                    {\n                        if ((msg.payload.device.deviceType == restfulDevice.deviceType) && (msg.payload.device.name == restfulDevice.name) )\n                            putArchiveValues(msg.payload);\n                    }\n                    break;\n                case 'getJwtToken':\n                    if (msg.userID == userID) loadJwtToken(msg);\n                    break;\n                case 'settingAcknowledge':\n                    if (msg.userID == userID)\n                    {\n                        if (msg.payload != 'Success!') acknowledgeDialog('Acknowledge', 'Setting', msg.payload);\n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            $('#linkQualityId').text(device.linkQuality.value);\n            $('#signalLevelId').text(device.signalLevel.value);\n            $('#snapshotTimeStamp').text(new Date(device.timeStamp).toLocaleString('en-SE', { timeZone: 'Europe/Stockholm' }));\n            var plow = device.pixelMin.value;\n            var phigh = device.pixelMax.value;\n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var pbox = Math.round(((phigh - plow) * (ibox / 8.0) + plow) * 10.0) / 10.0;\n                $('#box' + (ibox + 1).toString()).text(pbox.toString());\n            }\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            var rectWidth  = canvasWidth  / device.imageData.value.ncols;\n            var rectHeight = canvasHeight / device.imageData.value.nrows;\n            for (var irow = 0; irow < device.imageData.value.nrows; ++irow)\n            {\n                for (var icol = 0; icol < device.imageData.value.ncols; ++icol)\n                {\n                    var intensity = device.imageData.value.imageArray[irow][icol] / 256.0;\n                    var rgb = getRGB(intensity);\n                    if (intensity > 0.98)\n                    {\n                        rgb[0] = 255;\n                        rgb[1] = 255;\n                        rgb[2] = 255;\n                    }\n                    canvasContext.fillStyle = 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                    canvasContext.fillRect(icol * rectWidth, canvasHeight - rectHeight - irow * rectHeight, rectWidth, rectHeight);\n                }    \n            }\n \n        }\n        function updatePixelMaxBarChart()\n        {\n            var pixelMaxBarConfig = \n                {\n                    lolo            : device.pixelMax.alarm.limits.lolo, \n                    low             : device.pixelMax.alarm.limits.low, \n                    high            : device.pixelMax.alarm.limits.high, \n                    hihi            : device.pixelMax.alarm.limits.hihi, \n                    value           : device.pixelMax.value, \n                    unit            : device.pixelMax.unit, \n                    textsize        : 38,\n                    label           : 'pixelMax', \n                    lowColor        : '#0000ff', \n                    mediumColor     : '#00ff00',\n                    highColor       : '#ff0000', \n                    backgroundColor : '#9eb5c7', \n                    labelColor      : '#000000', \n                    gridColor       : '#ffffff',\n                    height          : 200, \n                    htmlId          : 'pixelMaxBarPlot'\n                };\n            setHorzBarWidget(pixelMaxBarConfig);\n        }\n        function getRGB(intensity)\n        {\n          var rgb = [0,0,0];\n          if ( (0 <= intensity) && (intensity <= 0.25) )\n          {\n            rgb[0] = 0;\n            rgb[1] = Math.floor(255 * intensity * 4);    \n            rgb[2] = 255;\n          }\n          if ( (0.25 < intensity) && (intensity <= 0.50) )\n          {\n            rgb[0] = 0;\n            rgb[1] = 255;    \n            rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n          }\n          if ( (0.50 < intensity) && (intensity <= 0.75) )\n          {\n            rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n            rgb[1] = 255;    \n            rgb[2] = 0;\n          }\n          if ( (0.75 < intensity) && (intensity <= 1.0) )\n          {\n            rgb[0] = 255;\n            rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n            rgb[2] = 0;\n          }\n          return rgb;\n        }\n",
         "output": "str",
         "x": 650,
         "y": 240,
@@ -1046,7 +1119,7 @@
         "fieldType": "msg",
         "format": "html",
         "syntax": "mustache",
-        "template": "    <div width=\"100%\">\n        <div class='row' style='padding-bottom: 10px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.pixelMaxBar}}}\n            </div>\n        </div>\n        <div class='row' style='padding-bottom: 10px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.spectrogram}}}\n            </div>\n        </div>\n    </div>\n",
+        "template": "    <div width=\"100%\">\n        <div class='row' style='padding-bottom: 10px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.pixelMaxBar}}}\n            </div>\n        </div>\n        <div class='row' style='padding-bottom: 10px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.spectrogram}}}\n            </div>\n        </div>\n        <div class='row' style='padding-bottom: 10px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.wifimon}}}\n            </div>\n        </div>\n        <div class='row' style='padding-bottom: 10px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.dangerZone}}}\n            </div>\n        </div>\n    </div>\n",
         "output": "str",
         "x": 950,
         "y": 400,
@@ -1065,7 +1138,7 @@
         "fieldType": "msg",
         "format": "html",
         "syntax": "mustache",
-        "template": "<!-- Dashboard HTML -->\n                <div class='card'>\n                    <p class='card-title'>Temperature</p>\n                    <div class='card-body' align=\"center\">\n                        <div class='row' style='padding-bottom: 25px;'>\n                            <div class=\"container-fluid \" align=\"center\">\n                                <table width='800px'>\n                                    <tr>\n                                        <td>\n                                            <canvas id=\"flirCanvas\" width=\"800\" height=\"600\" style=\"border:1px solid #000000;\" ></canvas>\n                                        </td>\n                                    </tr>\n                                </table>\n                            </div>\n                            <div class=\"container-fluid \" align=\"center\" style='padding-top: 0px;'>\n                                <table  width='792'>\n                                    <tr>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#0000ff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#0088ff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#00ffff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#00ff88\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#00ff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#88ff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#ffff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#ff8800\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#ff0000\"></div>\n                                        </td>\n                                    </tr>\n                                    <tr>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box1'>1</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box2'>2</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box3'>3</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box4'>4</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box5'>5</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box6'>6</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box7'>7</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box8'>8</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box9'>9</span>\n                                        </td>\n                                    </tr>\n                                </table>\n                            </div>\n                            <div class=\"container-fluid \" align=\"center\" style='padding-top: 0px;'>\n                                <table  width='800'>\n                                    <tr>\n                                        <td width=\"200px\"></td>\n                                        <td width=\"400px\" style='padding-top: 20px;'>\n                                            <button class='btn btn-block card-button big-text' id=\"autoScaleButton\" onclick=\"toggleAutoScale()\" >Auto Scale</button>\n                                        </td>\n                                        <td width=\"200px\"></td>\n                                    </tr>\n                                </table>\n                            </div>\n                        </div>\n                   </div>\n                </div>\n",
+        "template": "<!-- Dashboard HTML -->\n                <div class='card'>\n                    <p class='card-title'>Temperature</p>\n                    <div class='card-body' align=\"center\">\n                        <div class='row' style='padding-bottom: 25px;'>\n                            <div class=\"container-fluid \" align=\"center\">\n                                <table width='800px'>\n                                    <tr>\n                                        <td>\n                                            <canvas id=\"flirCanvas\" width=\"800\" height=\"600\" style=\"border:1px solid #000000;\" ></canvas>\n                                        </td>\n                                    </tr>\n                                </table>\n                            </div>\n                            <div class=\"container-fluid \" align=\"center\" style='padding-top: 0px;'>\n                                <table  width='792'>\n                                    <tr>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#0000ff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#0088ff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#00ffff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#00ff88\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#00ff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#88ff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#ffff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#ff8800\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div style=\"width:88px;height:50px;background-color:#ff0000\"></div>\n                                        </td>\n                                    </tr>\n                                    <tr>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box1'>1</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box2'>2</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box3'>3</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box4'>4</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box5'>5</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box6'>6</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box7'>7</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box8'>8</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box9'>9</span>\n                                        </td>\n                                    </tr>\n                                </table>\n                                <table width='800px'>\n                                    <tr>\n                                        <td width='100%' align='center'>\n                                            <span  class='card-text' id='snapshotTimeStamp'></span>\n                                        </td>\n                                    </tr>\n                                </table>\n                            </div>\n                        </div>\n                   </div>\n                </div>\n",
         "output": "str",
         "x": 990,
         "y": 280,
@@ -1341,8 +1414,8 @@
         "z": "5f562f66.a301e",
         "name": "Add MQTT  Publish node here",
         "info": "no topic - set by upstream node",
-        "x": 1400,
-        "y": 440,
+        "x": 980,
+        "y": 460,
         "wires": []
     },
     {
@@ -1366,18 +1439,6 @@
         "wires": []
     },
     {
-        "id": "ad9b4221.45487",
-        "type": "link out",
-        "z": "5f562f66.a301e",
-        "name": "Image ready for display",
-        "links": [
-            "9512b703.fd3e28"
-        ],
-        "x": 1435,
-        "y": 540,
-        "wires": []
-    },
-    {
         "id": "5cbd1d28.d10964",
         "type": "function",
         "z": "5f562f66.a301e",
@@ -1392,29 +1453,18 @@
         ]
     },
     {
-        "id": "74ffe519.0f1c1c",
-        "type": "websocket out",
-        "z": "5f562f66.a301e",
-        "name": "/websocket",
-        "server": "44b51478.9c022c",
-        "client": "",
-        "x": 670,
-        "y": 560,
-        "wires": []
-    },
-    {
         "id": "f062c2f5.4fb63",
         "type": "function",
         "z": "5f562f66.a301e",
-        "name": "Add topic",
-        "func": "var newMsg = {topic:'imageData', payload:{topic:'imgData', payload:msg.payload}};\nreturn newMsg;",
+        "name": "Process Data",
+        "func": "var imgArray = [];\nvar dataView     = new DataView(new ArrayBuffer(2));\nfor (var irow = 0; irow < 4800; ++irow)\n{\n        dataView.setUint8(0, msg.payload[irow * 2]);\n        dataView.setUint8(1, msg.payload[irow * 2 + 1]);\n        imgArray[irow] = dataView.getUint16(0);\n}\nvar minval = imgArray[0];\nvar maxval = imgArray[0];\nfor (var irow = 0; irow < 4800; ++irow)\n{\n        if ( minval > imgArray[irow]) minval = imgArray[irow];\n        if ( maxval < imgArray[irow]) maxval = imgArray[irow];\n}\nvar imgArray2D = [];\nvar deltaVal = maxval - minval;\nif (deltaVal == 0) deltaVal = 1;\nfor (var irow = 0; irow < 60; ++irow)\n{\n    imgArray2D[irow] = [];\n    for (var icol = 0; icol < 80; ++icol)\n    {\n        imgArray2D[irow][icol] = Math.floor(256.0 * (imgArray[irow * 80 + icol] - minval) / deltaVal);\n    }    \n}\nvar pgm = \n{\n    'type'      : 'P2',\n    'nrows'     : 60,\n    'ncols'     : 80,\n    'minval'    : minval,\n    'maxval'    : maxval,\n    'imageArray': imgArray2D\n}\ndevice = flow.get('device');\ndevice.pixelMin.value = (minval - 27315) / 100;\ndevice.pixelMax.value  = (maxval - 27315) / 100;\ndevice.imageData.value = pgm;\ndevice.timeStamp = new Date().getTime();\nvar newMsg = {topic:'imageData', payload:device};\nreturn newMsg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 500,
+        "x": 520,
         "y": 560,
         "wires": [
             [
-                "74ffe519.0f1c1c"
+                "9115ea87.0ca208"
             ]
         ]
     },
@@ -1461,6 +1511,101 @@
         "wires": [
             [
                 "756aff3b.081cc"
+            ]
+        ]
+    },
+    {
+        "id": "e3701624.e0da58",
+        "type": "mqtt out",
+        "z": "5f562f66.a301e",
+        "name": "Publish Readings",
+        "topic": "",
+        "qos": "0",
+        "retain": "false",
+        "broker": "516aef81.a2867",
+        "x": 970,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "6a87dbb1.d06e64",
+        "type": "mqtt in",
+        "z": "5f562f66.a301e",
+        "name": "Subscribe Settings",
+        "topic": "+/+/+/setting",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "516aef81.a2867",
+        "x": 210,
+        "y": 700,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "15c1f139.572e9f",
+        "type": "mqtt in",
+        "z": "5f562f66.a301e",
+        "name": "Restart Tray",
+        "topic": "+/+/+/restartTray",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "516aef81.a2867",
+        "x": 190,
+        "y": 820,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d056fa82.f1c0b8",
+        "type": "template",
+        "z": "d09903d9.5e846",
+        "name": "CSS",
+        "field": "payload.css",
+        "fieldType": "msg",
+        "format": "css",
+        "syntax": "mustache",
+        "template": "        :root \n        {\n          --color1: #415c71;\n          --color2: #547792;\n          --color3: #9eb5c7;\n          --color4: #c6c2bb;\n          --color5: #fdc300;\n          --big-text-size :300%;\n          --bold-text :900;\n          --vert-pad : 25px;\n          --horz-pad : 25px;\n        }\n        body \n        {\n          background-color: white !important;\n          padding-left:25px;\n          padding-right:25px;\n        }\n        \n        img \n        {\n          object-fit: contain;\n        }\n        a\n        {\n            color: white;\n        }\n        a:visited \n        { \n            color: var(--white);\n        }\n        a:hover \n        { \n            color: var(--color5);\n        }\n\n        .jumbotron \n        {\n          background-color: var(--color2) !important;\n          color: white;\n          padding-top:25px;\n          padding-bottom:25px;\n        }\n        .jumbotron-title\n        {\n          color:var(--color5);\n        }\n        .jumbotron-button\n        {\n          color: white;\n          background-color: var(--color1);\n       }\n        .card\n        {\n          background-color: var(--color2) !important;\n          text-align: center;\n        }\n        .card-body\n        {\n          background-color: var(--color3);;\n        }\n        .card-button\n        {\n          color: var(--color5) !important;\n          background-color: var(--color1) !important;\n          font-weight: bold;\n        }\n        .card-title\n        {\n          color: var(--color5);\n          font-weight: var(--bold-text);\n          font-size: var(--big-text-size);\n         }\n        .card-text\n        {\n          color: white;\n          text-align: left;\n          font-size: var(--big-text-size);\n        }\n        .danger-card\n        {\n          background-color: yellow !important;\n          text-align: center;\n        }\n        .danger-card-body\n        {\n          background-color: yellow;\n        }\n        .danger-card-button\n        {\n          color: yellow !important;\n          background-color: red !important;\n          font-weight: bold;\n        }\n        .danger-card-title\n        {\n          color: red;\n          font-weight: var(--bold-text);\n          font-size: var(--big-text-size);\n         }\n        .danger-card-text\n        {\n          color: white;\n          text-align: left;\n          font-size: var(--big-text-size);\n        }\n        .tableHeading\n        {\n          color:var(--container-title-color);\n        }\n        .tableText\n        {\n          color:var(--container-text-color);\n          font-size: var(--big-text-size);\n        }\n       .vert-pad\n        {\n            padding-top:var(--vert-pad);;\n            padding-bottom:var(--vert-pad);;\n        }\n        .horz-pad\n        {\n            padding-left:var(--horz-pad);;\n            padding-right:var(--horz-pad);;\n        }\n        .big-text\n        {\n            font-size: var(--big-text-size);\n        }\n        .bold-text\n        {\n            font-weight: var(--bold-text);\n        }\n        .ui-slider\n        {\n            height: 90px;\n            background-color: var(--color1) !important;\n        }\n        .ui-slider .ui-slider-handle \n        {\n            height: 100px;\n            width: 100px;\n            background-color: var(--color5) !important;\n        }\n        .ui-dialog-titlebar-close \n        {\n            visibility: hidden;\n        }\n        input.inputLarger\n        {\n            transform: scale(3);\n            margin: 1px;\n        }\n",
+        "output": "str",
+        "x": 190,
+        "y": 80,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "41f95d7.11018a4",
+        "type": "subflow:d09903d9.5e846",
+        "z": "693396dc.e76208",
+        "x": 200,
+        "y": 80,
+        "wires": [
+            [
+                "a69eb83d.916368"
+            ]
+        ]
+    },
+    {
+        "id": "bc1d70d0.eccdd",
+        "type": "subflow:188d93e1.8dcc1c",
+        "z": "693396dc.e76208",
+        "name": "",
+        "x": 490,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "a69eb83d.916368",
+        "type": "subflow:f07e020c.d4d43",
+        "z": "693396dc.e76208",
+        "name": "",
+        "env": [],
+        "x": 350,
+        "y": 80,
+        "wires": [
+            [
+                "bc1d70d0.eccdd"
             ]
         ]
     }

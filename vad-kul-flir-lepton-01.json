@@ -83,5 +83,11 @@
         "time": 0
       }
     }
+  },
+  "imageData": {
+    "action": "reading",
+    "type": "pgm",
+    "value": {},
+    "unit": "unit"
   }
- }
+}
