@@ -425,7 +425,8 @@
         "y": 560,
         "wires": [
             [
-                "a3ff8e5.b79de7"
+                "a3ff8e5.b79de7",
+                "e3701624.e0da58"
             ]
         ]
     },
@@ -1302,7 +1303,7 @@
         "fieldType": "msg",
         "format": "html",
         "syntax": "mustache",
-        "template": "basicYellow.png",
+        "template": "discoYellow.png",
         "output": "str",
         "x": 250,
         "y": 280,
@@ -1414,8 +1415,8 @@
         "z": "5f562f66.a301e",
         "name": "Add MQTT  Publish node here",
         "info": "no topic - set by upstream node",
-        "x": 980,
-        "y": 460,
+        "x": 900,
+        "y": 840,
         "wires": []
     },
     {
@@ -1424,8 +1425,8 @@
         "z": "5f562f66.a301e",
         "name": "Add MQTT  Subscribe node  and json parser here",
         "info": "topic is +/+/+/setting",
-        "x": 200,
-        "y": 140,
+        "x": 740,
+        "y": 900,
         "wires": []
     },
     {
@@ -1434,8 +1435,8 @@
         "z": "5f562f66.a301e",
         "name": "Add MQTT  Output  node to Restart Tray and json parser",
         "info": "topic is +/+/+/restartTray",
-        "x": 220,
-        "y": 260,
+        "x": 520,
+        "y": 940,
         "wires": []
     },
     {
@@ -1487,7 +1488,7 @@
             ],
             [],
             [
-                "84b8bd69.abc6b"
+                "b94a9bb2.c317a8"
             ]
         ]
     },
@@ -1496,7 +1497,7 @@
         "type": "delay",
         "z": "5f562f66.a301e",
         "name": "",
-        "pauseType": "delay",
+        "pauseType": "delayv",
         "timeout": "5",
         "timeoutUnits": "seconds",
         "rate": "1",
@@ -1506,7 +1507,7 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 340,
+        "x": 440,
         "y": 620,
         "wires": [
             [
@@ -1536,8 +1537,8 @@
         "qos": "0",
         "datatype": "auto",
         "broker": "516aef81.a2867",
-        "x": 210,
-        "y": 700,
+        "x": 110,
+        "y": 140,
         "wires": [
             []
         ]
@@ -1551,8 +1552,8 @@
         "qos": "0",
         "datatype": "auto",
         "broker": "516aef81.a2867",
-        "x": 190,
-        "y": 820,
+        "x": 90,
+        "y": 260,
         "wires": [
             []
         ]
@@ -1606,6 +1607,22 @@
         "wires": [
             [
                 "bc1d70d0.eccdd"
+            ]
+        ]
+    },
+    {
+        "id": "b94a9bb2.c317a8",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set delay",
+        "func": "msg['delay'] = flow.get('device').cameraDelay.value\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 300,
+        "y": 620,
+        "wires": [
+            [
+                "84b8bd69.abc6b"
             ]
         ]
     }
