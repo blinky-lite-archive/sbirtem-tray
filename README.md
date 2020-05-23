@@ -1,4 +1,4 @@
-# Vad Kul Thermal Camera
+# vad-kul-flir-lepton-tray
 ![vad-kul-montage](Vad-Kul-Montage.jpg)  
 The Vad Kul Camera is an open-source and inexpensive thermal camera based on a Raspberry Pi equipped with a camera module and an AMG8833 thermopile array.
 ## Parts
