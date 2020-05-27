@@ -38,8 +38,7 @@ The part cost before tax is about 270 euros
 
 ## Manual Raspberry Pi Setup
 - Download and burn Raspbian image on SD card.
- - I use stretch because it is easier to install a wireless hotspot on the Raspberry Pi [2019-04-08-raspbian-stretch-lite.zip (latest, lite)](http://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2019-04-09/2019-04-08-raspbian-stretch-lite.zip)
-- If desired, make the Raspberry Pi a wireless hotspot following this [link](https://thepi.io/how-to-use-your-raspberry-pi-as-a-wireless-access-point/). Note this will not work for Buster
+- If desired, make the Raspberry Pi a wireless hotspot following this [link](https://www.raspberrypi.org/documentation/configuration/wireless/access-point-routed.md). Note this will only work for Buster and later
 - Enable SPI interfaces using `sudo raspi-config`
 - Install Node.js on the Raspberry pi by following this [link](https://www.instructables.com/id/Install-Nodejs-and-Npm-on-Raspberry-Pi/)
 - Install pm2 globally if desired for running in [background](https://nodered.org/docs/faq/starting-node-red-on-boot) and at startup by `sudo npm install -g pm2`
