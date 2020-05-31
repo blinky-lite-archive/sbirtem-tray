@@ -371,8 +371,8 @@
         "func": "device = flow.get('device');\ndevice.imageData.value = null;\nvar pgm = flow.get('pgm');\nif (pgm != null)\n{\n    if (device.takeImage.value == 2)\n    {\n        device.pixelMin.value = (pgm.minval - 27315) / 100;\n        device.pixelMax.value  = (pgm.maxval - 27315) / 100;\n        device.imageData.value = pgm;\n        device.timeStamp = pgm.timeStamp;\n        device.takeImage.value = 0;\n    }\n    else\n    {\n        device.imageData.value = null;\n        device.pixelMin.value = (pgm.minval - 27315) / 100;\n        device.pixelMax.value  = (pgm.maxval - 27315) / 100;\n        device.timeStamp = pgm.timeStamp;\n    }\n}\n\ndevice.linkQuality.value     = global.get('linkQuality');\ndevice.signalLevel.value     = global.get('signalLevel');\nscalarAlarmScan(device, 'reading');\nvar toppy = global.get('project') + '/' + flow.get('cubeInfo').deviceType + '/' + flow.get('cubeInfo').name + '/reading';\nreturn {topic:toppy, payload:device};\n\nfunction getActionArray(device, type, actionType)\n{\n    var actionArray = [];\n    var keys = Object.keys(device);\n    for (var ii = 0; ii < keys.length; ++ii)\n    {\n        if (device[keys[ii]].hasOwnProperty('type'))\n        {\n            if (device[keys[ii]].type == type)\n            {\n                if (device[keys[ii]].action == actionType)\n                {\n                    actionArray.push(device[keys[ii]]);\n                }\n            }\n        }\n    }\n    return actionArray;\n}\nfunction scalarAlarmScan(device, actionType)\n{\n    var actionArray = getActionArray(device, 'scalar', actionType);\n    if (actionArray.length > 0)\n    {\n        for (var ii = 0; ii < actionArray.length; ++ii)\n        {\n            actionArray[ii].alarm.value = 0;\n            if (!isNaN(actionArray[ii].value))\n            {\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.low)  actionArray[ii].alarm.value = 1;\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.lolo) actionArray[ii].alarm.value = 3;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.high) actionArray[ii].alarm.value = 2;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.hihi) actionArray[ii].alarm.value = 4;\n            }\n        }\n    }\n}\n",
         "outputs": 1,
         "noerr": 0,
-        "x": 740,
-        "y": 560,
+        "x": 720,
+        "y": 640,
         "wires": [
             [
                 "a3ff8e5.b79de7",
@@ -405,8 +405,8 @@
         "func": "var mqttArray = msg.topic.split('/');\nvar device = \n{\n    project     : mqttArray[0],\n    deviceType  : mqttArray[1],\n    name        : mqttArray[2],\n    prop        : mqttArray[3],\n};\nreturn {topic : msg.topic, payload:{topic:'readings', mqttDevice : device, payload:msg.payload}};",
         "outputs": 1,
         "noerr": 0,
-        "x": 970,
-        "y": 560,
+        "x": 950,
+        "y": 640,
         "wires": [
             [
                 "107beeed.934ed1"
@@ -420,8 +420,8 @@
         "name": "/websocket",
         "server": "44b51478.9c022c",
         "client": "",
-        "x": 1190,
-        "y": 560,
+        "x": 1170,
+        "y": 640,
         "wires": []
     },
     {
@@ -433,8 +433,8 @@
             "c2b927f.87df7d8",
             "138a2f54.f58dd1"
         ],
-        "x": 1075,
-        "y": 660,
+        "x": 1055,
+        "y": 740,
         "wires": [
             [
                 "107beeed.934ed1"
@@ -818,7 +818,7 @@
         "fieldType": "msg",
         "format": "html",
         "syntax": "mustache",
-        "template": "Vad Kul Flir Lepton {{{payload.script.name}}}",
+        "template": "Vad Kul {{{payload.script.name}}}",
         "output": "str",
         "x": 240,
         "y": 160,
@@ -846,7 +846,7 @@
         "fieldType": "msg",
         "format": "javascript",
         "syntax": "mustache",
-        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var colorScale = true;\n        var enhancementLevel = 0;\n        var pgm = null;\n\n        var archiveRequestList = [];\n        var archiveList = [];\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n\n        }\n        function onWebSocketOpen()\n        {\n            sendWebSocketMessageObject({topic : 'getLastImage',userID : userID});\n        }\n        function onWebSocketClose()\n        {\n//            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        \n                    }\n                    break;\n                case 'lastImage':\n                    if (msg.userID == userID)\n                    {\n                        device = msg.payload;;\n                        if (device.imageData.value != null)\n                        {\n                            $('#snapshotTimeStamp').text(new Date(device.timeStamp).toLocaleString('en-SE', { timeZone: 'Europe/Stockholm' }));\n                            pgm = JSON.parse(JSON.stringify(device.imageData.value));\n                            plotImage();\n                            updatePixelMaxBarChart();\n                        }\n                    }\n                    break;\n                case 'getArchiveValues':\n                    if (msg.userID == userID)\n                    {\n                        if ((msg.payload.device.deviceType == restfulDevice.deviceType) && (msg.payload.device.name == restfulDevice.name) )\n                            putArchiveValues(msg.payload);\n                    }\n                    break;\n                case 'getJwtToken':\n                    if (msg.userID == userID) loadJwtToken(msg);\n                    break;\n                case 'settingAcknowledge':\n                    if (msg.userID == userID)\n                    {\n                        if (msg.payload != 'Success!') acknowledgeDialog('Acknowledge', 'Setting', msg.payload);\n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            $('#linkQualityId').text(device.linkQuality.value);\n            $('#signalLevelId').text(device.signalLevel.value);\n            $('#takeImageButton').prop( \"disabled\", false );\n            if (device.imageData.value != null)\n            {\n                $('#snapshotTimeStamp').text(new Date(device.timeStamp).toLocaleString('en-SE', { timeZone: 'Europe/Stockholm' }));\n                pgm = JSON.parse(JSON.stringify(device.imageData.value));\n                plotImage();\n                updatePixelMaxBarChart();\n            }\n        }\n        function plotImage()\n        {\n            var rgb = [];\n            var plow = (pgm.minval - 27315) / 100;\n            var phigh = (pgm.maxval - 27315) / 100;\n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var intensity = ibox / 8.0;\n                var pbox = Math.round(((phigh - plow) * intensity + plow) * 10.0) / 10.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(pbox.toString());\n                if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                if (colorScale)\n                {\n                    rgb = getRGB(intensity);\n                }\n                else\n                {\n                    rgb[0] = Math.floor(255 * intensity);\n                    rgb[1] = Math.floor(255 * intensity);\n                    rgb[2] = Math.floor(255 * intensity);\n                }\n                var style='width:88px;height:50px;background-color:' + 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                $('#box' + (ibox + 1).toString()).attr('style',style);\n            }\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            var rectWidth  = canvasWidth  / pgm.ncols;\n            var rectHeight = canvasHeight / pgm.nrows;\n            for (var irow = 0; irow < pgm.nrows; ++irow)\n            {\n                for (var icol = 0; icol < pgm.ncols; ++icol)\n                {\n                    var intensity = pgm.imageArray[irow][icol] / 256.0;\n                    if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                    if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                    if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                    if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                    if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                    if (colorScale)\n                    {\n                        rgb = getRGB(intensity);\n                        rgb[0] = Math.floor(rgb[0]);\n                        rgb[1] = Math.floor(rgb[1]);\n                        rgb[2] = Math.floor(rgb[2]);\n                    }\n                    else\n                    {\n                        rgb[0] = Math.floor(255 * intensity);\n                        rgb[1] = Math.floor(255 * intensity);\n                        rgb[2] = Math.floor(255 * intensity);\n                    }\n                    canvasContext.fillStyle = 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                    canvasContext.fillRect(icol * rectWidth, canvasHeight - rectHeight - irow * rectHeight, rectWidth, rectHeight);\n                }    \n            }\n        }\n        function updatePixelMaxBarChart()\n        {\n            var pixelMaxBarConfig = \n                {\n                    lolo            : device.pixelMax.alarm.limits.lolo, \n                    low             : device.pixelMax.alarm.limits.low, \n                    high            : device.pixelMax.alarm.limits.high, \n                    hihi            : device.pixelMax.alarm.limits.hihi, \n                    value           : device.pixelMax.value, \n                    unit            : device.pixelMax.unit, \n                    textsize        : 38,\n                    label           : 'pixelMax', \n                    lowColor        : '#0000ff', \n                    mediumColor     : '#00ff00',\n                    highColor       : '#ff0000', \n                    backgroundColor : '#9eb5c7', \n                    labelColor      : '#000000', \n                    gridColor       : '#ffffff',\n                    height          : 200, \n                    htmlId          : 'pixelMaxBarPlot'\n                };\n            setHorzBarWidget(pixelMaxBarConfig);\n        }\n        function getRGB(intensity)\n        {\n          var rgb = [0,0,0];\n          if ( (0 <= intensity) && (intensity <= 0.25) )\n          {\n            rgb[0] = 0;\n            rgb[1] = Math.floor(255 * intensity * 4);    \n            rgb[2] = 255;\n          }\n          if ( (0.25 < intensity) && (intensity <= 0.50) )\n          {\n            rgb[0] = 0;\n            rgb[1] = 255;    \n            rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n          }\n          if ( (0.50 < intensity) && (intensity <= 0.75) )\n          {\n            rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n            rgb[1] = 255;    \n            rgb[2] = 0;\n          }\n          if ( (0.75 < intensity) && (intensity <= 1.0) )\n          {\n            rgb[0] = 255;\n            rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n            rgb[2] = 0;\n          }\n          return rgb;\n        }\n        function toggleColorScale()\n        {\n            colorScale = !colorScale;\n            if (colorScale)\n            {\n                $('#colorScaleButton').text('Color');\n            }\n            else\n            {\n                $('#colorScaleButton').text('Gray');\n            }\n            plotImage();\n        }\n        function toggleEnhancedScale(deltaEnhanced)\n        {\n            enhancementLevel = enhancementLevel + deltaEnhanced;\n            if (enhancementLevel >  2) enhancementLevel = 2;\n            if (enhancementLevel < -2) enhancementLevel = -2;\n            $('#enhancementLevel').text(enhancementLevel.toString());\n            plotImage();\n        }\n        function takeImage()\n        {\n            device.takeImage.value = 1;\n            $('#takeImageButton').prop( \"disabled\", true );\n            \n            var mqttMessage = \n            {\n                topic   : mqttDevice.project + '/' +  mqttDevice.deviceType + '/' +  mqttDevice.name + '/setting',\n                payload :  device\n            };\n            checkLogin(sendSettingToMqtt, mqttMessage);\n        }\n",
+        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var colorScale = true;\n        var enhancementLevel = 0;\n        var pgm = null;\n\n        var archiveRequestList = [];\n        var archiveList = [];\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n\n        }\n        function onWebSocketOpen()\n        {\n            sendWebSocketMessageObject({topic : 'getLastImage',userID : userID});\n            sendWebSocketMessageObject({topic : 'pingServer',userID : userID});\n            setInterval\n            (\n                function()\n                {\n                    sendWebSocketMessageObject({topic : 'pingServer',userID : userID});\n                    \n                }, 10000);\n        }\n        function onWebSocketClose()\n        {\n            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        \n                    }\n                    break;\n                case 'lastImage':\n                    if (msg.userID == userID)\n                    {\n                        device = msg.payload;;\n                        if (device.imageData.value != null)\n                        {\n                            $('#snapshotTimeStamp').text(new Date(device.timeStamp).toLocaleString('en-SE', { timeZone: 'Europe/Stockholm' }));\n                            pgm = JSON.parse(JSON.stringify(device.imageData.value));\n                            plotImage();\n                            updatePixelMaxBarChart();\n                        }\n                    }\n                    break;\n                case 'getArchiveValues':\n                    if (msg.userID == userID)\n                    {\n                        if ((msg.payload.device.deviceType == restfulDevice.deviceType) && (msg.payload.device.name == restfulDevice.name) )\n                            putArchiveValues(msg.payload);\n                    }\n                    break;\n                case 'getJwtToken':\n                    if (msg.userID == userID) loadJwtToken(msg);\n                    break;\n                case 'settingAcknowledge':\n                    if (msg.userID == userID)\n                    {\n                        if (msg.payload != 'Success!') acknowledgeDialog('Acknowledge', 'Setting', msg.payload);\n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            $('#linkQualityId').text(device.linkQuality.value);\n            $('#signalLevelId').text(device.signalLevel.value);\n            $('#takeImageButton').prop( \"disabled\", false );\n            if (device.imageData.value != null)\n            {\n                $('#snapshotTimeStamp').text(new Date(device.timeStamp).toLocaleString('en-SE', { timeZone: 'Europe/Stockholm' }));\n                pgm = JSON.parse(JSON.stringify(device.imageData.value));\n                plotImage();\n                updatePixelMaxBarChart();\n            }\n        }\n        function plotImage()\n        {\n            var rgb = [];\n            var plow = (pgm.minval - 27315) / 100;\n            var phigh = (pgm.maxval - 27315) / 100;\n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var intensity = ibox / 8.0;\n                var pbox = Math.round(((phigh - plow) * intensity + plow) * 10.0) / 10.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(pbox.toString());\n                if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                if (colorScale)\n                {\n                    rgb = getRGB(intensity);\n                }\n                else\n                {\n                    rgb[0] = Math.floor(255 * intensity);\n                    rgb[1] = Math.floor(255 * intensity);\n                    rgb[2] = Math.floor(255 * intensity);\n                }\n                var style='width:88px;height:50px;background-color:' + 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                $('#box' + (ibox + 1).toString()).attr('style',style);\n            }\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            var rectWidth  = canvasWidth  / pgm.ncols;\n            var rectHeight = canvasHeight / pgm.nrows;\n            for (var irow = 0; irow < pgm.nrows; ++irow)\n            {\n                for (var icol = 0; icol < pgm.ncols; ++icol)\n                {\n                    var intensity = pgm.imageArray[irow][icol] / 256.0;\n                    if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                    if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                    if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                    if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                    if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                    if (colorScale)\n                    {\n                        rgb = getRGB(intensity);\n                        rgb[0] = Math.floor(rgb[0]);\n                        rgb[1] = Math.floor(rgb[1]);\n                        rgb[2] = Math.floor(rgb[2]);\n                    }\n                    else\n                    {\n                        rgb[0] = Math.floor(255 * intensity);\n                        rgb[1] = Math.floor(255 * intensity);\n                        rgb[2] = Math.floor(255 * intensity);\n                    }\n                    canvasContext.fillStyle = 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                    canvasContext.fillRect(icol * rectWidth, canvasHeight - rectHeight - irow * rectHeight, rectWidth, rectHeight);\n                }    \n            }\n        }\n        function updatePixelMaxBarChart()\n        {\n            var pixelMaxBarConfig = \n                {\n                    lolo            : device.pixelMax.alarm.limits.lolo, \n                    low             : device.pixelMax.alarm.limits.low, \n                    high            : device.pixelMax.alarm.limits.high, \n                    hihi            : device.pixelMax.alarm.limits.hihi, \n                    value           : device.pixelMax.value, \n                    unit            : device.pixelMax.unit, \n                    textsize        : 38,\n                    label           : 'pixelMax', \n                    lowColor        : '#0000ff', \n                    mediumColor     : '#00ff00',\n                    highColor       : '#ff0000', \n                    backgroundColor : '#9eb5c7', \n                    labelColor      : '#000000', \n                    gridColor       : '#ffffff',\n                    height          : 200, \n                    htmlId          : 'pixelMaxBarPlot'\n                };\n            setHorzBarWidget(pixelMaxBarConfig);\n        }\n        function getRGB(intensity)\n        {\n          var rgb = [0,0,0];\n          if ( (0 <= intensity) && (intensity <= 0.25) )\n          {\n            rgb[0] = 0;\n            rgb[1] = Math.floor(255 * intensity * 4);    \n            rgb[2] = 255;\n          }\n          if ( (0.25 < intensity) && (intensity <= 0.50) )\n          {\n            rgb[0] = 0;\n            rgb[1] = 255;    \n            rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n          }\n          if ( (0.50 < intensity) && (intensity <= 0.75) )\n          {\n            rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n            rgb[1] = 255;    \n            rgb[2] = 0;\n          }\n          if ( (0.75 < intensity) && (intensity <= 1.0) )\n          {\n            rgb[0] = 255;\n            rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n            rgb[2] = 0;\n          }\n          return rgb;\n        }\n        function toggleColorScale()\n        {\n            colorScale = !colorScale;\n            if (colorScale)\n            {\n                $('#colorScaleButton').text('Color');\n            }\n            else\n            {\n                $('#colorScaleButton').text('Gray');\n            }\n            plotImage();\n        }\n        function toggleEnhancedScale(deltaEnhanced)\n        {\n            enhancementLevel = enhancementLevel + deltaEnhanced;\n            if (enhancementLevel >  2) enhancementLevel = 2;\n            if (enhancementLevel < -2) enhancementLevel = -2;\n            $('#enhancementLevel').text(enhancementLevel.toString());\n            plotImage();\n        }\n        function takeImage()\n        {\n            device.takeImage.value = 1;\n            $('#takeImageButton').prop( \"disabled\", true );\n            \n            var mqttMessage = \n            {\n                topic   : mqttDevice.project + '/' +  mqttDevice.deviceType + '/' +  mqttDevice.name + '/setting',\n                payload :  device\n            };\n//            checkLogin(sendSettingToMqtt, mqttMessage);\n            sendWebSocketMessageObject({topic : 'getNewImage',userID : userID});\n        }\n",
         "output": "str",
         "x": 650,
         "y": 80,
@@ -884,7 +884,7 @@
         "fieldType": "msg",
         "format": "html",
         "syntax": "mustache",
-        "template": "    <div width=\"100%\">\n        <div class='row' style='padding-bottom: 10px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.pixelMaxBar}}}\n            </div>\n        </div>\n        <div class='row' style='padding-bottom: 10px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.spectrogram}}}\n            </div>\n        </div>\n        <div class='row' style='padding-bottom: 10px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.wifimon}}}\n            </div>\n        </div>\n    </div>\n",
+        "template": "    <div width=\"100%\">\n        <div class='row' style='padding-bottom: 10px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.pixelMaxBar}}}\n            </div>\n        </div>\n        <div class='row' style='padding-bottom: 10px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.spectrogram}}}\n            </div>\n        </div>\n    </div>\n",
         "output": "str",
         "x": 950,
         "y": 240,
@@ -996,7 +996,7 @@
         "type": "function",
         "z": "3f2da72f.995ab8",
         "name": "Save global init",
-        "func": "global.set(msg.topic,msg.payload);\nreturn msg;",
+        "func": "global.set(msg.topic,msg.payload);\nglobal.set('websocketPing',0);\nreturn msg;",
         "outputs": 0,
         "noerr": 0,
         "x": 360,
@@ -1049,7 +1049,7 @@
         "type": "function",
         "z": "3f2da72f.995ab8",
         "name": "Get Signal Quality",
-        "func": "var info = msg.payload;\nvar linkStartIndex  = info.indexOf('Link Quality=');\nvar levelStartIndex = info.indexOf('Signal level=');\nvar linkStopIndex   = info.indexOf('/70');\nvar levelStopIndex   = info.lastIndexOf('dBm');\nvar linkQuality = Number(info.substring(linkStartIndex + 13, linkStopIndex));\nvar signalLevel =  Number(info.substring(levelStartIndex + 13, levelStopIndex - 1));\nvar ssid = info.substring(info.indexOf('ESSID') + 7);\nssid = ssid.substring(0,ssid.indexOf('\"'));\nvar val = {linkQuality : linkQuality, signalLevel: signalLevel, ssid:ssid};\nglobal.set('linkQuality',linkQuality);\nglobal.set('signalLevel', signalLevel);\nglobal.set('ssid', ssid);\nreturn {topic :'test',payload : val};",
+        "func": "var linkQuality = 0;\nvar signalLevel = -100;\nvar ssid = \"none\";\n\nvar info = msg.payload;\nvar linkStartIndex  = info.indexOf('Link Quality=');\nif (linkStartIndex >= 0)\n{\n    var levelStartIndex = info.indexOf('Signal level=');\n    var linkStopIndex   = info.indexOf('/70');\n    var levelStopIndex   = info.lastIndexOf('dBm');\n    linkQuality = Number(info.substring(linkStartIndex + 13, linkStopIndex));\n    signalLevel =  Number(info.substring(levelStartIndex + 13, levelStopIndex - 1));\n    ssid = info.substring(info.indexOf('ESSID') + 7);\n    ssid = ssid.substring(0,ssid.indexOf('\"'));\n}\nvar val = {linkQuality : linkQuality, signalLevel: signalLevel, ssid:ssid};\nglobal.set('linkQuality',linkQuality);\nglobal.set('signalLevel', signalLevel);\nglobal.set('ssid', ssid);\nreturn {topic :'test',payload : val};",
         "outputs": 1,
         "noerr": 0,
         "x": 460,
@@ -1161,8 +1161,8 @@
         "func": "var imgArray = [];\nvar dataView     = new DataView(new ArrayBuffer(2));\nfor (var irow = 0; irow < 4800; ++irow)\n{\n        dataView.setUint8(0, msg.payload[irow * 2]);\n        dataView.setUint8(1, msg.payload[irow * 2 + 1]);\n        imgArray[irow] = dataView.getUint16(0);\n}\nvar minval = imgArray[0];\nvar maxval = imgArray[0];\nfor (var irow = 0; irow < 4800; ++irow)\n{\n        if ( minval > imgArray[irow]) minval = imgArray[irow];\n        if ( maxval < imgArray[irow]) maxval = imgArray[irow];\n}\nif (minval == 0) return null;\nvar imgArray2D = [];\nvar deltaVal = maxval - minval;\nif (deltaVal == 0) deltaVal = 1;\nfor (var irow = 0; irow < 60; ++irow)\n{\n    imgArray2D[irow] = [];\n    for (var icol = 0; icol < 80; ++icol)\n    {\n        imgArray2D[irow][icol] = Math.floor(256.0 * (imgArray[irow * 80 + icol] - minval) / deltaVal);\n    }    \n}\nvar pgm = \n{\n    'type'      : 'P2',\n    'timeStamp' : new Date().getTime(),\n    'nrows'     : 60,\n    'ncols'     : 80,\n    'minval'    : minval,\n    'maxval'    : maxval,\n    'imageArray': imgArray2D\n}\nflow.set('pgm',pgm);\nflow.get('device').takeImage.value = 2\nreturn null;",
         "outputs": 0,
         "noerr": 0,
-        "x": 520,
-        "y": 560,
+        "x": 500,
+        "y": 640,
         "wires": []
     },
     {
@@ -1176,11 +1176,12 @@
         "timer": "",
         "oldrc": false,
         "name": "Capture Flir image",
-        "x": 330,
-        "y": 560,
+        "x": 310,
+        "y": 640,
         "wires": [
             [
-                "f062c2f5.4fb63"
+                "f062c2f5.4fb63",
+                "620ca605.e38238"
             ],
             [
                 "e513f2b3.0044d"
@@ -1197,8 +1198,8 @@
         "qos": "0",
         "retain": "false",
         "broker": "516aef81.a2867",
-        "x": 970,
-        "y": 500,
+        "x": 950,
+        "y": 580,
         "wires": []
     },
     {
@@ -1245,8 +1246,8 @@
         "level": "0",
         "freq": "",
         "out": "out",
-        "x": 1110,
-        "y": 720,
+        "x": 1090,
+        "y": 800,
         "wires": []
     },
     {
@@ -1257,8 +1258,8 @@
         "func": "msg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 640,
-        "y": 720,
+        "x": 620,
+        "y": 800,
         "wires": [
             [
                 "e0462b10.e57408"
@@ -1273,8 +1274,8 @@
         "func": "msg.payload = 0;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 320,
-        "y": 720,
+        "x": 300,
+        "y": 800,
         "wires": [
             [
                 "3f536cba.884974"
@@ -1296,8 +1297,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 490,
-        "y": 720,
+        "x": 470,
+        "y": 800,
         "wires": [
             [
                 "797e0c4f.55b624"
@@ -1316,8 +1317,8 @@
         "crontab": "",
         "once": false,
         "onceDelay": 0.1,
-        "x": 160,
-        "y": 720,
+        "x": 140,
+        "y": 800,
         "wires": [
             [
                 "1f653c8a.b53073"
@@ -1339,8 +1340,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 790,
-        "y": 720,
+        "x": 770,
+        "y": 800,
         "wires": [
             [
                 "a31b44a2.959fc8"
@@ -1355,8 +1356,8 @@
         "func": "msg.payload = 0;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 940,
-        "y": 720,
+        "x": 920,
+        "y": 800,
         "wires": [
             [
                 "133e815c.6120cf"
@@ -1371,8 +1372,8 @@
         "scope": [
             "756aff3b.081cc"
         ],
-        "x": 140,
-        "y": 500,
+        "x": 120,
+        "y": 580,
         "wires": [
             [
                 "3e88e0d5.feeb1"
@@ -1387,8 +1388,8 @@
         "func": "var newMsg = {fill: msg.status.fill, pid:msg.status.text}\nflow.set('cameraProcess', newMsg);\nreturn null;",
         "outputs": 0,
         "noerr": 0,
-        "x": 350,
-        "y": 500,
+        "x": 330,
+        "y": 580,
         "wires": []
     },
     {
@@ -1406,8 +1407,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 300,
-        "y": 620,
+        "x": 280,
+        "y": 700,
         "wires": [
             [
                 "e68a810e.f7863"
@@ -1422,8 +1423,8 @@
         "func": "var process = flow.get('cameraProcess');\nvar newMsg = null;\nif (process.pid != undefined)\n{\n    var pid = Number(process.pid.substring(4)) + 1;\n    newMsg = {topic:'killProcess',payload:pid}\n}\nreturn newMsg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 510,
-        "y": 620,
+        "x": 490,
+        "y": 700,
         "wires": [
             [
                 "3132ba84.59a1f6"
@@ -1441,8 +1442,8 @@
         "timer": "",
         "oldrc": false,
         "name": "",
-        "x": 690,
-        "y": 620,
+        "x": 670,
+        "y": 700,
         "wires": [
             [],
             [],
@@ -1461,8 +1462,8 @@
         "crontab": "",
         "once": true,
         "onceDelay": "1",
-        "x": 130,
-        "y": 560,
+        "x": 110,
+        "y": 640,
         "wires": [
             [
                 "756aff3b.081cc",
@@ -1504,10 +1505,11 @@
         "z": "5f562f66.a301e",
         "name": "Capture Flir image in",
         "links": [
-            "9739f0da.67f96"
+            "9739f0da.67f96",
+            "6fa87323.05d3ac"
         ],
-        "x": 155,
-        "y": 620,
+        "x": 135,
+        "y": 700,
         "wires": [
             [
                 "756aff3b.081cc",
@@ -1551,7 +1553,7 @@
         "once": true,
         "onceDelay": "5",
         "x": 690,
-        "y": 480,
+        "y": 580,
         "wires": [
             [
                 "9115ea87.0ca208"
@@ -1567,8 +1569,8 @@
             "6c15c07a.68169",
             "e5570491.c3b9a8"
         ],
-        "x": 1115,
-        "y": 780,
+        "x": 1095,
+        "y": 860,
         "wires": []
     },
     {
@@ -1579,8 +1581,8 @@
         "links": [
             "65c2a6ff.a7b8f8"
         ],
-        "x": 1115,
-        "y": 820,
+        "x": 1095,
+        "y": 900,
         "wires": []
     },
     {
@@ -1591,8 +1593,8 @@
         "func": "return {topic:'getJwtToken', payload:{topic:'getJwtToken', userID:msg.userID, token: msg.token}};\n",
         "outputs": 1,
         "noerr": 0,
-        "x": 930,
-        "y": 860,
+        "x": 910,
+        "y": 940,
         "wires": [
             [
                 "138a2f54.f58dd1"
@@ -1605,8 +1607,8 @@
         "z": "5f562f66.a301e",
         "name": "get Token",
         "tokenconfig": "144aea5f.fcbd96",
-        "x": 780,
-        "y": 860,
+        "x": 760,
+        "y": 940,
         "wires": [
             [
                 "408d5e18.19765"
@@ -1619,8 +1621,8 @@
         "z": "5f562f66.a301e",
         "name": "decrypt Token",
         "tokenconfig": "144aea5f.fcbd96",
-        "x": 820,
-        "y": 780,
+        "x": 800,
+        "y": 860,
         "wires": [
             [
                 "155f7d52.7399f3"
@@ -1635,8 +1637,8 @@
         "func": "if (Number(msg.token) == msg.userID)\n{\n    return [msg, {topic : 'acknowledge', payload:{topic:'settingAcknowledge', payload: 'Success!', userID : msg.userID}}]\n}\nreturn [null, {topic : 'acknowledge', payload:{topic:'settingAcknowledge', payload: 'Bad token', userID : msg.userID}}];",
         "outputs": 2,
         "noerr": 0,
-        "x": 990,
-        "y": 780,
+        "x": 970,
+        "y": 860,
         "wires": [
             [
                 "58aa550c.06cb4c"
@@ -1654,8 +1656,8 @@
         "func": "return {\n    topic   : msg.payload.mqttMessage.topic, \n    payload : msg.payload.mqttMessage.payload, \n    token   : msg.payload.token, \n    userID  : msg.payload.userID };\n",
         "outputs": 1,
         "noerr": 0,
-        "x": 630,
-        "y": 780,
+        "x": 610,
+        "y": 860,
         "wires": [
             [
                 "91bd15fa.9ab178"
@@ -1670,8 +1672,8 @@
         "func": "if (global.get('settingsPassword') == 'NULL')\n{\n    return [null, {topic:'getJwtToken',payload:msg.payload.userID, userID : msg.payload.userID}];    \n}\nif (msg.payload.payload.loginPassword != global.get('settingsPassword'))\n{\n    return [{topic:'getJwtToken', payload:{topic:'getJwtToken', userID:msg.payload.userID, token: null}}, null];\n}\nreturn [null, {topic:'getJwtToken',payload:msg.payload.userID, userID : msg.payload.userID}];",
         "outputs": 2,
         "noerr": 0,
-        "x": 610,
-        "y": 840,
+        "x": 590,
+        "y": 920,
         "wires": [
             [
                 "138a2f54.f58dd1"
@@ -1703,13 +1705,23 @@
                 "t": "eq",
                 "v": "getLastImage",
                 "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "getNewImage",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "pingServer",
+                "vt": "str"
             }
         ],
         "checkall": "true",
         "repair": false,
-        "outputs": 3,
-        "x": 450,
-        "y": 780,
+        "outputs": 5,
+        "x": 430,
+        "y": 860,
         "wires": [
             [
                 "3a1fb97e.c10786"
@@ -1719,6 +1731,12 @@
             ],
             [
                 "667c7ddf.0a7b64"
+            ],
+            [
+                "bf309ef4.a0389"
+            ],
+            [
+                "ade0ddee.d077b"
             ]
         ]
     },
@@ -1730,8 +1748,8 @@
         "property": "payload",
         "action": "",
         "pretty": false,
-        "x": 330,
-        "y": 780,
+        "x": 310,
+        "y": 860,
         "wires": [
             [
                 "f270bcda.23518"
@@ -1745,8 +1763,8 @@
         "name": "/websocket",
         "server": "44b51478.9c022c",
         "client": "",
-        "x": 160,
-        "y": 780,
+        "x": 140,
+        "y": 860,
         "wires": [
             [
                 "75bcac45.dd63c4"
@@ -1761,8 +1779,8 @@
         "func": "device =  flow.get('device');\ndevice.imageData.value = flow.get('pgm');\n\nvar newMsg = {topic : 'lastImage', payload:{topic:'lastImage', payload: device, userID : msg.payload.userID}}\nreturn newMsg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 620,
-        "y": 920,
+        "x": 600,
+        "y": 980,
         "wires": [
             [
                 "138a2f54.f58dd1"
@@ -1780,23 +1798,8 @@
         "tostatus": false,
         "complete": "true",
         "targetType": "full",
-        "x": 470,
-        "y": 660,
-        "wires": []
-    },
-    {
-        "id": "ee86da2e.cdb538",
-        "type": "debug",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "x": 1210,
-        "y": 380,
+        "x": 450,
+        "y": 740,
         "wires": []
     },
     {
@@ -1828,6 +1831,381 @@
         "wires": [
             [
                 "225946b1.9e8b3a"
+            ]
+        ]
+    },
+    {
+        "id": "56b21d74.f13534",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 0",
+        "func": "msg.payload = 0;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 760,
+        "y": 520,
+        "wires": [
+            [
+                "f8d673c5.5bd28"
+            ]
+        ]
+    },
+    {
+        "id": "620ca605.e38238",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 1",
+        "func": "msg.payload = 1;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 480,
+        "y": 480,
+        "wires": [
+            [
+                "78708c9a.23eac4",
+                "f8d673c5.5bd28"
+            ]
+        ]
+    },
+    {
+        "id": "78708c9a.23eac4",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 620,
+        "y": 520,
+        "wires": [
+            [
+                "56b21d74.f13534"
+            ]
+        ]
+    },
+    {
+        "id": "f8d673c5.5bd28",
+        "type": "rpi-gpio out",
+        "z": "5f562f66.a301e",
+        "name": "Red LED",
+        "pin": "38",
+        "set": true,
+        "level": "0",
+        "freq": "",
+        "out": "out",
+        "x": 940,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "583afec6.7dee4",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 0",
+        "func": "msg.payload = 0;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 800,
+        "y": 1160,
+        "wires": [
+            [
+                "83563b17.c1c958"
+            ]
+        ]
+    },
+    {
+        "id": "b9fe4f39.4802b",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 1",
+        "func": "msg.payload = 1;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 460,
+        "y": 1160,
+        "wires": [
+            [
+                "813910c2.7a6ad",
+                "83563b17.c1c958"
+            ]
+        ]
+    },
+    {
+        "id": "813910c2.7a6ad",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 660,
+        "y": 1160,
+        "wires": [
+            [
+                "583afec6.7dee4"
+            ]
+        ]
+    },
+    {
+        "id": "bf309ef4.a0389",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Get New image",
+        "func": "return {topic:'takeImage', payload:true}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 600,
+        "y": 1040,
+        "wires": [
+            [
+                "6fa87323.05d3ac"
+            ]
+        ]
+    },
+    {
+        "id": "6fa87323.05d3ac",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "Get New Image Out",
+        "links": [
+            "4b5048a4.61fd58"
+        ],
+        "x": 715,
+        "y": 1040,
+        "wires": []
+    },
+    {
+        "id": "ade0ddee.d077b",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "websocketPing",
+        "func": "global.set('websocketPing',new Date().getTime());\n",
+        "outputs": 0,
+        "noerr": 0,
+        "x": 600,
+        "y": 1080,
+        "wires": []
+    },
+    {
+        "id": "93c753e9.c8707",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 0",
+        "func": "msg.payload = 0;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 600,
+        "y": 1280,
+        "wires": [
+            [
+                "f10c4981.8f8b28",
+                "83563b17.c1c958"
+            ]
+        ]
+    },
+    {
+        "id": "a6981dbe.2292",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 1",
+        "func": "msg.payload = 1;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 460,
+        "y": 1200,
+        "wires": [
+            [
+                "ae6cad36.b9871",
+                "83563b17.c1c958"
+            ]
+        ]
+    },
+    {
+        "id": "ae6cad36.b9871",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "100",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 550,
+        "y": 1240,
+        "wires": [
+            [
+                "93c753e9.c8707"
+            ]
+        ]
+    },
+    {
+        "id": "83563b17.c1c958",
+        "type": "rpi-gpio out",
+        "z": "5f562f66.a301e",
+        "name": "Yellow LED",
+        "pin": "36",
+        "set": true,
+        "level": "0",
+        "freq": "",
+        "out": "out",
+        "x": 1230,
+        "y": 1360,
+        "wires": []
+    },
+    {
+        "id": "501ad6fa.f091e8",
+        "type": "inject",
+        "z": "5f562f66.a301e",
+        "name": "2 sec",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "2",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "1",
+        "x": 110,
+        "y": 1200,
+        "wires": [
+            [
+                "ae8390fb.efa5b"
+            ]
+        ]
+    },
+    {
+        "id": "ae8390fb.efa5b",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Check for connection",
+        "func": "if ((new Date().getTime() - global.get('websocketPing')) < 9000)\n{\n    return [null,msg,null];\n}\nelse\n{\n    if (global.get('signalLevel') > -100)\n    {\n        return [msg, null, null];\n    }\n    else\n    {\n        return [null,null,msg]\n    }\n}\nreturn [null,null,null];\n",
+        "outputs": 3,
+        "noerr": 0,
+        "x": 280,
+        "y": 1200,
+        "wires": [
+            [
+                "b9fe4f39.4802b"
+            ],
+            [
+                "a6981dbe.2292"
+            ],
+            [
+                "ff1f9003.0e333"
+            ]
+        ]
+    },
+    {
+        "id": "ff1f9003.0e333",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 0",
+        "func": "msg.payload = 0;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 800,
+        "y": 1480,
+        "wires": [
+            [
+                "83563b17.c1c958"
+            ]
+        ]
+    },
+    {
+        "id": "f3e94a0d.2a3758",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 1",
+        "func": "msg.payload = 1;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 680,
+        "y": 1360,
+        "wires": [
+            [
+                "83563b17.c1c958",
+                "10ff2d41.d8fa73"
+            ]
+        ]
+    },
+    {
+        "id": "f10c4981.8f8b28",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "100",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 650,
+        "y": 1320,
+        "wires": [
+            [
+                "f3e94a0d.2a3758"
+            ]
+        ]
+    },
+    {
+        "id": "10ff2d41.d8fa73",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "100",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 750,
+        "y": 1400,
+        "wires": [
+            [
+                "cd4dd94a.352328",
+                "83563b17.c1c958"
+            ]
+        ]
+    },
+    {
+        "id": "cd4dd94a.352328",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 0",
+        "func": "msg.payload = 0;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 800,
+        "y": 1440,
+        "wires": [
+            [
+                "83563b17.c1c958"
             ]
         ]
     }
