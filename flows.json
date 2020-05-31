@@ -903,7 +903,7 @@
         "fieldType": "msg",
         "format": "html",
         "syntax": "mustache",
-        "template": "<!-- Dashboard HTML -->\n                <div class='card'>\n                    <p class='card-title'>Temperature</p>\n                    <div class='card-body' align=\"center\">\n                        <div class='row' style='padding-bottom: 25px;'>\n                            <div class=\"container-fluid \" align=\"center\">\n                                <table width='800px'>\n                                    <tr>\n                                        <td>\n                                            <canvas id=\"flirCanvas\" width=\"800\" height=\"600\" style=\"border:1px solid #000000;\" ></canvas>\n                                        </td>\n                                    </tr>\n                                </table>\n                            </div>\n                            <div class=\"container-fluid \" align=\"center\" style='padding-top: 0px;'>\n                                <table  width='792'>\n                                    <tr>\n                                        <td width=\"88px\">\n                                            <div id='box1' style=\"width:88px;height:50px;background-color:#0000ff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box2' style=\"width:88px;height:50px;background-color:#0088ff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box3' style=\"width:88px;height:50px;background-color:#00ffff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box4' style=\"width:88px;height:50px;background-color:#00ff88\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box5' style=\"width:88px;height:50px;background-color:#00ff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box6' style=\"width:88px;height:50px;background-color:#88ff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box7' style=\"width:88px;height:50px;background-color:#ffff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box8' style=\"width:88px;height:50px;background-color:#ff8800\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box9' style=\"width:88px;height:50px;background-color:#ff0000\"></div>\n                                        </td>\n                                    </tr>\n                                    <tr>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box1Label'>1</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box2Label'>2</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box3Label'>3</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box4Label'>4</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box5Label'>5</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box6Label'>6</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box7Label'>7</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box8Label'>8</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span id='box9Label'>9</span>\n                                        </td>\n                                    </tr>\n                                </table>\n                                <table width='800px'>\n                                    <tr>\n                                        <td width='100%' align='center'>\n                                            <span  class='card-text' id='snapshotTimeStamp'></span>\n                                        </td>\n                                    </tr>\n                                </table>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width=\"20%\"></td>\n                                                <td width=\"40%\">\n                                                    <button class='btn btn-block big-text' style='font-weight: bold; background-color:var(--color1);color:var(--color5)' id=\"takeImageButton\" onclick=\"takeImage()\" >Take Image</button>\n                                                </td>\n                                                <td width=\"20%\" ></td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width=\"60%\" align='left'>\n                                                    <span  class='card-text'>Color Mode</span>\n                                                </td>\n                                                <td width=\"40%\">\n                                                    <button class='btn btn-block card-button big-text' id=\"colorScaleButton\" onclick=\"toggleColorScale()\" >Color</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width=\"60%\" align='left'>\n                                                    <span  class='card-text'>Enhancement Level</span>\n                                                </td>\n                                                <td width=\"14%\" >\n                                                    <button class='btn btn-block card-button big-text' onclick=\"toggleEnhancedScale(-1)\">-</button>\n                                                </td>\n                                                <td width=\"12%px\" align='center'>\n                                                    <span  class='card-text' id=\"enhancementLevel\" >0</span>\n                                                </td>\n                                                <td width=\"14%\">\n                                                    <button class='btn btn-block card-button big-text' onclick=\"toggleEnhancedScale(1)\">+</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                   </div>\n                </div>\n",
+        "template": "<!-- Dashboard HTML -->\n                <div class='card'>\n                    <p class='card-title'>Temperature</p>\n                    <div class='card-body' align=\"center\">\n                        <div class='row' style='padding-bottom: 25px;'>\n                            <div class=\"container-fluid \" align=\"center\">\n                                <table width='800px'>\n                                    <tr>\n                                        <td>\n                                            <canvas id=\"flirCanvas\" width=\"800\" height=\"600\" style=\"border:1px solid #000000;\" ></canvas>\n                                        </td>\n                                    </tr>\n                                </table>\n                            </div>\n                            <div class=\"container-fluid \" align=\"center\" style='padding-top: 0px;'>\n                                <table  width='792'>\n                                    <tr>\n                                        <td width=\"88px\">\n                                            <div id='box1' style=\"width:88px;height:50px;background-color:#0000ff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box2' style=\"width:88px;height:50px;background-color:#0088ff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box3' style=\"width:88px;height:50px;background-color:#00ffff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box4' style=\"width:88px;height:50px;background-color:#00ff88\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box5' style=\"width:88px;height:50px;background-color:#00ff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box6' style=\"width:88px;height:50px;background-color:#88ff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box7' style=\"width:88px;height:50px;background-color:#ffff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box8' style=\"width:88px;height:50px;background-color:#ff8800\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box9' style=\"width:88px;height:50px;background-color:#ff0000\"></div>\n                                        </td>\n                                    </tr>\n                                    <tr>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box1Label'>1</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box2Label'>2</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box3Label'>3</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box4Label'>4</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box5Label'>5</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box6Label'>6</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box7Label'>7</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box8Label'>8</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box9Label'>9</span>\n                                        </td>\n                                    </tr>\n                                </table>\n                                <table width='800px'>\n                                    <tr>\n                                        <td width='100%' align='center'>\n                                            <span  class='card-text' id='snapshotTimeStamp'></span>\n                                        </td>\n                                    </tr>\n                                </table>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width=\"20%\"></td>\n                                                <td width=\"40%\">\n                                                    <button class='btn btn-block big-text' style='font-weight: bold; background-color:var(--color1);color:var(--color5)' id=\"takeImageButton\" onclick=\"takeImage()\" >Take Image</button>\n                                                </td>\n                                                <td width=\"20%\" ></td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width=\"60%\" align='left'>\n                                                    <span  class='card-text'>Color Mode</span>\n                                                </td>\n                                                <td width=\"40%\">\n                                                    <button class='btn btn-block card-button big-text' id=\"colorScaleButton\" onclick=\"toggleColorScale()\" >Color</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width=\"60%\" align='left'>\n                                                    <span  class='card-text'>Enhancement Level</span>\n                                                </td>\n                                                <td width=\"14%\" >\n                                                    <button class='btn btn-block card-button big-text' onclick=\"toggleEnhancedScale(-1)\">-</button>\n                                                </td>\n                                                <td width=\"12%px\" align='center'>\n                                                    <span  class='card-text' id=\"enhancementLevel\" >0</span>\n                                                </td>\n                                                <td width=\"14%\">\n                                                    <button class='btn btn-block card-button big-text' onclick=\"toggleEnhancedScale(1)\">+</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                   </div>\n                </div>\n",
         "output": "str",
         "x": 990,
         "y": 120,
@@ -1105,7 +1105,7 @@
         "fieldType": "msg",
         "format": "javascript",
         "syntax": "mustache",
-        "template": "// Horz Bar Widget\n        function setHorzBarWidget(barConfig)\n        {\n            var lowValue = 0;\n            var mediumValue = 0;\n            var highValue = 0;\n        \n            var lowColor = barConfig.backgroundColor;\n            var mediumColor = barConfig.backgroundColor;\n            var highColor = barConfig.backgroundColor;\n            var valueColor = barConfig.backgroundColor; \n            \n            if ( barConfig.value <= barConfig.lolo)\n            {\n                lowValue = barConfig.lolo;\n                lowColor = barConfig.lowColor;\n                valueColor = lowColor;\n            }\n            if ( (barConfig.lolo <= barConfig.value) && (barConfig.value < barConfig.low) )\n            {\n                lowValue = barConfig.value;\n                lowColor = barConfig.lowColor;\n                valueColor = lowColor;\n            }\n            if ( (barConfig.low  <= barConfig.value) && (barConfig.value < barConfig.high) )\n            {\n                lowValue = barConfig.low;\n                mediumValue = barConfig.value - barConfig.low; \n                lowColor = barConfig.mediumColor;\n                mediumColor = barConfig.mediumColor;\n                valueColor = mediumColor;\n        \n            }\n            if ( (barConfig.high <= barConfig.value) && (barConfig.value < barConfig.hihi) )\n            {\n                lowValue = barConfig.low;\n                mediumValue = barConfig.high - barConfig.low;\n                highValue = barConfig.value - barConfig.high;\n                lowColor = barConfig.highColor;\n                mediumColor = barConfig.highColor;\n                highColor = barConfig.highColor;\n                valueColor = highColor;\n            }\n            if ( barConfig.hihi <= barConfig.value)\n            {\n                lowValue = barConfig.low;\n                mediumValue = barConfig.high - barConfig.low; \n                highValue = barConfig.hihi - barConfig.high; \n                lowColor = barConfig.highColor;\n                mediumColor = barConfig.highColor;\n                highColor = barConfig.highColor;\n                valueColor = highColor;\n            }\n            \n            var lowBar = \n            {\n                y: ['', '-'],\n                x: [ barConfig.low, lowValue],\n                type: 'bar',\n                orientation: 'h',\n                showlegend: false,\n                marker:{color: [barConfig.lowColor, lowColor]},\n              width: [0.1, 1.0],\n            };\n            var mediumBar = \n            {\n                y: ['', '-'],\n                x: [barConfig.high - barConfig.low, mediumValue],\n                type: 'bar',\n                orientation: 'h',\n                showlegend: false,\n                marker:{color: [barConfig.mediumColor, mediumColor]},\n              width: [0.1, 1.0],\n            };\n            var highBar = \n            {\n                y: ['', '-'],\n                x: [barConfig.hihi - barConfig.high, highValue],\n                orientation: 'h',\n                type: 'bar',\n                showlegend: false,\n                marker:{color: [barConfig.highColor, highColor]},\n              width: [0.1, 1.0],\n            };\n            var layout = \n                {\n                    barmode: 'stack',\n                    plot_bgcolor:barConfig.backgroundColor,\n                    paper_bgcolor:barConfig.backgroundColor,\n                    margin: \n                        {\n                            t: 70, //top margin\n                            l: 20, //left margin\n                            r: 20, //right margin\n                            b: 70 //bottom margin\n                        },\n \n                    height: barConfig.height,\n                    title: \n                        {\n                            text: barConfig.value.toString() + ' ' + barConfig.unit,\n                            font: {color: valueColor, size:barConfig.textsize},\n                        },\n                    yaxis: \n                        {\n                            tickfont: {color:valueColor, size:barConfig.textsize}\n                        },\n                    xaxis: \n                        {\n                            range: [barConfig.lolo, barConfig.hihi],\n                            tickfont: {color:barConfig.labelColor, size:barConfig.textsize},\n                            gridcolor       : barConfig.gridColor\n\n                        },\n                };\n           Plotly.newPlot(barConfig.htmlId, [lowBar, mediumBar, highBar], layout, {'displayModeBar': false});\n        }\n        \n        \n        \n        \n        \n    \n",
+        "template": "// Horz Bar Widget\n        function setHorzBarWidget(barConfig)\n        {\n            var lowValue = 0;\n            var mediumValue = 0;\n            var highValue = 0;\n        \n            var lowColor = barConfig.backgroundColor;\n            var mediumColor = barConfig.backgroundColor;\n            var highColor = barConfig.backgroundColor;\n            var valueColor = barConfig.backgroundColor; \n            \n            if ( barConfig.value <= barConfig.lolo)\n            {\n                lowValue = barConfig.lolo;\n                lowColor = barConfig.lowColor;\n                valueColor = lowColor;\n            }\n            if ( (barConfig.lolo <= barConfig.value) && (barConfig.value < barConfig.low) )\n            {\n                lowValue = barConfig.value;\n                lowColor = barConfig.lowColor;\n                valueColor = lowColor;\n            }\n            if ( (barConfig.low  <= barConfig.value) && (barConfig.value < barConfig.high) )\n            {\n                lowValue = barConfig.low;\n                mediumValue = barConfig.value - barConfig.low; \n                lowColor = barConfig.mediumColor;\n                mediumColor = barConfig.mediumColor;\n                valueColor = mediumColor;\n        \n            }\n            if ( (barConfig.high <= barConfig.value) && (barConfig.value < barConfig.hihi) )\n            {\n                lowValue = barConfig.low;\n                mediumValue = barConfig.high - barConfig.low;\n                highValue = barConfig.value - barConfig.high;\n                lowColor = barConfig.highColor;\n                mediumColor = barConfig.highColor;\n                highColor = barConfig.highColor;\n                valueColor = highColor;\n            }\n            if ( barConfig.hihi <= barConfig.value)\n            {\n                lowValue = barConfig.low;\n                mediumValue = barConfig.high - barConfig.low; \n                highValue = barConfig.hihi - barConfig.high; \n                lowColor = barConfig.highColor;\n                mediumColor = barConfig.highColor;\n                highColor = barConfig.highColor;\n                valueColor = highColor;\n            }\n            \n            var lowBar = \n            {\n                y: ['', '-'],\n                x: [ barConfig.low, lowValue],\n                type: 'bar',\n                orientation: 'h',\n                showlegend: false,\n                marker:{color: [barConfig.lowColor, lowColor]},\n              width: [0.1, 1.0],\n            };\n            var mediumBar = \n            {\n                y: ['', '-'],\n                x: [barConfig.high - barConfig.low, mediumValue],\n                type: 'bar',\n                orientation: 'h',\n                showlegend: false,\n                marker:{color: [barConfig.mediumColor, mediumColor]},\n              width: [0.1, 1.0],\n            };\n            var highBar = \n            {\n                y: ['', '-'],\n                x: [barConfig.hihi - barConfig.high, highValue],\n                orientation: 'h',\n                type: 'bar',\n                showlegend: false,\n                marker:{color: [barConfig.highColor, highColor]},\n              width: [0.1, 1.0],\n            };\n            var layout = \n                {\n                    barmode: 'stack',\n                    plot_bgcolor:barConfig.backgroundColor,\n                    paper_bgcolor:barConfig.backgroundColor,\n                    margin: \n                        {\n                            t: 70, //top margin\n                            l: 20, //left margin\n                            r: 20, //right margin\n                            b: 70 //bottom margin\n                        },\n \n                    height: barConfig.height,\n                    title: \n                        {\n                            text: barConfig.value.toString() + ' ' + barConfig.unit,\n//                            font: {color: valueColor, size:barConfig.textsize},\n                            font: {color: '#000000', size:45},\n                        },\n                    yaxis: \n                        {\n                            tickfont: {color:valueColor, size:barConfig.textsize}\n                        },\n                    xaxis: \n                        {\n                            range: [barConfig.lolo, barConfig.hihi],\n                            tickfont: {color:barConfig.labelColor, size:barConfig.textsize},\n                            gridcolor       : barConfig.gridColor\n\n                        },\n                };\n           Plotly.newPlot(barConfig.htmlId, [lowBar, mediumBar, highBar], layout, {'displayModeBar': false});\n        }\n        \n        \n        \n        \n        \n    \n",
         "output": "str",
         "x": 680,
         "y": 120,
@@ -1242,12 +1242,12 @@
         "z": "5f562f66.a301e",
         "name": "CS1",
         "pin": "7",
-        "set": "",
+        "set": false,
         "level": "0",
         "freq": "",
         "out": "out",
-        "x": 1090,
-        "y": 800,
+        "x": 710,
+        "y": 840,
         "wires": []
     },
     {
@@ -1258,11 +1258,12 @@
         "func": "msg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 620,
-        "y": 800,
+        "x": 380,
+        "y": 880,
         "wires": [
             [
-                "e0462b10.e57408"
+                "e0462b10.e57408",
+                "133e815c.6120cf"
             ]
         ]
     },
@@ -1278,7 +1279,8 @@
         "y": 800,
         "wires": [
             [
-                "3f536cba.884974"
+                "3f536cba.884974",
+                "133e815c.6120cf"
             ]
         ]
     },
@@ -1297,8 +1299,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 470,
-        "y": 800,
+        "x": 350,
+        "y": 840,
         "wires": [
             [
                 "797e0c4f.55b624"
@@ -1340,8 +1342,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 770,
-        "y": 800,
+        "x": 430,
+        "y": 920,
         "wires": [
             [
                 "a31b44a2.959fc8"
@@ -1356,8 +1358,8 @@
         "func": "msg.payload = 0;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 920,
-        "y": 800,
+        "x": 480,
+        "y": 960,
         "wires": [
             [
                 "133e815c.6120cf"
@@ -1569,8 +1571,8 @@
             "6c15c07a.68169",
             "e5570491.c3b9a8"
         ],
-        "x": 1095,
-        "y": 860,
+        "x": 1075,
+        "y": 1120,
         "wires": []
     },
     {
@@ -1581,8 +1583,8 @@
         "links": [
             "65c2a6ff.a7b8f8"
         ],
-        "x": 1095,
-        "y": 900,
+        "x": 1075,
+        "y": 1160,
         "wires": []
     },
     {
@@ -1593,8 +1595,8 @@
         "func": "return {topic:'getJwtToken', payload:{topic:'getJwtToken', userID:msg.userID, token: msg.token}};\n",
         "outputs": 1,
         "noerr": 0,
-        "x": 910,
-        "y": 940,
+        "x": 890,
+        "y": 1200,
         "wires": [
             [
                 "138a2f54.f58dd1"
@@ -1607,8 +1609,8 @@
         "z": "5f562f66.a301e",
         "name": "get Token",
         "tokenconfig": "144aea5f.fcbd96",
-        "x": 760,
-        "y": 940,
+        "x": 740,
+        "y": 1200,
         "wires": [
             [
                 "408d5e18.19765"
@@ -1621,8 +1623,8 @@
         "z": "5f562f66.a301e",
         "name": "decrypt Token",
         "tokenconfig": "144aea5f.fcbd96",
-        "x": 800,
-        "y": 860,
+        "x": 780,
+        "y": 1120,
         "wires": [
             [
                 "155f7d52.7399f3"
@@ -1637,8 +1639,8 @@
         "func": "if (Number(msg.token) == msg.userID)\n{\n    return [msg, {topic : 'acknowledge', payload:{topic:'settingAcknowledge', payload: 'Success!', userID : msg.userID}}]\n}\nreturn [null, {topic : 'acknowledge', payload:{topic:'settingAcknowledge', payload: 'Bad token', userID : msg.userID}}];",
         "outputs": 2,
         "noerr": 0,
-        "x": 970,
-        "y": 860,
+        "x": 950,
+        "y": 1120,
         "wires": [
             [
                 "58aa550c.06cb4c"
@@ -1656,8 +1658,8 @@
         "func": "return {\n    topic   : msg.payload.mqttMessage.topic, \n    payload : msg.payload.mqttMessage.payload, \n    token   : msg.payload.token, \n    userID  : msg.payload.userID };\n",
         "outputs": 1,
         "noerr": 0,
-        "x": 610,
-        "y": 860,
+        "x": 590,
+        "y": 1120,
         "wires": [
             [
                 "91bd15fa.9ab178"
@@ -1672,8 +1674,8 @@
         "func": "if (global.get('settingsPassword') == 'NULL')\n{\n    return [null, {topic:'getJwtToken',payload:msg.payload.userID, userID : msg.payload.userID}];    \n}\nif (msg.payload.payload.loginPassword != global.get('settingsPassword'))\n{\n    return [{topic:'getJwtToken', payload:{topic:'getJwtToken', userID:msg.payload.userID, token: null}}, null];\n}\nreturn [null, {topic:'getJwtToken',payload:msg.payload.userID, userID : msg.payload.userID}];",
         "outputs": 2,
         "noerr": 0,
-        "x": 590,
-        "y": 920,
+        "x": 570,
+        "y": 1180,
         "wires": [
             [
                 "138a2f54.f58dd1"
@@ -1720,8 +1722,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 5,
-        "x": 430,
-        "y": 860,
+        "x": 410,
+        "y": 1120,
         "wires": [
             [
                 "3a1fb97e.c10786"
@@ -1748,8 +1750,8 @@
         "property": "payload",
         "action": "",
         "pretty": false,
-        "x": 310,
-        "y": 860,
+        "x": 290,
+        "y": 1120,
         "wires": [
             [
                 "f270bcda.23518"
@@ -1763,8 +1765,8 @@
         "name": "/websocket",
         "server": "44b51478.9c022c",
         "client": "",
-        "x": 140,
-        "y": 860,
+        "x": 120,
+        "y": 1120,
         "wires": [
             [
                 "75bcac45.dd63c4"
@@ -1779,8 +1781,8 @@
         "func": "device =  flow.get('device');\ndevice.imageData.value = flow.get('pgm');\n\nvar newMsg = {topic : 'lastImage', payload:{topic:'lastImage', payload: device, userID : msg.payload.userID}}\nreturn newMsg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 600,
-        "y": 980,
+        "x": 580,
+        "y": 1240,
         "wires": [
             [
                 "138a2f54.f58dd1"
@@ -1912,8 +1914,8 @@
         "func": "msg.payload = 0;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 800,
-        "y": 1160,
+        "x": 820,
+        "y": 1400,
         "wires": [
             [
                 "83563b17.c1c958"
@@ -1928,8 +1930,8 @@
         "func": "msg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 460,
-        "y": 1160,
+        "x": 480,
+        "y": 1400,
         "wires": [
             [
                 "813910c2.7a6ad",
@@ -1952,8 +1954,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 660,
-        "y": 1160,
+        "x": 680,
+        "y": 1400,
         "wires": [
             [
                 "583afec6.7dee4"
@@ -1968,8 +1970,8 @@
         "func": "return {topic:'takeImage', payload:true}\n",
         "outputs": 1,
         "noerr": 0,
-        "x": 600,
-        "y": 1040,
+        "x": 580,
+        "y": 1300,
         "wires": [
             [
                 "6fa87323.05d3ac"
@@ -1984,8 +1986,8 @@
         "links": [
             "4b5048a4.61fd58"
         ],
-        "x": 715,
-        "y": 1040,
+        "x": 695,
+        "y": 1300,
         "wires": []
     },
     {
@@ -1996,8 +1998,8 @@
         "func": "global.set('websocketPing',new Date().getTime());\n",
         "outputs": 0,
         "noerr": 0,
-        "x": 600,
-        "y": 1080,
+        "x": 580,
+        "y": 1340,
         "wires": []
     },
     {
@@ -2008,8 +2010,8 @@
         "func": "msg.payload = 0;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 600,
-        "y": 1280,
+        "x": 620,
+        "y": 1520,
         "wires": [
             [
                 "f10c4981.8f8b28",
@@ -2025,8 +2027,8 @@
         "func": "msg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 460,
-        "y": 1200,
+        "x": 480,
+        "y": 1440,
         "wires": [
             [
                 "ae6cad36.b9871",
@@ -2049,8 +2051,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 550,
-        "y": 1240,
+        "x": 570,
+        "y": 1480,
         "wires": [
             [
                 "93c753e9.c8707"
@@ -2067,8 +2069,8 @@
         "level": "0",
         "freq": "",
         "out": "out",
-        "x": 1230,
-        "y": 1360,
+        "x": 1250,
+        "y": 1600,
         "wires": []
     },
     {
@@ -2083,8 +2085,8 @@
         "crontab": "",
         "once": true,
         "onceDelay": "2",
-        "x": 110,
-        "y": 1200,
+        "x": 130,
+        "y": 1440,
         "wires": [
             [
                 "ae8390fb.efa5b"
@@ -2099,8 +2101,8 @@
         "func": "if ((new Date().getTime() - global.get('websocketPing')) < 9000)\n{\n    return [null,msg,null];\n}\nelse\n{\n    if (global.get('signalLevel') > -100)\n    {\n        return [msg, null, null];\n    }\n    else\n    {\n        return [null,null,msg]\n    }\n}\nreturn [null,null,null];\n",
         "outputs": 3,
         "noerr": 0,
-        "x": 280,
-        "y": 1200,
+        "x": 300,
+        "y": 1440,
         "wires": [
             [
                 "b9fe4f39.4802b"
@@ -2121,8 +2123,8 @@
         "func": "msg.payload = 0;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 800,
-        "y": 1480,
+        "x": 820,
+        "y": 1720,
         "wires": [
             [
                 "83563b17.c1c958"
@@ -2137,8 +2139,8 @@
         "func": "msg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 680,
-        "y": 1360,
+        "x": 700,
+        "y": 1600,
         "wires": [
             [
                 "83563b17.c1c958",
@@ -2161,8 +2163,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 650,
-        "y": 1320,
+        "x": 670,
+        "y": 1560,
         "wires": [
             [
                 "f3e94a0d.2a3758"
@@ -2184,8 +2186,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 750,
-        "y": 1400,
+        "x": 770,
+        "y": 1640,
         "wires": [
             [
                 "cd4dd94a.352328",
@@ -2201,8 +2203,8 @@
         "func": "msg.payload = 0;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 800,
-        "y": 1440,
+        "x": 820,
+        "y": 1680,
         "wires": [
             [
                 "83563b17.c1c958"

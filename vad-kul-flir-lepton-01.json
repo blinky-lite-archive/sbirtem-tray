@@ -2,7 +2,7 @@
   "deviceType": "vad-kul-flir-lepton",
   "name": "01",
   "arcPeriod": 60000,
-  "timeStamp": 1590910695206,
+  "timeStamp": 1590937742117,
   "lastArchive": 1584283329231,
   "linkQuality": {
     "action": "reading",
@@ -27,7 +27,7 @@
   "signalLevel": {
     "action": "reading",
     "type": "scalar",
-    "value": -36,
+    "value": -38,
     "unit": "dBm",
     "alarm": {
       "value": 0,
@@ -47,7 +47,7 @@
   "pixelMin": {
     "action": "reading",
     "type": "scalar",
-    "value": 24.4,
+    "value": 22.98,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -67,7 +67,7 @@
   "pixelMax": {
     "action": "reading",
     "type": "scalar",
-    "value": 34.18,
+    "value": 34.59,
     "unit": "C",
     "alarm": {
       "value": 0,
