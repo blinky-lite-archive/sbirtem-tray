@@ -721,7 +721,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Cube Custom Info",
-        "func": "var cubeInfo = \n{\n    deviceType  : 'vad-kul-flir-lepton',\n    name        : '01',\n};\nflow.set('cubeInfo', cubeInfo);\n\nreturn null;",
+        "func": "var cubeInfo = \n{\n    deviceType  : 'vad-kul',\n    name        : '01',\n};\nflow.set('cubeInfo', cubeInfo);\n\nreturn null;",
         "outputs": 0,
         "noerr": 0,
         "x": 370,

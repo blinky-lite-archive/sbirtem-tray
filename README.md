@@ -1,7 +1,7 @@
-# Vad Kul FLIR LEPTON Thermal Imager
-![vad-kul-montage](VadKulFlirLeptonMontage.jpg)  
+# Vad Kul Thermal Imager
+![vad-kul-montage](VadKulMontage.jpg)  
 
-The Vad Kul FLIR LEPTON Thermal Imager is an open-source and inexpensive 80x60 pixel thermal camera that is that is is controlled and viewed via a web application. The camera also comes with MQTT hooks so that it can be viewed, controlled, and images archived over the internet. The camera is based on a Raspberry Pi connected to a FLIR LEPTON 2.5 thermal imager via a LEPTON 2.0 breakout board.
+The Vad Kul Thermal Imager is an open-source and inexpensive 80x60 pixel thermal camera that is that is is controlled and viewed via a web application. The camera also comes with MQTT hooks so that it can be viewed, controlled, and images archived over the internet. The camera is based on a Raspberry Pi connected to a FLIR LEPTON 2.5 thermal imager via a LEPTON 2.0 breakout board.
 ## Parts
 - [Raspberry Pi 3A+ (or equivalent) (26 euros)](https://www.electrokit.com/en/product/raspberry-pi-3-model-a/)
 - [8 GB or more microSD card (8.6 euros)](https://www.electrokit.com/en/product/memory-card-microsdhc-16gb/)
@@ -31,8 +31,8 @@ The part cost before tax is about 270 euros
 |P02 - Vin|P02 - 5V|
 
 ## Raspberry Pi setup with pre-loaded disk image.
-- [Download](https://www.need.to.add.com) and burn Raspbian image with Vad Kul-Flir-Lepton already installed.
-- When powered up, the Raspberry Pi will run Vad Kul automatically and the Raspberry Pi will act as a wireless hotspot. You can see the SSID of the hotspot is *vad-kul-flir-lepton-01* and the password is *blinky-lite*
+- [Download](https://www.need.to.add.com) and burn Raspbian image with Vad Kul already installed.
+- When powered up, the Raspberry Pi will run Vad Kul automatically and the Raspberry Pi will act as a wireless hotspot. You can see the SSID of the hotspot is *vad-kul-01* and the password is *xxxx*
 - Once connected to the Raspberry Pi hotspot navigate your browser to http://192.168.4.1 to see the application
 - The Raspberry Pi will also act as a web server on Port 80
 
@@ -47,7 +47,7 @@ The part cost before tax is about 270 euros
 - **IMPORTANT** - From the project directory, navigate to the sub-directory **flirLepton25capture** and type `make`
 - create a file .env in the project directory and add the following lines  
 `PROJECT=blinky-lite`  
-`MQTTCLIENTID=vad-kul-flir-lepton-tray-01`  
+`MQTTCLIENTID=vad-kul-tray-01`  
 `MQTTSERVERIP=`*your-MQTT-broker-URL*  
 `MQTTUSERNAME=`*your-MQTT-broker-username*  
 `MQTTPASSWORD=`*your-MQTT-broker-password*
