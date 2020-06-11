@@ -1,0 +1,4 @@
+(sym_lib_table
+  (lib (name dmcginnis427)(type Legacy)(uri ${KIPRJMOD}/Library/dmcginnis427Symbols/dmcginnis427.lib)(options "")(descr ""))
+  (lib (name vad-kul-rescue)(type Legacy)(uri ${KIPRJMOD}/vad-kul-rescue.lib)(options "")(descr ""))
+)

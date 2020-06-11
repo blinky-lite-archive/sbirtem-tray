@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name dmcginnis427Footprints)(type KiCad)(uri ${KIPRJMOD}/Library/dmcginnis427Footprints)(options "")(descr ""))
+)

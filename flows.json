@@ -1242,8 +1242,8 @@
         "z": "5f562f66.a301e",
         "name": "CS1",
         "pin": "7",
-        "set": false,
-        "level": "0",
+        "set": true,
+        "level": "1",
         "freq": "",
         "out": "out",
         "x": 710,
@@ -1254,56 +1254,16 @@
         "id": "797e0c4f.55b624",
         "type": "function",
         "z": "5f562f66.a301e",
-        "name": "set to 1",
-        "func": "msg.payload = 1;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 380,
-        "y": 880,
-        "wires": [
-            [
-                "e0462b10.e57408",
-                "133e815c.6120cf"
-            ]
-        ]
-    },
-    {
-        "id": "1f653c8a.b53073",
-        "type": "function",
-        "z": "5f562f66.a301e",
         "name": "set to 0",
         "func": "msg.payload = 0;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 300,
+        "x": 320,
         "y": 800,
         "wires": [
             [
-                "3f536cba.884974",
+                "e0462b10.e57408",
                 "133e815c.6120cf"
-            ]
-        ]
-    },
-    {
-        "id": "3f536cba.884974",
-        "type": "delay",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "200",
-        "timeoutUnits": "milliseconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "x": 350,
-        "y": 840,
-        "wires": [
-            [
-                "797e0c4f.55b624"
             ]
         ]
     },
@@ -1323,7 +1283,7 @@
         "y": 800,
         "wires": [
             [
-                "1f653c8a.b53073"
+                "797e0c4f.55b624"
             ]
         ]
     },
@@ -1342,8 +1302,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 430,
-        "y": 920,
+        "x": 370,
+        "y": 840,
         "wires": [
             [
                 "a31b44a2.959fc8"
@@ -1354,12 +1314,12 @@
         "id": "a31b44a2.959fc8",
         "type": "function",
         "z": "5f562f66.a301e",
-        "name": "set to 0",
-        "func": "msg.payload = 0;\nreturn msg;",
+        "name": "set to 1",
+        "func": "msg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 480,
-        "y": 960,
+        "x": 420,
+        "y": 880,
         "wires": [
             [
                 "133e815c.6120cf"
