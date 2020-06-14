@@ -1157,7 +1157,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Process Data",
-        "func": "var imgArray = [];\nvar dataView     = new DataView(new ArrayBuffer(2));\nfor (var irow = 0; irow < 4800; ++irow)\n{\n        dataView.setUint8(0, msg.payload[irow * 2]);\n        dataView.setUint8(1, msg.payload[irow * 2 + 1]);\n        imgArray[irow] = dataView.getUint16(0);\n}\nvar minval = imgArray[0];\nvar maxval = imgArray[0];\nfor (var irow = 0; irow < 4800; ++irow)\n{\n        if ( minval > imgArray[irow]) minval = imgArray[irow];\n        if ( maxval < imgArray[irow]) maxval = imgArray[irow];\n}\nif (minval == 0) return {topic:'takeImage',payload:true};\nvar imgArray2D = [];\nvar deltaVal = maxval - minval;\nif (deltaVal == 0) deltaVal = 1;\nnumPix32 = 0;\nfor (var irow = 0; irow < 60; ++irow)\n{\n    imgArray2D[irow] = [];\n    for (var icol = 0; icol < 80; ++icol)\n    {\n        if (imgArray[irow * 80 + icol] > 30500) ++numPix32;\n        imgArray2D[irow][icol] = Math.floor(256.0 * (imgArray[irow * 80 + icol] - minval) / deltaVal);\n    }    \n}\nvar pgm = \n{\n    'type'      : 'P2',\n    'timeStamp' : new Date().getTime(),\n    'nrows'     : 60,\n    'ncols'     : 80,\n    'minval'    : minval,\n    'maxval'    : maxval,\n    'imageArray': imgArray2D\n}\nflow.set('pgm',pgm);\nflow.get('device').archiveData.value = 0;\nif (numPix32 > 100) flow.get('device').archiveData.value = 1;\nreturn {topic:'takeImage',payload:true};",
+        "func": "if (msg.payload.length < 1) node.warn (\"BOOGER\");\nvar imgArray = [];\nvar dataView     = new DataView(new ArrayBuffer(2));\nfor (var irow = 0; irow < 4800; ++irow)\n{\n        dataView.setUint8(0, msg.payload[irow * 2]);\n        dataView.setUint8(1, msg.payload[irow * 2 + 1]);\n        imgArray[irow] = dataView.getUint16(0);\n}\nvar minval = imgArray[0];\nvar maxval = imgArray[0];\nfor (var irow = 0; irow < 4800; ++irow)\n{\n        if ( minval > imgArray[irow]) minval = imgArray[irow];\n        if ( maxval < imgArray[irow]) maxval = imgArray[irow];\n}\nif (minval == 0) return {topic:'takeImage',payload:true};\nvar imgArray2D = [];\nvar deltaVal = maxval - minval;\nif (deltaVal == 0) deltaVal = 1;\nnumPix32 = 0;\nfor (var irow = 0; irow < 60; ++irow)\n{\n    imgArray2D[irow] = [];\n    for (var icol = 0; icol < 80; ++icol)\n    {\n        if (imgArray[irow * 80 + icol] > 30500) ++numPix32;\n        imgArray2D[irow][icol] = Math.floor(256.0 * (imgArray[irow * 80 + icol] - minval) / deltaVal);\n    }    \n}\nvar pgm = \n{\n    'type'      : 'P2',\n    'timeStamp' : new Date().getTime(),\n    'nrows'     : 60,\n    'ncols'     : 80,\n    'minval'    : minval,\n    'maxval'    : maxval,\n    'imageArray': imgArray2D\n}\nflow.set('pgm',pgm);\nflow.get('device').archiveData.value = 0;\nif (numPix32 > 100) flow.get('device').archiveData.value = 1;\nreturn {topic:'takeImage',payload:true};",
         "outputs": 1,
         "noerr": 0,
         "x": 500,
@@ -1187,9 +1187,7 @@
                 "f062c2f5.4fb63",
                 "620ca605.e38238"
             ],
-            [
-                "e513f2b3.0044d"
-            ],
+            [],
             []
         ]
     },
@@ -1374,7 +1372,7 @@
         "randomUnits": "seconds",
         "drop": false,
         "x": 290,
-        "y": 780,
+        "y": 700,
         "wires": [
             [
                 "e68a810e.f7863"
@@ -1389,8 +1387,8 @@
         "func": "var process = flow.get('cameraProcess');\nvar newMsg = null;\nif (process.pid != undefined)\n{\n    var pid = Number(process.pid.substring(4)) + 1;\n    newMsg = {topic:'killProcess',payload:pid}\n}\nreturn newMsg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 480,
-        "y": 780,
+        "x": 320,
+        "y": 740,
         "wires": [
             [
                 "3132ba84.59a1f6"
@@ -1408,7 +1406,7 @@
         "timer": "",
         "oldrc": false,
         "name": "",
-        "x": 650,
+        "x": 270,
         "y": 780,
         "wires": [
             [],
@@ -1687,7 +1685,7 @@
         "func": "msg.payload = 0;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 760,
+        "x": 440,
         "y": 520,
         "wires": [
             [
@@ -1703,8 +1701,8 @@
         "func": "msg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 480,
-        "y": 480,
+        "x": 300,
+        "y": 460,
         "wires": [
             [
                 "78708c9a.23eac4",
@@ -1727,8 +1725,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 620,
-        "y": 520,
+        "x": 440,
+        "y": 480,
         "wires": [
             [
                 "56b21d74.f13534"
@@ -1745,8 +1743,8 @@
         "level": "0",
         "freq": "",
         "out": "out",
-        "x": 940,
-        "y": 480,
+        "x": 620,
+        "y": 460,
         "wires": []
     },
     {
