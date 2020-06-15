@@ -1338,7 +1338,7 @@
         "repeat": "",
         "crontab": "",
         "once": true,
-        "onceDelay": "1",
+        "onceDelay": "10",
         "x": 110,
         "y": 640,
         "wires": [
@@ -1598,7 +1598,7 @@
         "func": "msg.payload = 0;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 440,
+        "x": 640,
         "y": 520,
         "wires": [
             [
@@ -1611,10 +1611,10 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "set to 1",
-        "func": "msg.payload = 1;\nreturn msg;",
+        "func": "if (msg.payload.length < 1) return null;\nmsg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 300,
+        "x": 500,
         "y": 460,
         "wires": [
             [
@@ -1638,7 +1638,7 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 440,
+        "x": 640,
         "y": 480,
         "wires": [
             [
@@ -1656,7 +1656,7 @@
         "level": "0",
         "freq": "",
         "out": "out",
-        "x": 620,
+        "x": 820,
         "y": 460,
         "wires": []
     },
