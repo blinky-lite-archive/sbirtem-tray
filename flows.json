@@ -9,7 +9,7 @@
     {
         "id": "5f562f66.a301e",
         "type": "tab",
-        "label": "Cube-01",
+        "label": "Cube-A",
         "disabled": false,
         "info": ""
     },
@@ -335,7 +335,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Make Pretty",
-        "func": "var jsonPretty = JSON.stringify(msg.payload,null,2);\nvar filename = flow.get('cubeInfo').deviceType + '-' + flow.get('cubeInfo').name + '.json';\nreturn {topic: msg.payload, payload:jsonPretty, 'filename':filename};",
+        "func": "var jsonPretty = JSON.stringify(msg.payload,null,2);\nvar filename = 'cube-A-settings.json';\nreturn {topic: msg.payload, payload:jsonPretty, 'filename':filename};",
         "outputs": 1,
         "noerr": 0,
         "x": 910,
@@ -367,7 +367,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Readings Alarm Scan",
-        "func": "device = flow.get('device');\ndevice.imageData.value = null;\nvar pgm = flow.get('pgm');\nif (pgm != null)\n{\n    device.pixelMin.value = (pgm.minval - 27315) / 100;\n    device.pixelMax.value  = (pgm.maxval - 27315) / 100;\n    device.imageData.value = pgm;\n    device.timeStamp = pgm.timeStamp;\n}\n\ndevice.linkQuality.value     = global.get('linkQuality');\ndevice.signalLevel.value     = global.get('signalLevel');\nscalarAlarmScan(device, 'reading');\nvar toppy = global.get('project') + '/' + flow.get('cubeInfo').deviceType + '/' + flow.get('cubeInfo').name + '/reading';\nreturn {topic:toppy, payload:device};\n\nfunction getActionArray(device, type, actionType)\n{\n    var actionArray = [];\n    var keys = Object.keys(device);\n    for (var ii = 0; ii < keys.length; ++ii)\n    {\n        if (device[keys[ii]].hasOwnProperty('type'))\n        {\n            if (device[keys[ii]].type == type)\n            {\n                if (device[keys[ii]].action == actionType)\n                {\n                    actionArray.push(device[keys[ii]]);\n                }\n            }\n        }\n    }\n    return actionArray;\n}\nfunction scalarAlarmScan(device, actionType)\n{\n    var actionArray = getActionArray(device, 'scalar', actionType);\n    if (actionArray.length > 0)\n    {\n        for (var ii = 0; ii < actionArray.length; ++ii)\n        {\n            actionArray[ii].alarm.value = 0;\n            if (!isNaN(actionArray[ii].value))\n            {\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.low)  actionArray[ii].alarm.value = 1;\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.lolo) actionArray[ii].alarm.value = 3;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.high) actionArray[ii].alarm.value = 2;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.hihi) actionArray[ii].alarm.value = 4;\n            }\n        }\n    }\n}\n",
+        "func": "device = flow.get('device');\ndevice.imageData.value = null;\nvar pgm = flow.get('pgm');\nif (pgm != null)\n{\n    device.pixelMin.value = (pgm.minval - 27315) / 100;\n    device.pixelMax.value  = (pgm.maxval - 27315) / 100;\n    device.imageData.value = pgm;\n    device.timeStamp = pgm.timeStamp;\n}\n\ndevice.linkQuality.value     = global.get('linkQuality');\ndevice.signalLevel.value     = global.get('signalLevel');\nscalarAlarmScan(device, 'reading');\nvar toppy = global.get('project') + '/' + global.get('deviceTypeA') + '/' + global.get('deviceNameA') + '/reading';\nreturn {topic:toppy, payload:device};\n\nfunction getActionArray(device, type, actionType)\n{\n    var actionArray = [];\n    var keys = Object.keys(device);\n    for (var ii = 0; ii < keys.length; ++ii)\n    {\n        if (device[keys[ii]].hasOwnProperty('type'))\n        {\n            if (device[keys[ii]].type == type)\n            {\n                if (device[keys[ii]].action == actionType)\n                {\n                    actionArray.push(device[keys[ii]]);\n                }\n            }\n        }\n    }\n    return actionArray;\n}\nfunction scalarAlarmScan(device, actionType)\n{\n    var actionArray = getActionArray(device, 'scalar', actionType);\n    if (actionArray.length > 0)\n    {\n        for (var ii = 0; ii < actionArray.length; ++ii)\n        {\n            actionArray[ii].alarm.value = 0;\n            if (!isNaN(actionArray[ii].value))\n            {\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.low)  actionArray[ii].alarm.value = 1;\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.lolo) actionArray[ii].alarm.value = 3;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.high) actionArray[ii].alarm.value = 2;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.hihi) actionArray[ii].alarm.value = 4;\n            }\n        }\n    }\n}\n",
         "outputs": 1,
         "noerr": 0,
         "x": 720,
@@ -383,9 +383,8 @@
         "id": "6c15c07a.68169",
         "type": "link in",
         "z": "5f562f66.a301e",
-        "name": "cube-01 Settings In",
+        "name": "cube-A Settings In",
         "links": [
-            "9e56a59.12b4158",
             "58aa550c.06cb4c"
         ],
         "x": 35,
@@ -427,9 +426,8 @@
         "id": "65c2a6ff.a7b8f8",
         "type": "link in",
         "z": "5f562f66.a301e",
-        "name": "cube-01 to websocket",
+        "name": "cube-A to websocket",
         "links": [
-            "c2b927f.87df7d8",
             "138a2f54.f58dd1"
         ],
         "x": 1055,
@@ -686,53 +684,11 @@
         ]
     },
     {
-        "id": "9256d95.2ffee28",
-        "type": "comment",
-        "z": "5f562f66.a301e",
-        "name": "Customization",
-        "info": " - Buffer size on Teensy Output\n - rfcomm port\n - code in Create Readings\n - code in Create Settings\n - websocket URL",
-        "x": 630,
-        "y": 40,
-        "wires": []
-    },
-    {
-        "id": "c0eddd92.1b41",
-        "type": "inject",
-        "z": "5f562f66.a301e",
-        "name": "Init",
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "repeat": "",
-        "crontab": "",
-        "once": true,
-        "onceDelay": 0.1,
-        "x": 90,
-        "y": 40,
-        "wires": [
-            [
-                "218e440b.fba8ac"
-            ]
-        ]
-    },
-    {
-        "id": "218e440b.fba8ac",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Cube Custom Info",
-        "func": "var cubeInfo = \n{\n    deviceType  : 'vad-kul',\n    name        : '01',\n};\nflow.set('cubeInfo', cubeInfo);\n\nreturn null;",
-        "outputs": 0,
-        "noerr": 0,
-        "x": 370,
-        "y": 40,
-        "wires": []
-    },
-    {
         "id": "2635280b.22f548",
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Make Pretty",
-        "func": "var filename = flow.get('cubeInfo').deviceType + '-' + flow.get('cubeInfo').name + '.json';\nreturn {topic: 'readFile', 'filename':filename};",
+        "func": "var filename = 'cube-A-settings.json';\nreturn {topic: 'readFile', 'filename':filename};",
         "outputs": 1,
         "noerr": 0,
         "x": 270,
@@ -748,7 +704,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Filter MQTT",
-        "func": "var mqttArray = msg.topic.split('/');\nif (mqttArray[0] != global.get('project')) return null;\nif (mqttArray[1] != flow.get('cubeInfo').deviceType) return null;\nif (mqttArray[2] != flow.get('cubeInfo').name) return null;\n\nreturn msg;",
+        "func": "var mqttArray = msg.topic.split('/');\nif (mqttArray[0] != global.get('project')) return null;\nif (mqttArray[1] != global.get('deviceTypeA')) return null;\nif (mqttArray[2] != global.get('deviceNameA')) return null;\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "x": 510,
@@ -764,7 +720,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Filter MQTT",
-        "func": "var mqttArray = msg.topic.split('/');\nif (mqttArray[0] != global.get('project')) return null;\nif (mqttArray[1] != flow.get('cubeInfo').deviceType) return null;\nif (mqttArray[2] != flow.get('cubeInfo').name) return null;\n\nreturn msg;",
+        "func": "var mqttArray = msg.topic.split('/');\nif (mqttArray[0] != global.get('project')) return null;\nif (mqttArray[1] != global.get('deviceTypeA')) return null;\nif (mqttArray[2] != global.get('deviceNameA')) return null;\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "x": 510,
@@ -797,7 +753,7 @@
         "type": "function",
         "z": "c4285970.3276d8",
         "name": "Set Name And Device Type",
-        "func": "msg.payload['script'] = {};\nmsg.payload['script']['name'] = '01'\nmsg.payload['script']['deviceType'] = 'vad-kul';\nmsg.payload['script']['project'] = global.get('project');\nreturn msg;\n",
+        "func": "msg.payload['script'] = {};\nmsg.payload['script']['name'] = global.get('deviceNameA')\nmsg.payload['script']['deviceType'] = global.get('deviceTypeA');\nmsg.payload['script']['project'] = global.get('project');\nreturn msg;\n",
         "outputs": 1,
         "noerr": 0,
         "x": 300,
@@ -1014,7 +970,7 @@
         "oldrc": false,
         "name": "",
         "x": 280,
-        "y": 220,
+        "y": 320,
         "wires": [
             [
                 "adf1efae.e4e0f"
@@ -1036,7 +992,7 @@
         "once": true,
         "onceDelay": 0.1,
         "x": 120,
-        "y": 220,
+        "y": 320,
         "wires": [
             [
                 "d162777.1380788"
@@ -1052,7 +1008,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 460,
-        "y": 220,
+        "y": 320,
         "wires": [
             []
         ]
@@ -1354,8 +1310,7 @@
         "z": "5f562f66.a301e",
         "name": "Settings Out",
         "links": [
-            "6c15c07a.68169",
-            "e5570491.c3b9a8"
+            "6c15c07a.68169"
         ],
         "x": 1075,
         "y": 1120,
@@ -1544,21 +1499,6 @@
         ]
     },
     {
-        "id": "e513f2b3.0044d",
-        "type": "debug",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "x": 1210,
-        "y": 420,
-        "wires": []
-    },
-    {
         "id": "a413542a.4b41a8",
         "type": "json",
         "z": "5f562f66.a301e",
@@ -1651,7 +1591,7 @@
         "type": "rpi-gpio out",
         "z": "5f562f66.a301e",
         "name": "Red LED",
-        "pin": "38",
+        "pin": "37",
         "set": true,
         "level": "0",
         "freq": "",
@@ -1790,7 +1730,7 @@
         "type": "rpi-gpio out",
         "z": "5f562f66.a301e",
         "name": "Yellow LED",
-        "pin": "36",
+        "pin": "35",
         "set": true,
         "level": "0",
         "freq": "",
@@ -2138,6 +2078,46 @@
         "wires": [
             [
                 "e3701624.e0da58"
+            ]
+        ]
+    },
+    {
+        "id": "f56d3371.a7153",
+        "type": "inject",
+        "z": "3f2da72f.995ab8",
+        "name": "DEVICETYPEA",
+        "topic": "deviceTypeA",
+        "payload": "DEVICETYPEA",
+        "payloadType": "env",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "x": 120,
+        "y": 200,
+        "wires": [
+            [
+                "5497633f.4a758c"
+            ]
+        ]
+    },
+    {
+        "id": "c09bc160.3a3f1",
+        "type": "inject",
+        "z": "3f2da72f.995ab8",
+        "name": "DEVICENAMEA",
+        "topic": "deviceNameA",
+        "payload": "DEVICENAMEA",
+        "payloadType": "env",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "x": 120,
+        "y": 260,
+        "wires": [
+            [
+                "5497633f.4a758c"
             ]
         ]
     }

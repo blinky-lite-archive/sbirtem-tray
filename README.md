@@ -47,6 +47,8 @@ The part cost before tax is about 270 euros
 - **IMPORTANT** - From the project directory, navigate to the sub-directory **flirLepton25capture** and type `make`
 - create a file .env in the project directory and add the following lines  
 `PROJECT=blinky-lite`  
+`DEVICETYPEA=vad-kul`  
+`DEVICENAMEA=01`  
 `MQTTCLIENTID=vad-kul-tray-01`  
 `MQTTSERVERIP=`*your-MQTT-broker-URL*  
 `MQTTUSERNAME=`*your-MQTT-broker-username*  
