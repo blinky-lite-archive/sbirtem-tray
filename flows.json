@@ -193,6 +193,12 @@
                 "base-font": {
                     "value": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
                 }
+            },
+            "angularTheme": {
+                "primary": "indigo",
+                "accents": "blue",
+                "warn": "red",
+                "background": "grey"
             }
         },
         "site": {
@@ -247,6 +253,26 @@
         "willTopic": "",
         "willQos": "0",
         "willPayload": ""
+    },
+    {
+        "id": "14ffb6e8.88bde9",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "f0ed91d4.4b811",
+        "type": "ui_group",
+        "z": "",
+        "name": "Default",
+        "tab": "14ffb6e8.88bde9",
+        "order": 1,
+        "disp": true,
+        "width": "18",
+        "collapse": false
     },
     {
         "id": "5902d0c0.241a6",
@@ -1120,7 +1146,6 @@
         "y": 640,
         "wires": [
             [
-                "ed91a6bf.2a8498",
                 "9115ea87.0ca208"
             ],
             [
@@ -1281,27 +1306,6 @@
             [],
             [],
             []
-        ]
-    },
-    {
-        "id": "3bc30e95.19ede2",
-        "type": "inject",
-        "z": "5f562f66.a301e",
-        "name": "Image",
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "repeat": "",
-        "crontab": "",
-        "once": true,
-        "onceDelay": "10",
-        "x": 110,
-        "y": 640,
-        "wires": [
-            [
-                "756aff3b.081cc",
-                "64edca1f.282284"
-            ]
         ]
     },
     {
@@ -1878,54 +1882,20 @@
         ]
     },
     {
-        "id": "886f23d1.03ddd",
-        "type": "link out",
-        "z": "5f562f66.a301e",
-        "name": "Process Data out",
-        "links": [
-            "a59831a8.7ff9"
-        ],
-        "x": 1295,
-        "y": 720,
-        "wires": []
-    },
-    {
         "id": "a59831a8.7ff9",
         "type": "link in",
         "z": "5f562f66.a301e",
         "name": "Capture Flir image In",
         "links": [
-            "886f23d1.03ddd"
+            "886f23d1.03ddd",
+            "a851f6f5.3a80f8"
         ],
-        "x": 95,
-        "y": 720,
+        "x": 115,
+        "y": 660,
         "wires": [
             [
                 "756aff3b.081cc",
                 "64edca1f.282284"
-            ]
-        ]
-    },
-    {
-        "id": "ed91a6bf.2a8498",
-        "type": "delay",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "pauseType": "delayv",
-        "timeout": "3000",
-        "timeoutUnits": "milliseconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "x": 700,
-        "y": 720,
-        "wires": [
-            [
-                "886f23d1.03ddd"
             ]
         ]
     },
@@ -2060,9 +2030,7 @@
         "x": 1120,
         "y": 920,
         "wires": [
-            [
-                "886f23d1.03ddd"
-            ]
+            []
         ]
     },
     {
@@ -2176,6 +2144,146 @@
             [
                 "b6fcc866.328488"
             ]
+        ]
+    },
+    {
+        "id": "e2249214.f4375",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Check  Target Distance",
+        "func": "var minTime = 2000;\nvar range = 150.0;\nflow.get('device').archiveData.value = 0;\nvar prevDistance = context.get('prevDistance');\nif (prevDistance == undefined) prevDistance = 1000;\ncontext.set('prevDistance',msg.payload);\nvar lastTriggerTime = context.get('lastTriggerTime');\nif (lastTriggerTime == undefined) \n{\n    lastTriggerTime = new Date().getTime();\n    context.set('lastTriggerTime',lastTriggerTime);\n}\nvar nowTime = new Date().getTime();\nif ((nowTime - lastTriggerTime) > minTime)\n{\n    if ((msg.payload < range) && (prevDistance < 10000))\n    {\n        context.set('lastTriggerTime',nowTime);\n        return [msg, null];\n    }\n}\nreturn [null, msg];",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 520,
+        "y": 1000,
+        "wires": [
+            [
+                "a851f6f5.3a80f8"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "a851f6f5.3a80f8",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "target distance out",
+        "links": [
+            "a59831a8.7ff9"
+        ],
+        "x": 835,
+        "y": 1000,
+        "wires": []
+    },
+    {
+        "id": "6c495461.9069cc",
+        "type": "rpi-srf",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "topic": "SRF",
+        "pulse": "1",
+        "pins": "29,31",
+        "x": 110,
+        "y": 1000,
+        "wires": [
+            [
+                "6840cfcb.cb382"
+            ]
+        ]
+    },
+    {
+        "id": "6840cfcb.cb382",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "HC04 Distance",
+        "func": "return {topic:'targetDistance',payload:Number(msg.payload)};\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 260,
+        "y": 1000,
+        "wires": [
+            [
+                "e2249214.f4375",
+                "94bfd6ec.cc0e58",
+                "1024a696.2a04c9"
+            ]
+        ]
+    },
+    {
+        "id": "1024a696.2a04c9",
+        "type": "debug",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 430,
+        "y": 1040,
+        "wires": []
+    },
+    {
+        "id": "ffd48d2b.d729e",
+        "type": "inject",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 680,
+        "y": 1040,
+        "wires": [
+            [
+                "a851f6f5.3a80f8"
+            ]
+        ]
+    },
+    {
+        "id": "94bfd6ec.cc0e58",
+        "type": "ui_chart",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "group": "f0ed91d4.4b811",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "chart",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "2",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "outputs": 1,
+        "x": 440,
+        "y": 940,
+        "wires": [
+            []
         ]
     }
 ]

@@ -24,6 +24,7 @@
     "node-red-contrib-auth": "^0.1.7",
     "node-red-dashboard": "^2.19.3",
     "node-red-node-pi-gpio": "^1.1.1",
+    "node-red-node-pisrf": "^0.1.4",
     "pi-spi": "^1.2.1"
   }
 }
