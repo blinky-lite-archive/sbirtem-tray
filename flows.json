@@ -382,7 +382,7 @@
         "wires": [
             [
                 "a3ff8e5.b79de7",
-                "12c0d57a.dcb5eb"
+                "e3701624.e0da58"
             ]
         ]
     },
@@ -1120,7 +1120,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Process Data",
-        "func": "if (msg.payload.length < 1)\n{\n    var errCount = context.get('errCount');\n    if (errCount == undefined) errCount = 0;\n    ++errCount\n    if (errCount < 5)\n    {\n        context.set('errCount',errCount);\n        return [{topic:'takeImage',payload:true, delay:flow.get('device').imageDelay.value}, null];\n    }\n    else\n    {\n        context.set('errCount',0);\n        node.warn(\"Resetting Camera\");\n        flow.set('resettingCamera',true);\n        return [null, {topic:'resetCamera',payload:true}];\n    }\n}\nelse\n{\n    context.set('errCount',0);\n}\nvar imgArray = [];\nvar dataView     = new DataView(new ArrayBuffer(2));\nfor (var irow = 0; irow < 4800; ++irow)\n{\n        dataView.setUint8(0, msg.payload[irow * 2]);\n        dataView.setUint8(1, msg.payload[irow * 2 + 1]);\n        imgArray[irow] = dataView.getUint16(0);\n}\nvar minval = imgArray[0];\nvar maxval = imgArray[0];\nfor (var irow = 0; irow < 4800; ++irow)\n{\n        if ( minval > imgArray[irow]) minval = imgArray[irow];\n        if ( maxval < imgArray[irow]) maxval = imgArray[irow];\n}\nif (minval == 0) return [{topic:'takeImage',payload:true, delay:flow.get('device').imageDelay.value}, null];\nvar imgArray2D = [];\nvar deltaVal = maxval - minval;\nif (deltaVal == 0) deltaVal = 1;\nnumPix32 = 0;\nvar archiveMinTempK = Math.round(100 * flow.get('device').archiveMinTemp.value) + 27315;\nfor (var irow = 0; irow < 60; ++irow)\n{\n    imgArray2D[irow] = [];\n    for (var icol = 0; icol < 80; ++icol)\n    {\n        if (imgArray[irow * 80 + icol] > archiveMinTempK) ++numPix32;\n        if (flow.get('device').flipVertical.value == 0)\n        {\n            if (flow.get('device').flipHorizontal.value == 0)\n            {\n                imgArray2D[irow][icol] = Math.floor(256.0 * (imgArray[irow * 80 + icol] - minval) / deltaVal);\n            }\n            else\n            {\n                imgArray2D[irow][icol] = Math.floor(256.0 * (imgArray[irow * 80 + 79 - icol] - minval) / deltaVal);\n            }\n        }\n        else\n        {\n            if (flow.get('device').flipHorizontal.value == 0)\n            {\n                imgArray2D[irow][icol] = Math.floor(256.0 * (imgArray[(59 - irow) * 80 + icol] - minval) / deltaVal);\n            }\n            else\n            {\n                imgArray2D[irow][icol] = Math.floor(256.0 * (imgArray[(59 - irow) * 80 + 79 - icol] - minval) / deltaVal);\n            }\n        }\n    }    \n}\nvar pgm = \n{\n    'type'      : 'P2',\n    'timeStamp' : new Date().getTime(),\n    'nrows'     : 60,\n    'ncols'     : 80,\n    'minval'    : minval,\n    'maxval'    : maxval,\n    'imageArray': imgArray2D\n};\nflow.set('pgm',pgm);\nflow.get('device').archiveData.value = 0;\nvar numPix32Cut = Math.round(48.0 * flow.get('device').archivePixelPercent.value);\nif (numPix32 > numPix32Cut) flow.get('device').archiveData.value = 1;\nreturn [{topic:'takeImage',payload:true, delay:flow.get('device').imageDelay.value}, null];",
+        "func": "if (msg.payload.length < 1)\n{\n    var errCount = context.get('errCount');\n    if (errCount == undefined) errCount = 0;\n    ++errCount\n    if (errCount < 5)\n    {\n        context.set('errCount',errCount);\n        return [{topic:'takeImage',payload:true, delay:flow.get('device').imageDelay.value}, null];\n    }\n    else\n    {\n        context.set('errCount',0);\n        node.warn(\"Resetting Camera\");\n        flow.set('resettingCamera',true);\n        return [null, {topic:'resetCamera',payload:true}];\n    }\n}\nelse\n{\n    context.set('errCount',0);\n}\nvar imgArray = [];\nvar dataView     = new DataView(new ArrayBuffer(2));\nfor (var irow = 0; irow < 4800; ++irow)\n{\n        dataView.setUint8(0, msg.payload[irow * 2]);\n        dataView.setUint8(1, msg.payload[irow * 2 + 1]);\n        imgArray[irow] = dataView.getUint16(0);\n}\nvar minval = imgArray[0];\nvar maxval = imgArray[0];\nfor (var irow = 0; irow < 4800; ++irow)\n{\n        if ( minval > imgArray[irow]) minval = imgArray[irow];\n        if ( maxval < imgArray[irow]) maxval = imgArray[irow];\n}\nif (minval == 0) return [{topic:'takeImage',payload:true, delay:flow.get('device').imageDelay.value}, null];\nvar imgArray2D = [];\nvar deltaVal = maxval - minval;\nif (deltaVal == 0) deltaVal = 1;\nnumPix32 = 0;\nvar archiveMinTempK = Math.round(100 * flow.get('device').archiveMinTemp.value) + 27315;\nfor (var irow = 0; irow < 60; ++irow)\n{\n    imgArray2D[irow] = [];\n    for (var icol = 0; icol < 80; ++icol)\n    {\n        if (imgArray[irow * 80 + icol] > archiveMinTempK) ++numPix32;\n        if (flow.get('device').flipVertical.value == 0)\n        {\n            if (flow.get('device').flipHorizontal.value == 0)\n            {\n                imgArray2D[irow][icol] = Math.floor(256.0 * (imgArray[irow * 80 + icol] - minval) / deltaVal);\n            }\n            else\n            {\n                imgArray2D[irow][icol] = Math.floor(256.0 * (imgArray[irow * 80 + 79 - icol] - minval) / deltaVal);\n            }\n        }\n        else\n        {\n            if (flow.get('device').flipHorizontal.value == 0)\n            {\n                imgArray2D[irow][icol] = Math.floor(256.0 * (imgArray[(59 - irow) * 80 + icol] - minval) / deltaVal);\n            }\n            else\n            {\n                imgArray2D[irow][icol] = Math.floor(256.0 * (imgArray[(59 - irow) * 80 + 79 - icol] - minval) / deltaVal);\n            }\n        }\n    }    \n}\nvar pgm = \n{\n    'type'      : 'P2',\n    'timeStamp' : new Date().getTime(),\n    'nrows'     : 60,\n    'ncols'     : 80,\n    'minval'    : minval,\n    'maxval'    : maxval,\n    'imageArray': imgArray2D\n};\nvar numPix32Cut = Math.round(48.0 * flow.get('device').archivePixelPercent.value);\nif (numPix32 > numPix32Cut)\n{\n    flow.get('device').archiveData.value = 1;\n}\nelse\n{\n    flow.get('device').archiveData.value = 0;\n    pgm = null;\n}\nflow.set('pgm',pgm);\nreturn [{topic:'takeImage',payload:true, delay:flow.get('device').imageDelay.value}, null];",
         "outputs": 2,
         "noerr": 0,
         "x": 500,
@@ -1165,8 +1165,8 @@
         "qos": "0",
         "retain": "false",
         "broker": "516aef81.a2867",
-        "x": 1250,
-        "y": 500,
+        "x": 950,
+        "y": 580,
         "wires": []
     },
     {
@@ -2013,22 +2013,6 @@
         "wires": [
             [
                 "fd6e82bc.30235"
-            ]
-        ]
-    },
-    {
-        "id": "12c0d57a.dcb5eb",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Publish only if archiveData good",
-        "func": "if (msg.payload.archiveData.value < 1) return null;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 990,
-        "y": 580,
-        "wires": [
-            [
-                "e3701624.e0da58"
             ]
         ]
     },
