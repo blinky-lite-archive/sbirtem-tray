@@ -374,8 +374,8 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Readings Alarm Scan",
-        "func": "device = flow.get('device');\ndevice.imageData.value = null;\nvar pgm = flow.get('pgm');\nif (pgm != null)\n{\n    device.pixelMin.value = (pgm.minval - 27315) / 100;\n    device.pixelMax.value  = (pgm.maxval - 27315) / 100;\n    device.imageData.value = pgm;\n    device.timeStamp = pgm.timeStamp;\n}\n\ndevice.linkQuality.value     = global.get('linkQuality');\ndevice.signalLevel.value     = global.get('signalLevel');\nscalarAlarmScan(device, 'reading');\nvar toppy = global.get('project') + '/' + global.get('deviceTypeA') + '/' + global.get('deviceNameA') + '/reading';\nreturn {topic:toppy, payload:device};\n\nfunction getActionArray(device, type, actionType)\n{\n    var actionArray = [];\n    var keys = Object.keys(device);\n    for (var ii = 0; ii < keys.length; ++ii)\n    {\n        if (device[keys[ii]].hasOwnProperty('type'))\n        {\n            if (device[keys[ii]].type == type)\n            {\n                if (device[keys[ii]].action == actionType)\n                {\n                    actionArray.push(device[keys[ii]]);\n                }\n            }\n        }\n    }\n    return actionArray;\n}\nfunction scalarAlarmScan(device, actionType)\n{\n    var actionArray = getActionArray(device, 'scalar', actionType);\n    if (actionArray.length > 0)\n    {\n        for (var ii = 0; ii < actionArray.length; ++ii)\n        {\n            actionArray[ii].alarm.value = 0;\n            if (!isNaN(actionArray[ii].value))\n            {\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.low)  actionArray[ii].alarm.value = 1;\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.lolo) actionArray[ii].alarm.value = 3;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.high) actionArray[ii].alarm.value = 2;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.hihi) actionArray[ii].alarm.value = 4;\n            }\n        }\n    }\n}\n",
-        "outputs": 1,
+        "func": "device = flow.get('device');\ndevice.imageData.value = null;\nvar pgm = flow.get('pgm');\nvar tooHotMsg = null;\nif (pgm != null)\n{\n    device.pixelMin.value = (pgm.minval - 27315) / 100;\n    device.pixelMax.value  = (pgm.maxval - 27315) / 100;\n    device.imageData.value = pgm;\n    device.timeStamp = pgm.timeStamp;\n    if (device.pixelMax.value >= device.pixelMax.alarm.limits.high)\n    {\n        tooHotMsg = {topic:'tooHotAlarm', payload:true};\n    }\n}\n\ndevice.linkQuality.value     = global.get('linkQuality');\ndevice.signalLevel.value     = global.get('signalLevel');\nscalarAlarmScan(device, 'reading');\nvar toppy = global.get('project') + '/' + global.get('deviceTypeA') + '/' + global.get('deviceNameA') + '/reading';\nreturn [{topic:toppy, payload:device},tooHotMsg];\n\nfunction getActionArray(device, type, actionType)\n{\n    var actionArray = [];\n    var keys = Object.keys(device);\n    for (var ii = 0; ii < keys.length; ++ii)\n    {\n        if (device[keys[ii]].hasOwnProperty('type'))\n        {\n            if (device[keys[ii]].type == type)\n            {\n                if (device[keys[ii]].action == actionType)\n                {\n                    actionArray.push(device[keys[ii]]);\n                }\n            }\n        }\n    }\n    return actionArray;\n}\nfunction scalarAlarmScan(device, actionType)\n{\n    var actionArray = getActionArray(device, 'scalar', actionType);\n    if (actionArray.length > 0)\n    {\n        for (var ii = 0; ii < actionArray.length; ++ii)\n        {\n            actionArray[ii].alarm.value = 0;\n            if (!isNaN(actionArray[ii].value))\n            {\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.low)  actionArray[ii].alarm.value = 1;\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.lolo) actionArray[ii].alarm.value = 3;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.high) actionArray[ii].alarm.value = 2;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.hihi) actionArray[ii].alarm.value = 4;\n            }\n        }\n    }\n}\n",
+        "outputs": 2,
         "noerr": 0,
         "x": 720,
         "y": 640,
@@ -383,6 +383,9 @@
             [
                 "a3ff8e5.b79de7",
                 "e3701624.e0da58"
+            ],
+            [
+                "16929cec.74f3b3"
             ]
         ]
     },
@@ -865,7 +868,7 @@
         "fieldType": "msg",
         "format": "html",
         "syntax": "mustache",
-        "template": "<!-- Dashboard HTML -->\n                <div class='card'>\n                    <p class='card-title'>Temperature</p>\n                    <div class='card-body' align=\"center\">\n                        <div class='row' style='padding-bottom: 25px;'>\n                            <div class=\"container-fluid \" align=\"center\">\n                                <table width='800px'>\n                                    <tr>\n                                        <td>\n                                            <canvas id=\"flirCanvas\" width=\"800\" height=\"600\" style=\"border:1px solid #000000;\" ></canvas>\n                                        </td>\n                                    </tr>\n                                </table>\n                            </div>\n                            <div class=\"container-fluid \" align=\"center\" style='padding-top: 0px;'>\n                                <table  width='792'>\n                                    <tr>\n                                        <td width=\"88px\">\n                                            <div id='box1' style=\"width:88px;height:50px;background-color:#0000ff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box2' style=\"width:88px;height:50px;background-color:#0088ff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box3' style=\"width:88px;height:50px;background-color:#00ffff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box4' style=\"width:88px;height:50px;background-color:#00ff88\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box5' style=\"width:88px;height:50px;background-color:#00ff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box6' style=\"width:88px;height:50px;background-color:#88ff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box7' style=\"width:88px;height:50px;background-color:#ffff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box8' style=\"width:88px;height:50px;background-color:#ff8800\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box9' style=\"width:88px;height:50px;background-color:#ff0000\"></div>\n                                        </td>\n                                    </tr>\n                                    <tr>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box1Label'>1</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box2Label'>2</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box3Label'>3</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box4Label'>4</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box5Label'>5</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box6Label'>6</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box7Label'>7</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box8Label'>8</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box9Label'>9</span>\n                                        </td>\n                                    </tr>\n                                </table>\n                                <table width='800px'>\n                                    <tr>\n                                        <td width='100%' align='center'>\n                                            <span  class='card-text' id='snapshotTimeStamp'></span>\n                                        </td>\n                                    </tr>\n                                </table>\n                            </div>\n                        </div>\n                   </div>\n                </div>\n",
+        "template": "<!-- Dashboard HTML -->\n                <div class='card'>\n                    <p class='card-title'>Temperature</p>\n                    <div class='card-body' align=\"center\">\n                        <div class='row' style='padding-bottom: 25px;'>\n                            <div class=\"container-fluid \" align=\"center\">\n                                <table width='800px'>\n                                    <tr>\n                                        <td>\n                                            <canvas id=\"flirCanvas\" width=\"800\" height=\"600\" style=\"border:1px solid #000000;\" ></canvas>\n                                        </td>\n                                    </tr>\n                                </table>\n                            </div>\n                            <div class=\"container-fluid \" align=\"center\" style='padding-top: 0px;'>\n                                <table  width='792'>\n                                    <tr>\n                                        <td width=\"88px\">\n                                            <div id='box1' style=\"width:88px;height:50px;background-color:#0000ff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box2' style=\"width:88px;height:50px;background-color:#0088ff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box3' style=\"width:88px;height:50px;background-color:#00ffff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box4' style=\"width:88px;height:50px;background-color:#00ff88\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box5' style=\"width:88px;height:50px;background-color:#00ff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box6' style=\"width:88px;height:50px;background-color:#88ff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box7' style=\"width:88px;height:50px;background-color:#ffff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box8' style=\"width:88px;height:50px;background-color:#ff8800\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box9' style=\"width:88px;height:50px;background-color:#ff0000\"></div>\n                                        </td>\n                                    </tr>\n                                    <tr>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box1Label'>1</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box2Label'>2</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box3Label'>3</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box4Label'>4</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box5Label'>5</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box6Label'>6</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box7Label'>7</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box8Label'>8</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box9Label'>9</span>\n                                        </td>\n                                    </tr>\n                                </table>\n                                <table width='800px'>\n                                    <tr>\n                                        <td width='100%' align='center'>\n                                            <span  class='card-text' id='snapshotTimeStamp'></span>\n                                        </td>\n                                    </tr>\n                                </table>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width=\"60%\" align='left'>\n                                                    <span  class='card-text'>Color Mode</span>\n                                                </td>\n                                                <td width=\"40%\">\n                                                    <button class='btn btn-block card-button big-text' id=\"colorScaleButton\" onclick=\"toggleColorScale()\" >Color</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width=\"60%\" align='left'>\n                                                    <span  class='card-text'>Enhancement Level</span>\n                                                </td>\n                                                <td width=\"14%\" >\n                                                    <button class='btn btn-block card-button big-text' onclick=\"toggleEnhancedScale(-1)\">-</button>\n                                                </td>\n                                                <td width=\"12%px\" align='center'>\n                                                    <span  class='card-text' id=\"enhancementLevel\" >0</span>\n                                                </td>\n                                                <td width=\"14%\">\n                                                    <button class='btn btn-block card-button big-text' onclick=\"toggleEnhancedScale(1)\">+</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n\n                            </div>\n                        </div>\n                   </div>\n                </div>\n",
         "output": "str",
         "x": 990,
         "y": 120,
@@ -1259,7 +1262,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Check if Process hung",
-        "func": "var process = flow.get('cameraProcess');\nvar newMsg = null;\nif (process.pid != undefined)\n{\n    var pid = Number(process.pid.substring(4)) + 1;\n    newMsg = {topic:'killProcess',payload:pid}\n}\nreturn newMsg;",
+        "func": "var process = flow.get('cameraProcess');\nvar newMsg = null;\nif (process.pid != undefined)\n{\n    var pid = Number(process.pid.substring(4)) + 1;\n    newMsg = {topic:'killProcess',payload:pid}\n    node.warn('Camera Hang')\n}\nreturn newMsg;",
         "outputs": 1,
         "noerr": 0,
         "x": 320,
@@ -1575,8 +1578,8 @@
         "id": "f8d673c5.5bd28",
         "type": "rpi-gpio out",
         "z": "5f562f66.a301e",
-        "name": "Red LED",
-        "pin": "37",
+        "name": "Blue LED",
+        "pin": "35",
         "set": true,
         "level": "0",
         "freq": "",
@@ -1715,7 +1718,7 @@
         "type": "rpi-gpio out",
         "z": "5f562f66.a301e",
         "name": "Yellow LED",
-        "pin": "35",
+        "pin": "33",
         "set": true,
         "level": "0",
         "freq": "",
@@ -1927,7 +1930,7 @@
         "type": "rpi-gpio out",
         "z": "5f562f66.a301e",
         "name": "Reset Camera",
-        "pin": "7",
+        "pin": "11",
         "set": true,
         "level": "1",
         "freq": "",
@@ -2103,7 +2106,7 @@
         "fieldType": "msg",
         "format": "html",
         "syntax": "mustache",
-        "template": "<!-- Dashboard HTML -->\n                <div class='card'>\n                    <p class='card-title'>Controls</p>\n                    <div class='card-body' align=\"center\">\n                        <div class='row' style='padding-bottom: 25px;'>\n                            <div class=\"container-fluid \" align=\"center\" style='padding-top: 0px;'>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width=\"60%\" align='left'>\n                                                    <span  class='card-text'>Color Mode</span>\n                                                </td>\n                                                <td width=\"40%\">\n                                                    <button class='btn btn-block card-button big-text' id=\"colorScaleButton\" onclick=\"toggleColorScale()\" >Color</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width=\"60%\" align='left'>\n                                                    <span  class='card-text'>Enhancement Level</span>\n                                                </td>\n                                                <td width=\"14%\" >\n                                                    <button class='btn btn-block card-button big-text' onclick=\"toggleEnhancedScale(-1)\">-</button>\n                                                </td>\n                                                <td width=\"12%px\" align='center'>\n                                                    <span  class='card-text' id=\"enhancementLevel\" >0</span>\n                                                </td>\n                                                <td width=\"14%\">\n                                                    <button class='btn btn-block card-button big-text' onclick=\"toggleEnhancedScale(1)\">+</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%' >\n                                                    <span class='card-text' >Alarm Sound</span>\n                                                </td>\n                                                <td width='40%' align='center'>\n                                                    <button class='btn btn-block big-text' style='background-color:green;color:black' id='soundButtonId' onclick=\"toggleSound()\" >On</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%' >\n                                                    <span class='card-text' >Flip Horizontal</span>\n                                                </td>\n                                                <td width='40%' align='center'>\n                                                    <button class='btn btn-block big-text' style='background-color:grey;color:black' id='flipHorizontalId' onclick=\"flipHorizontal()\" >?</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%' >\n                                                    <span class='card-text' >Flip Vertical</span>\n                                                </td>\n                                                <td width='40%' align='center'>\n                                                    <button class='btn btn-block big-text' style='background-color:grey;color:black' id='flipVerticalId' onclick=\"flipVertical()\" >?</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Image Delay (mS)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"imageDelayInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"imageDelayChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"imageDelayButtonId\" onclick=\"imageDelay()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >UltraSound Range (cm)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"ultraSoundRangeInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"ultraSoundRangeChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"ultraSoundRangeButtonId\" onclick=\"ultraSoundRange()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Archive Temp (C)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"archiveMinTempInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"archiveMinTempChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"archiveMinTempButtonId\" onclick=\"archiveMinTemp()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Archive Pixel (%)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"archivePixelPercentInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"archivePixelPercentChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"archivePixelPercentButtonId\" onclick=\"archivePixelPercent()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                   </div>\n                </div>\n",
+        "template": "<!-- Dashboard HTML -->\n                <div class='card'>\n                    <p class='card-title'>Controls</p>\n                    <div class='card-body' align=\"center\">\n                        <div class='row' style='padding-bottom: 25px;'>\n                            <div class=\"container-fluid \" align=\"center\" style='padding-top: 0px;'>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%' >\n                                                    <span class='card-text' >Alarm Sound</span>\n                                                </td>\n                                                <td width='40%' align='center'>\n                                                    <button class='btn btn-block big-text' style='background-color:green;color:black' id='soundButtonId' onclick=\"toggleSound()\" >On</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%' >\n                                                    <span class='card-text' >Flip Horizontal</span>\n                                                </td>\n                                                <td width='40%' align='center'>\n                                                    <button class='btn btn-block big-text' style='background-color:grey;color:black' id='flipHorizontalId' onclick=\"flipHorizontal()\" >?</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%' >\n                                                    <span class='card-text' >Flip Vertical</span>\n                                                </td>\n                                                <td width='40%' align='center'>\n                                                    <button class='btn btn-block big-text' style='background-color:grey;color:black' id='flipVerticalId' onclick=\"flipVertical()\" >?</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Image Delay (mS)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"imageDelayInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"imageDelayChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"imageDelayButtonId\" onclick=\"imageDelay()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >UltraSound Range (cm)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"ultraSoundRangeInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"ultraSoundRangeChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"ultraSoundRangeButtonId\" onclick=\"ultraSoundRange()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Archive Temp (C)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"archiveMinTempInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"archiveMinTempChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"archiveMinTempButtonId\" onclick=\"archiveMinTemp()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Archive Pixel (%)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"archivePixelPercentInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"archivePixelPercentChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"archivePixelPercentButtonId\" onclick=\"archivePixelPercent()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                   </div>\n                </div>\n",
         "output": "str",
         "x": 970,
         "y": 240,
@@ -2219,5 +2222,157 @@
         "x": 1290,
         "y": 920,
         "wires": []
+    },
+    {
+        "id": "efc84a31.d4d1e8",
+        "type": "rpi-gpio out",
+        "z": "5f562f66.a301e",
+        "name": "Red LED",
+        "pin": "37",
+        "set": true,
+        "level": "0",
+        "freq": "",
+        "out": "out",
+        "x": 1720,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "785b3f2f.e51bc",
+        "type": "rpi-gpio out",
+        "z": "5f562f66.a301e",
+        "name": "MOSI",
+        "pin": "19",
+        "set": true,
+        "level": "0",
+        "freq": "",
+        "out": "out",
+        "x": 1330,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "429043c0.eff86c",
+        "type": "rpi-gpio out",
+        "z": "5f562f66.a301e",
+        "name": "SDA1",
+        "pin": "3",
+        "set": true,
+        "level": "0",
+        "freq": "",
+        "out": "out",
+        "x": 1330,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "f4f70335.3fca1",
+        "type": "rpi-gpio out",
+        "z": "5f562f66.a301e",
+        "name": "SCL1",
+        "pin": "5",
+        "set": true,
+        "level": "0",
+        "freq": "",
+        "out": "out",
+        "x": 1330,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "16929cec.74f3b3",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Set alarm burst",
+        "func": "var burstCount = context.get('burstCount');\nif (burstCount == undefined) burstCount = 0;\nif (msg.topic == 'tooHotAlarm') burstCount = 0;\n++burstCount;\ncontext.set('burstCount',burstCount)\nif (burstCount < 20) return msg;\nreturn null;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1100,
+        "y": 760,
+        "wires": [
+            [
+                "b47bb87.ee68148",
+                "97eff5eb.0b1a58"
+            ]
+        ]
+    },
+    {
+        "id": "51f565be.01b09c",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 1",
+        "func": "msg.payload = 1;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1460,
+        "y": 760,
+        "wires": [
+            [
+                "efc84a31.d4d1e8"
+            ]
+        ]
+    },
+    {
+        "id": "b47bb87.ee68148",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "200",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 1290,
+        "y": 800,
+        "wires": [
+            [
+                "3b27ec2a.410934"
+            ]
+        ]
+    },
+    {
+        "id": "3b27ec2a.410934",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 0",
+        "func": "return {topic:'redLed',payload:0};",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1460,
+        "y": 800,
+        "wires": [
+            [
+                "efc84a31.d4d1e8",
+                "16929cec.74f3b3"
+            ]
+        ]
+    },
+    {
+        "id": "97eff5eb.0b1a58",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "100",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 1290,
+        "y": 760,
+        "wires": [
+            [
+                "51f565be.01b09c"
+            ]
+        ]
     }
 ]
