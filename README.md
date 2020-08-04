@@ -46,15 +46,13 @@ The part cost before tax is about 270 euros
 - Enter the project directory and `npm install` the node imports
 - **IMPORTANT** - From the project directory, navigate to the sub-directory **flirLepton25capture** and type `make`
 - create a file .env in the project directory and add the following lines  
-`PROJECT=blinky-lite`  
+`PROJECT=vad-kul`  
 `DEVICETYPEA=vad-kul`  
 `DEVICENAMEA=01`  
 `MQTTCLIENTID=vad-kul-tray-01`  
 `MQTTSERVERIP=`*your-MQTT-broker-URL*  
 `MQTTUSERNAME=`*your-MQTT-broker-username*  
 `MQTTPASSWORD=`*your-MQTT-broker-password*
-`JWTKEYSECRET=`*some-random-string-you-pick*  
-`SETTINGSPASSWORD=`*your-choice*  
 `NODEREDCONFIGSECRET=`*another-choice*    
 - To run the code from the project directory enter `./run-blinky-lite.sh $(pwd)`
 - OR to run the code in background enter from the project directory `./pm2.sh $(pwd)`
