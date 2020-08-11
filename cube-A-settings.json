@@ -27,7 +27,7 @@
   "signalLevel": {
     "action": "reading",
     "type": "scalar",
-    "value": -20,
+    "value": -36,
     "unit": "dBm",
     "alarm": {
       "value": 0,
@@ -87,10 +87,10 @@
   "ultraSoundDistance": {
     "action": "reading",
     "type": "scalar",
-    "value": 8,
+    "value": 397,
     "unit": "cm",
     "alarm": {
-      "value": 3,
+      "value": 0,
       "limits": {
         "lolo": 10,
         "low": 15,
