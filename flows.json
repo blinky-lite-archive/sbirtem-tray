@@ -1797,7 +1797,7 @@
         "z": "5f562f66.a301e",
         "name": "",
         "pauseType": "delay",
-        "timeout": "10",
+        "timeout": "2",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -1806,105 +1806,11 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 700,
-        "y": 780,
+        "x": 740,
+        "y": 880,
         "wires": [
             [
-                "5de2e4d7.ba6fec"
-            ]
-        ]
-    },
-    {
-        "id": "63eaee1a.ace32",
-        "type": "rpi-gpio out",
-        "z": "5f562f66.a301e",
-        "name": "Reset Camera",
-        "pin": "11",
-        "set": true,
-        "level": "1",
-        "freq": "",
-        "out": "out",
-        "x": 1140,
-        "y": 860,
-        "wires": []
-    },
-    {
-        "id": "5de2e4d7.ba6fec",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "set to 0",
-        "func": "msg.payload = 0;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 840,
-        "y": 780,
-        "wires": [
-            [
-                "6155b0bf.59f51",
-                "63eaee1a.ace32"
-            ]
-        ]
-    },
-    {
-        "id": "6155b0bf.59f51",
-        "type": "delay",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "200",
-        "timeoutUnits": "milliseconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "x": 890,
-        "y": 820,
-        "wires": [
-            [
-                "6d8a7aa3.0cd694"
-            ]
-        ]
-    },
-    {
-        "id": "6d8a7aa3.0cd694",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "set to 1",
-        "func": "msg.payload = 1;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 940,
-        "y": 860,
-        "wires": [
-            [
-                "63eaee1a.ace32",
-                "c2a8f382.b5df7"
-            ]
-        ]
-    },
-    {
-        "id": "c2a8f382.b5df7",
-        "type": "delay",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "20",
-        "timeoutUnits": "seconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "x": 1120,
-        "y": 920,
-        "wires": [
-            [
-                "fd6e82bc.30235"
+                "5fe1f713.dae2a8"
             ]
         ]
     },
@@ -2014,7 +1920,7 @@
         "outputs": 2,
         "noerr": 0,
         "x": 480,
-        "y": 980,
+        "y": 1000,
         "wires": [
             [
                 "a851f6f5.3a80f8"
@@ -2079,7 +1985,7 @@
         "repeat": "",
         "crontab": "",
         "once": false,
-        "onceDelay": 0.1,
+        "onceDelay": "60",
         "x": 500,
         "y": 940,
         "wires": [
@@ -2093,12 +1999,16 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Initialize Stuff",
-        "func": "flow.set('resettingCamera',false);\nreturn msg;",
-        "outputs": 0,
+        "func": "flow.set('resettingCamera',true);\nreturn msg;",
+        "outputs": 1,
         "noerr": 0,
         "x": 270,
         "y": 400,
-        "wires": []
+        "wires": [
+            [
+                "6abb16.fc9774ec"
+            ]
+        ]
     },
     {
         "id": "fd6e82bc.30235",
@@ -2108,8 +2018,8 @@
         "func": "flow.set('resettingCamera',false);\nreturn msg;",
         "outputs": 0,
         "noerr": 0,
-        "x": 1290,
-        "y": 920,
+        "x": 1890,
+        "y": 880,
         "wires": []
     },
     {
@@ -2669,5 +2579,373 @@
                 "9bc013a4.b46c"
             ]
         ]
+    },
+    {
+        "id": "242fb7ee.ec2318",
+        "type": "exec",
+        "z": "5f562f66.a301e",
+        "command": "flirLepton25i2c/flirLepton25i2c.exe setFfcStateToManual",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "setFfcStateToManual",
+        "x": 740,
+        "y": 400,
+        "wires": [
+            [
+                "1cc9fd62.227313"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "6abb16.fc9774ec",
+        "type": "exec",
+        "z": "5f562f66.a301e",
+        "command": "flirLepton25i2c/flirLepton25i2c.exe reboot",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "reboot",
+        "x": 410,
+        "y": 400,
+        "wires": [
+            [
+                "e1d61d76.3569b"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "e1d61d76.3569b",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 560,
+        "y": 400,
+        "wires": [
+            [
+                "242fb7ee.ec2318"
+            ]
+        ]
+    },
+    {
+        "id": "4532c4da.1b43ac",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "clear camera reset",
+        "func": "flow.set('resettingCamera',false);\nreturn msg;",
+        "outputs": 0,
+        "noerr": 0,
+        "x": 1430,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "1cc9fd62.227313",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "10",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 940,
+        "y": 400,
+        "wires": [
+            [
+                "82484d70.a7df"
+            ]
+        ]
+    },
+    {
+        "id": "82484d70.a7df",
+        "type": "exec",
+        "z": "5f562f66.a301e",
+        "command": "flirLepton25i2c/flirLepton25i2c.exe performFfc",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "performFfc",
+        "x": 1090,
+        "y": 400,
+        "wires": [
+            [
+                "dc342449.ddba88"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "dc342449.ddba88",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 1260,
+        "y": 400,
+        "wires": [
+            [
+                "4532c4da.1b43ac"
+            ]
+        ]
+    },
+    {
+        "id": "1cd59f0.d6f2e61",
+        "type": "exec",
+        "z": "5f562f66.a301e",
+        "command": "flirLepton25i2c/flirLepton25i2c.exe setFfcStateToManual",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "setFfcStateToManual",
+        "x": 1200,
+        "y": 880,
+        "wires": [
+            [
+                "34b6f055.70dd4"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "5fe1f713.dae2a8",
+        "type": "exec",
+        "z": "5f562f66.a301e",
+        "command": "flirLepton25i2c/flirLepton25i2c.exe reboot",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "reboot",
+        "x": 870,
+        "y": 880,
+        "wires": [
+            [
+                "4105c23f.1181bc"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "4105c23f.1181bc",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 1020,
+        "y": 880,
+        "wires": [
+            [
+                "1cd59f0.d6f2e61"
+            ]
+        ]
+    },
+    {
+        "id": "34b6f055.70dd4",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "10",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 1400,
+        "y": 880,
+        "wires": [
+            [
+                "844f0fc.e7ab8f"
+            ]
+        ]
+    },
+    {
+        "id": "844f0fc.e7ab8f",
+        "type": "exec",
+        "z": "5f562f66.a301e",
+        "command": "flirLepton25i2c/flirLepton25i2c.exe performFfc",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "performFfc",
+        "x": 1550,
+        "y": 880,
+        "wires": [
+            [
+                "fcf0c780.08c1d8"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "fcf0c780.08c1d8",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 1720,
+        "y": 880,
+        "wires": [
+            [
+                "fd6e82bc.30235"
+            ]
+        ]
+    },
+    {
+        "id": "89cfd52.1eb2928",
+        "type": "inject",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "topic": "Init FFC",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "60",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "60",
+        "x": 1020,
+        "y": 980,
+        "wires": [
+            [
+                "1ee58b30.404be5"
+            ]
+        ]
+    },
+    {
+        "id": "1ee58b30.404be5",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "hold capture",
+        "func": "flow.set('resettingCamera',true);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1210,
+        "y": 980,
+        "wires": [
+            [
+                "808c8caf.d76fb"
+            ]
+        ]
+    },
+    {
+        "id": "2fcf61df.b03cce",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1500",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 1560,
+        "y": 960,
+        "wires": [
+            [
+                "bef6edc2.3d633"
+            ]
+        ]
+    },
+    {
+        "id": "808c8caf.d76fb",
+        "type": "exec",
+        "z": "5f562f66.a301e",
+        "command": "flirLepton25i2c/flirLepton25i2c.exe performFfc",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "performFfc",
+        "x": 1370,
+        "y": 980,
+        "wires": [
+            [
+                "2fcf61df.b03cce"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "bef6edc2.3d633",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "resume capture",
+        "func": "flow.set('resettingCamera',false);\nreturn msg;",
+        "outputs": 0,
+        "noerr": 0,
+        "x": 1740,
+        "y": 960,
+        "wires": []
     }
 ]
