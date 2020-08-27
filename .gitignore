@@ -18,5 +18,8 @@ node_modules
 *.backup
 *.exe
 *.o
+*.exe
+*.a
+
 
 
