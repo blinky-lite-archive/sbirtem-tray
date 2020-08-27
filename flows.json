@@ -2127,48 +2127,6 @@
         "wires": []
     },
     {
-        "id": "785b3f2f.e51bc",
-        "type": "rpi-gpio out",
-        "z": "5f562f66.a301e",
-        "name": "MOSI",
-        "pin": "19",
-        "set": true,
-        "level": "0",
-        "freq": "",
-        "out": "out",
-        "x": 1330,
-        "y": 460,
-        "wires": []
-    },
-    {
-        "id": "429043c0.eff86c",
-        "type": "rpi-gpio out",
-        "z": "5f562f66.a301e",
-        "name": "SDA1",
-        "pin": "3",
-        "set": true,
-        "level": "0",
-        "freq": "",
-        "out": "out",
-        "x": 1330,
-        "y": 340,
-        "wires": []
-    },
-    {
-        "id": "f4f70335.3fca1",
-        "type": "rpi-gpio out",
-        "z": "5f562f66.a301e",
-        "name": "SCL1",
-        "pin": "5",
-        "set": true,
-        "level": "0",
-        "freq": "",
-        "out": "out",
-        "x": 1330,
-        "y": 400,
-        "wires": []
-    },
-    {
         "id": "16929cec.74f3b3",
         "type": "function",
         "z": "5f562f66.a301e",
