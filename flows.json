@@ -381,8 +381,8 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Readings Alarm Scan",
-        "func": "device = flow.get('device');\ndevice.imageData.value = null;\nvar pgm = flow.get('pgm');\nvar tooHotMsg = null;\nif (pgm != null)\n{\n    device.pixelMin.value = (pgm.minval - 27315) / 100;\n    device.pixelMax.value  = (pgm.maxval - 27315) / 100;\n    device.imageData.value = pgm;\n    device.timeStamp = pgm.timeStamp;\n    if (device.pixelMax.value >= device.pixelMax.alarm.limits.high)\n    {\n        tooHotMsg = {topic:'tooHotAlarm', payload:true};\n    }\n}\n\ndevice.linkQuality.value     = global.get('linkQuality');\ndevice.signalLevel.value     = global.get('signalLevel');\nscalarAlarmScan(device, 'reading');\nvar toppy = global.get('project') + '/' + global.get('deviceTypeA') + '/' + global.get('deviceNameA') + '/reading';\nreturn [{topic:toppy, payload:device},tooHotMsg];\n\nfunction getActionArray(device, type, actionType)\n{\n    var actionArray = [];\n    var keys = Object.keys(device);\n    for (var ii = 0; ii < keys.length; ++ii)\n    {\n        if (device[keys[ii]].hasOwnProperty('type'))\n        {\n            if (device[keys[ii]].type == type)\n            {\n                if (device[keys[ii]].action == actionType)\n                {\n                    actionArray.push(device[keys[ii]]);\n                }\n            }\n        }\n    }\n    return actionArray;\n}\nfunction scalarAlarmScan(device, actionType)\n{\n    var actionArray = getActionArray(device, 'scalar', actionType);\n    if (actionArray.length > 0)\n    {\n        for (var ii = 0; ii < actionArray.length; ++ii)\n        {\n            actionArray[ii].alarm.value = 0;\n            if (!isNaN(actionArray[ii].value))\n            {\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.low)  actionArray[ii].alarm.value = 1;\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.lolo) actionArray[ii].alarm.value = 3;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.high) actionArray[ii].alarm.value = 2;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.hihi) actionArray[ii].alarm.value = 4;\n            }\n        }\n    }\n}\n",
-        "outputs": 2,
+        "func": "device = flow.get('device');\ndevice.imageData.value = null;\nvar pgm = flow.get('pgm');\nvar tooHotMsg = null;\nvar notHotMsg = null;\nif (pgm != null)\n{\n    flow.set('lastImageTime',new Date().getTime());\n    device.pixelMin.value = (pgm.minval - 27315) / 100;\n    device.pixelMax.value  = (pgm.maxval - 27315) / 100;\n    device.imageData.value = pgm;\n    device.timeStamp = pgm.timeStamp;\n    if (device.pixelMax.value >= device.pixelMax.alarm.limits.high)\n    {\n        tooHotMsg = {topic:'tooHotAlarm', payload:true};\n    }\n    else\n    {\n        notHotMsg = {topic:'notHotAlarm', payload:true};\n    }\n}\n\ndevice.linkQuality.value     = global.get('linkQuality');\ndevice.signalLevel.value     = global.get('signalLevel');\nscalarAlarmScan(device, 'reading');\nvar toppy = global.get('project') + '/' + global.get('deviceTypeA') + '/' + global.get('deviceNameA') + '/reading';\nreturn [{topic:toppy, payload:device},tooHotMsg, notHotMsg];\n\nfunction getActionArray(device, type, actionType)\n{\n    var actionArray = [];\n    var keys = Object.keys(device);\n    for (var ii = 0; ii < keys.length; ++ii)\n    {\n        if (device[keys[ii]].hasOwnProperty('type'))\n        {\n            if (device[keys[ii]].type == type)\n            {\n                if (device[keys[ii]].action == actionType)\n                {\n                    actionArray.push(device[keys[ii]]);\n                }\n            }\n        }\n    }\n    return actionArray;\n}\nfunction scalarAlarmScan(device, actionType)\n{\n    var actionArray = getActionArray(device, 'scalar', actionType);\n    if (actionArray.length > 0)\n    {\n        for (var ii = 0; ii < actionArray.length; ++ii)\n        {\n            actionArray[ii].alarm.value = 0;\n            if (!isNaN(actionArray[ii].value))\n            {\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.low)  actionArray[ii].alarm.value = 1;\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.lolo) actionArray[ii].alarm.value = 3;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.high) actionArray[ii].alarm.value = 2;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.hihi) actionArray[ii].alarm.value = 4;\n            }\n        }\n    }\n}\n",
+        "outputs": 3,
         "noerr": 0,
         "x": 720,
         "y": 640,
@@ -392,7 +392,12 @@
                 "e3701624.e0da58"
             ],
             [
-                "16929cec.74f3b3"
+                "16929cec.74f3b3",
+                "247ec1cc.5f8a1e"
+            ],
+            [
+                "620ca605.e38238",
+                "247ec1cc.5f8a1e"
             ]
         ]
     },
@@ -421,7 +426,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 950,
-        "y": 640,
+        "y": 600,
         "wires": [
             [
                 "107beeed.934ed1"
@@ -435,8 +440,8 @@
         "name": "/websocket",
         "server": "44b51478.9c022c",
         "client": "",
-        "x": 1170,
-        "y": 640,
+        "x": 1150,
+        "y": 600,
         "wires": []
     },
     {
@@ -533,7 +538,7 @@
         "fieldType": "msg",
         "format": "javascript",
         "syntax": "mustache",
-        "template": "        var ws;\n        var userID = -1;\n        var useWebSocketsFlag = true;\n        var projectName = '{{{payload.projectname}}}';\n        var heartBeatImage = false;\n        var wsUri = '';\n\n        function useWebSockets(webSocketsFlag)\n        {\n            useWebSocketsFlag = webSocketsFlag;\n        }\n        function wsConnectC()\n        {\n            if (!useWebSocketsFlag)\n            {\n                return;\n            }\n            if (wsUri.length < 1)\n            {\n                var uri = window.location.href.split('://');\n                var wslead = 'ws://';\n                if (uri[0] == 'https') wslead = 'wss://';\n                var questionLocation = uri[1].indexOf('?');\n                if (questionLocation >= 0)\n                {\n                    uri[1] = uri[1].substring(0,questionLocation);\n//                    console.log(uri[1]);\n                }\n                if (uri[1].indexOf('/') < (uri[1].length - 1))\n                {\n                    wsUri = wslead + uri[1] + '/websocket';\n                }\n                else\n                {\n                    wsUri = wslead + uri[1] + 'websocket';\n                }\n            }\n            ws = new WebSocket(wsUri);\n            ws.onmessage = function(event)\n            {\n                onWebSocketMessage(JSON.parse(event.data));\n        \n            };\n            ws.onopen = function()\n            {\n                console.log(\"Websocket connected\");\n                $('#webSocketStatus').html('Open');\n                $('#reOpenWebSocketButton').hide();\n                $('#webSocketStatusRow').css('padding-bottom','0px');\n                $('#webSocketStatusCard').hide();\n                onWebSocketOpen();\n            };\n            ws.onclose = function()\n            {\n                console.log(\"Websocket closed\");\n                $('#webSocketStatus').html('Closed');\n                $('#reOpenWebSocketButton').show();\n                $('#webSocketStatusCard').show();\n                $('#webSocketStatusRow').css('padding-bottom','25px');\n                onWebSocketClose();\n            };\n        }\n        function sendWebSocketMessageObject(message)\n        {\n            ws.send(JSON.stringify(message));\n        }\n\n        function getRandomInt(max)\n        {\n          return Math.floor(Math.random() * Math.floor(max));\n        }\n        $( document ).ready(function()\n        {\n            userID  = {{{payload.userID}}};\n            if (!useWebSocketsFlag)\n            {\n                $('#webSocketStatusRow').css('padding-bottom','0px');\n                $('#webSocketStatusCard').hide();\n            }\n            wsConnectC();\n            onDocumentReady();\n        });\n        $( function() \n        {\n            $( \"#acknowledgeDialog\" ).dialog(\n                {\n                    width:    500,\n                    autoOpen: false,\n                    buttons:\n                    [\n                        {\n                            text: \"Ok\",\n                            click: function() { $( this ).dialog( \"close\" );},\n                            showText: false\n                        },\n                   ]\n                });\n            $( \"#messageDialog\" ).dialog(\n                {\n                    width:    500,\n                    autoOpen: false,\n                    buttons:[]\n                });\n        } );\n        function optionDialog(headerText, title, text, buttonTexts, buttonFunctions)\n        {\n            var buttonDefinitions = [];\n            for (var ii = 0; ii < buttonTexts.length; ++ii)\n            {\n                buttonDefinitions[ii] = \n                    {\n                        text: buttonTexts[ii],\n                        click: buttonFunctions[ii],\n                        showText: false\n                    };\n            }\n            $( \"#optionDialog\" ).dialog( \"option\", \"title\", headerText );   \n            $( \"#optionDialog\" ).dialog( \"option\", \"buttons\", buttonDefinitions);\n            $( \"#optionDialogTitle\" ).html(title);\n            $( \"#optionDialogText\" ).html(text);\n            $( \"#optionDialog\" ).dialog( \"open\" );\n        }\n        $( function() \n        {\n            $( \"#optionDialog\" ).dialog(\n                {\n                    width:    500,\n                    autoOpen: false,\n                    buttons:\n                    [\n                        {\n                            text: \"Ok\",\n                            click: function() {$( this ).dialog( \"close\" );},\n                            showText: false\n                        },\n                        {\n                            text: \"Cancel\",\n                            click: function() {$( this ).dialog( \"close\" );},\n                            showText: false\n                        },\n                   ]\n                });\n        } );\n        function acknowledgeDialog(headerText, title, text)\n        {\n            $( \"#acknowledgeDialog\" ).dialog( \"option\", \"title\", headerText );    \n            $( \"#acknowledgeDialogTitle\" ).html(title);\n            $( \"#acknowledgeDialogText\" ).html(text);\n            $( \"#acknowledgeDialog\" ).dialog( \"open\" );\n        }\n        function messageDialog(headerText, title, text)\n        {\n            $( \"#messageDialog\" ).dialog( \"option\", \"title\", headerText );    \n            $( \"#messageDialogTitle\" ).html(title);\n            $( \"#messageDialogText\" ).html(text);\n            $( \"#messageDialog\" ).dialog( \"open\" );\n        }\n        function sendSettingToMqtt(mqttMessage)\n        {\n            var socketMessage = \n            {\n                topic       : 'sendSettingToMqtt',\n                mqttMessage : mqttMessage,\n                token       : jwtToken,\n                userID      : userID\n            };\n            sendWebSocketMessageObject({topic : 'sendSettingToMqtt', mqttMessage : mqttMessage, token : jwtToken, userID : userID});\n        }\n        function heartbeat()\n        {\n            heartBeatImage = !heartBeatImage;\n            var heartBeatImageSrc = '/img/heartRed.png';\n            if (heartBeatImage) heartBeatImageSrc = '/img/heartPink.png';\n            $('#heartBeatID').attr('src',heartBeatImageSrc);\n        }\n",
+        "template": "        var ws;\n        var userID = -1;\n        var useWebSocketsFlag = true;\n        var projectName = '{{{payload.projectname}}}';\n        var heartBeatImage = false;\n        var wsUri = '';\n\n        function useWebSockets(webSocketsFlag)\n        {\n            useWebSocketsFlag = webSocketsFlag;\n        }\n        function wsConnectC()\n        {\n            if (!useWebSocketsFlag)\n            {\n                return;\n            }\n            if (wsUri.length < 1)\n            {\n                var uri = window.location.href.split('://');\n                var wslead = 'ws://';\n                if (uri[0] == 'https') wslead = 'wss://';\n                var questionLocation = uri[1].indexOf('?');\n                if (questionLocation >= 0)\n                {\n                    uri[1] = uri[1].substring(0,questionLocation);\n//                    console.log(uri[1]);\n                }\n                if (uri[1].indexOf('/') < (uri[1].length - 1))\n                {\n                    wsUri = wslead + uri[1] + '/websocket';\n                }\n                else\n                {\n                    wsUri = wslead + uri[1] + 'websocket';\n                }\n            }\n            ws = new WebSocket(wsUri);\n            ws.onmessage = function(event)\n            {\n                onWebSocketMessage(JSON.parse(event.data));\n        \n            };\n            ws.onopen = function()\n            {\n                console.log(\"Websocket connected\");\n                $('#webSocketStatus').html('Open');\n                $('#reOpenWebSocketButton').hide();\n                $('#webSocketStatusRow').css('padding-bottom','0px');\n                $('#webSocketStatusCard').hide();\n                onWebSocketOpen();\n            };\n            ws.onclose = function()\n            {\n                console.log(\"Websocket closed\");\n                $('#webSocketStatus').html('Closed');\n                $('#reOpenWebSocketButton').show();\n                $('#webSocketStatusCard').show();\n                $('#webSocketStatusRow').css('padding-bottom','25px');\n                onWebSocketClose();\n            };\n        }\n        function sendWebSocketMessageObject(message)\n        {\n            ws.send(JSON.stringify(message));\n        }\n\n        function getRandomInt(max)\n        {\n          return Math.floor(Math.random() * Math.floor(max));\n        }\n        $( document ).ready(function()\n        {\n            userID  = {{{payload.userID}}};\n            if (!useWebSocketsFlag)\n            {\n                $('#webSocketStatusRow').css('padding-bottom','0px');\n                $('#webSocketStatusCard').hide();\n            }\n            wsConnectC();\n            onDocumentReady();\n        });\n        $( function() \n        {\n            $( \"#acknowledgeDialog\" ).dialog(\n                {\n                    width:    500,\n                    autoOpen: false,\n                    buttons:\n                    [\n                        {\n                            text: \"Ok\",\n                            click: function() { $( this ).dialog( \"close\" );},\n                            showText: false\n                        },\n                   ]\n                });\n            $( \"#messageDialog\" ).dialog(\n                {\n                    width:    500,\n                    autoOpen: false,\n                    buttons:[]\n                });\n        } );\n        function optionDialog(headerText, title, text, buttonTexts, buttonFunctions)\n        {\n            var buttonDefinitions = [];\n            for (var ii = 0; ii < buttonTexts.length; ++ii)\n            {\n                buttonDefinitions[ii] = \n                    {\n                        text: buttonTexts[ii],\n                        click: buttonFunctions[ii],\n                        showText: false\n                    };\n            }\n            $( \"#optionDialog\" ).dialog( \"option\", \"title\", headerText );   \n            $( \"#optionDialog\" ).dialog( \"option\", \"buttons\", buttonDefinitions);\n            $( \"#optionDialogTitle\" ).html(title);\n            $( \"#optionDialogText\" ).html(text);\n            $( \"#optionDialog\" ).dialog( \"open\" );\n        }\n        $( function() \n        {\n            $( \"#optionDialog\" ).dialog(\n                {\n                    width:    500,\n                    autoOpen: false,\n                    buttons:\n                    [\n                        {\n                            text: \"Ok\",\n                            click: function() {$( this ).dialog( \"close\" );},\n                            showText: false\n                        },\n                        {\n                            text: \"Cancel\",\n                            click: function() {$( this ).dialog( \"close\" );},\n                            showText: false\n                        },\n                   ]\n                });\n        } );\n        function acknowledgeDialog(headerText, title, text)\n        {\n            $( \"#acknowledgeDialog\" ).dialog( \"option\", \"title\", headerText );    \n            $( \"#acknowledgeDialogTitle\" ).html(title);\n            $( \"#acknowledgeDialogText\" ).html(text);\n            $( \"#acknowledgeDialog\" ).dialog( \"open\" );\n        }\n        function messageDialog(headerText, title, text)\n        {\n            $( \"#messageDialog\" ).dialog( \"option\", \"title\", headerText );    \n            $( \"#messageDialogTitle\" ).html(title);\n            $( \"#messageDialogText\" ).html(text);\n            $( \"#messageDialog\" ).dialog( \"open\" );\n        }\n        function sendSettingToMqtt(mqttMessage)\n        {\n            var socketMessage = \n            {\n                topic       : 'sendSettingToMqtt',\n                mqttMessage : mqttMessage,\n                userID      : userID\n            };\n            sendWebSocketMessageObject({topic : 'sendSettingToMqtt', mqttMessage : mqttMessage, userID : userID});\n        }\n        function heartbeat()\n        {\n            heartBeatImage = !heartBeatImage;\n            var heartBeatImageSrc = '/img/heartRed.png';\n            if (heartBeatImage) heartBeatImageSrc = '/img/heartPink.png';\n            $('#heartBeatID').attr('src',heartBeatImageSrc);\n        }\n",
         "output": "str",
         "x": 350,
         "y": 40,
@@ -802,7 +807,7 @@
         "fieldType": "msg",
         "format": "javascript",
         "syntax": "mustache",
-        "template": "// Global Javascript\n        var plotConfig = \n        {\n            trace1Title : 'Temp (C)',\n            trace1Color : '#557a95',\n            trace1GridColor : '#beceda',\n            trace2Title : 'Distance (cm)',\n            trace2Color : '#f2a31f',\n            plotLength  : 600000,\n            width   : '',\n            height  :   '500',\n            htmlId  :   'historyStripChart'\n        };\n        let historyStripChart = new StripChart(plotConfig);\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var colorScale = true;\n        var enhancementLevel = 0;\n        var pgm = null;\n        var audioAlarm = new Audio('/audio/hold-your-horses.ogg');\n        var audioAlarmOn = true;\n        var imageDelayChanged = false;\n        var ultraSoundRangeChanged = false;\n        var archiveMinTempChanged = false;\n        var archivePixelPercentChanged = false;\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n            $('#imageDelayButtonId').hide();\n            $('#ultraSoundRangeButtonId').hide();\n            $('#archiveMinTempButtonId').hide();\n            $('#archivePixelPercentButtonId').hide();\n        }\n        function onWebSocketOpen()\n        {\n//            sendWebSocketMessageObject({topic : 'getLastImage',userID : userID});\n            sendWebSocketMessageObject({topic : 'pingServer',userID : userID});\n            setInterval(function(){sendWebSocketMessageObject({topic : 'pingServer',userID : userID});}, 10000);\n        }\n        function onWebSocketClose()\n        {\n            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        \n                    }\n                    break;\n                case 'lastImage':\n                    if (msg.userID == userID)\n                    {\n                        device = msg.payload;;\n                        if (device.imageData.value != null)\n                        {\n                            $('#snapshotTimeStamp').text(new Date(device.timeStamp).toLocaleString('en-SE', { timeZone: 'Europe/Stockholm' }));\n                            pgm = JSON.parse(JSON.stringify(device.imageData.value));\n                            plotImage();\n                            updatePixelMaxBarChart();\n                        }\n                    }\n                    break;\n                case 'getArchiveValues':\n                    if (msg.userID == userID)\n                    {\n                        if ((msg.payload.device.deviceType == restfulDevice.deviceType) && (msg.payload.device.name == restfulDevice.name) )\n                            putArchiveValues(msg.payload);\n                    }\n                    break;\n                case 'getJwtToken':\n                    if (msg.userID == userID) loadJwtToken(msg);\n                    break;\n                case 'settingAcknowledge':\n                    if (msg.userID == userID)\n                    {\n                        if (msg.payload != 'Success!') acknowledgeDialog('Acknowledge', 'Setting', msg.payload);\n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            $('#linkQualityId').text(device.linkQuality.value);\n            $('#signalLevelId').text(device.signalLevel.value);\n            if (!imageDelayChanged)$('#imageDelayInputId').val(device.imageDelay.value);\n            if (!ultraSoundRangeChanged)$('#ultraSoundRangeInputId').val(device.ultraSoundRange.value);\n            if (!archiveMinTempChanged)$('#archiveMinTempInputId').val(device.archiveMinTemp.value);\n            if (!archivePixelPercentChanged)$('#archivePixelPercentInputId').val(device.archivePixelPercent.value);\n            if (device.imageData.value != null)\n            {\n                historyStripChart.add3TracePoints(device.pixelMax.value, device.pixelMin.value, device.ultraSoundDistance.value);\n                $('#snapshotTimeStamp').text(new Date(device.timeStamp).toLocaleString('en-SE', { timeZone: 'Europe/Stockholm' }));\n                pgm = JSON.parse(JSON.stringify(device.imageData.value));\n                plotImage();\n                updatePixelMaxBarChart();\n                \n                var image1dArray = [];\n                var ipixel = 0;\n                var plow = (pgm.minval - 27315) / 100;\n                var phigh = (pgm.maxval - 27315) / 100;\n                if ((device.pixelMax.alarm.value == 2) || (device.pixelMax.alarm.value == 4))\n                {\n                    if (audioAlarmOn)\n                    {\n                        var playPromise = audioAlarm.play();\n                        if (playPromise !== undefined) \n                        {\n                            playPromise.then(_ => \n                            {\n                            // Automatic playback started!\n                            // Show playing UI.\n                            }).catch(error => \n                            {\n                            // Auto-play was prevented\n                            // Show paused UI.\n                            });\n                         }\n                    }\n                }\n                for (var irow = 0; irow < pgm.nrows; ++irow)\n                {\n                    for (var icol = 0; icol < pgm.ncols; ++icol)\n                    {\n                        image1dArray[ipixel] = (pgm.imageArray[irow][icol] / 256.0) * (phigh - plow) + plow;\n                         ++ipixel;\n                    }\n                }\n\n                var layout = {title: \"Temperature (C)\", xaxis: {title: \"Temperature (C)\"}, yaxis: {title: \"Count\"}};\n\n                Plotly.newPlot('pixelHistogramChart', [{x: image1dArray, type:'histogram',  autobinx: true }]);\n//              Plotly.newPlot('pixelHistogramChart', [{x: image1dArray, type:'histogram',  xbins: {size: 0.5,start: 0} }],layout);\n            }\n            else\n            {\n                historyStripChart.add1TracePoints(device.ultraSoundDistance.value);\n            }\n            \n            var buttonColor = 'green';\n            var buttonTextColor = 'black';\n            var buttonText = \"Off\";\n            if (device.flipHorizontal.value > 0) \n            {\n                buttonColor = 'red';\n                buttonText = 'On';\n            }\n            $('#flipHorizontalId').css('color', buttonTextColor); \n            $('#flipHorizontalId').css('background-color', buttonColor); \n            $('#flipHorizontalId').text(buttonText); \n\n            buttonColor = 'green';\n            buttonTextColor = 'black';\n            buttonText = \"Off\";\n            if (device.flipVertical.value > 0) \n            {\n                buttonColor = 'red';\n                buttonText = 'On';\n            }\n            $('#flipVerticalId').css('color', buttonTextColor); \n            $('#flipVerticalId').css('background-color', buttonColor); \n            $('#flipVerticalId').text(buttonText); \n        }\n        function plotImage()\n        {\n            var rgb = [];\n            var plow = (pgm.minval - 27315) / 100;\n            var phigh = (pgm.maxval - 27315) / 100;\n            var pdelta = phigh - plow;\n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var intensity = ibox / 8.0;\n                var pbox = Math.round(((phigh - plow) * intensity + plow) * 10.0) / 10.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(pbox.toString());\n                if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                if (colorScale)\n                {\n                    rgb = getRGB(intensity);\n                }\n                else\n                {\n                    rgb[0] = Math.floor(255 * intensity);\n                    rgb[1] = Math.floor(255 * intensity);\n                    rgb[2] = Math.floor(255 * intensity);\n                }\n                var style='width:88px;height:50px;background-color:' + 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                $('#box' + (ibox + 1).toString()).attr('style',style);\n            }\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var tipPointer = document.getElementById(\"tipPointer\");\n            var tipPointerContext = tipPointer.getContext(\"2d\");\n            var tip = document.getElementById(\"tip\");\n            var tipContext = tip.getContext(\"2d\");\n            tipContext.font = \"30px Arial\";\n            tipContext.fillStyle = \"cyan\";\n            tipPointerContext.fillStyle = \"cyan\";\n            if (colorScale) tipContext.fillStyle = \"black\";\n            if (colorScale) tipPointerContext.fillStyle = \"black\";\n            tipContext.textAlign = \"left\";\n\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            var rectWidth  = canvasWidth  / pgm.ncols;\n            var rectHeight = canvasHeight / pgm.nrows;\n            canvas.onmousemove = function (e) \n            {\n                var icol = Math.floor(e.layerX / rectWidth);\n                if (icol < 0) icol = 0;\n                if (icol >= pgm.ncols) icol = pgm.ncols - 1;\n                var irow = Math.floor((canvasHeight - e.layerY) / rectHeight);\n                if (irow < 0) irow = 0;\n                if (irow >= pgm.nrows) irow = pgm.nrows - 1;\n                var temp = Math.floor(100.0 * (pdelta * pgm.imageArray[irow][icol] / 256.0 + plow)) / 100;\n\n                tipPointer.style.top = (e.layerY  - tipPointer.height / 2).toString()  + \"px\";\n                tipPointer.style.left = (e.layerX - tipPointer.width / 2).toString() + \"px\";\n                tipPointerContext.clearRect(0, 0, tipPointer.width, tipPointer.height);\n                tipPointerContext.fillRect( 0, 0, tipPointer.width, tipPointer.height);\n\n                tip.style.top = (e.layerY - tip.height - tipPointer.height).toString()  + \"px\";\n                tip.style.left = (e.layerX).toString() + \"px\";\n                tipContext.clearRect(0, 0, tip.width, tip.height);\n                tipContext.fillText(temp.toString() + ' C', 0, 30);\n            };\n\n            for (var irow = 0; irow < pgm.nrows; ++irow)\n            {\n                for (var icol = 0; icol < pgm.ncols; ++icol)\n                {\n                    var intensity = pgm.imageArray[irow][icol] / 256.0;\n                    if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                    if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                    if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                    if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                    if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                    if (colorScale)\n                    {\n                        rgb = getRGB(intensity);\n                        rgb[0] = Math.floor(rgb[0]);\n                        rgb[1] = Math.floor(rgb[1]);\n                        rgb[2] = Math.floor(rgb[2]);\n                    }\n                    else\n                    {\n                        rgb[0] = Math.floor(255 * intensity);\n                        rgb[1] = Math.floor(255 * intensity);\n                        rgb[2] = Math.floor(255 * intensity);\n                    }\n                    canvasContext.fillStyle = 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                    if (intensity > 0.98) \n                    {\n                        canvasContext.fillStyle='magenta';\n                        if (colorScale) canvasContext.fillStyle='white';\n                    }\n\n                    canvasContext.fillRect(icol * rectWidth, canvasHeight - rectHeight - irow * rectHeight, rectWidth, rectHeight);\n                }    \n            }\n        }\n        function mouseLeftCanvas()\n        {\n            var tip = document.getElementById(\"tip\");\n            var tipContext = tip.getContext(\"2d\");\n            tipContext.clearRect(0, 0, tip.width, tip.height);\n            var tipPointer = document.getElementById(\"tipPointer\");\n            var tipPointerContext = tipPointer.getContext(\"2d\");\n            tipPointerContext.clearRect(0, 0, tipPointer.width, tipPointer.height);\n        }\n         function updatePixelMaxBarChart()\n        {\n            $('#pixelMaxBarPlot').show();\n            var pixelMaxBarConfig = \n                {\n                    lolo            : device.pixelMax.alarm.limits.lolo, \n                    low             : device.pixelMax.alarm.limits.low, \n                    high            : device.pixelMax.alarm.limits.high, \n                    hihi            : device.pixelMax.alarm.limits.hihi, \n                    value           : device.pixelMax.value, \n                    unit            : device.pixelMax.unit, \n                    textsize        : 38,\n                    label           : 'pixelMax', \n                    lowColor        : '#0000ff', \n                    mediumColor     : '#00ff00',\n                    highColor       : '#ff0000', \n                    backgroundColor : '#9eb5c7', \n                    labelColor      : '#000000', \n                    gridColor       : '#ffffff',\n                    height          : 200, \n                    htmlId          : 'pixelMaxBarPlot'\n                };\n            setHorzBarWidget(pixelMaxBarConfig);\n        }\n        function getRGB(intensity)\n        {\n          var rgb = [0,0,0];\n          if ( (0 <= intensity) && (intensity <= 0.25) )\n          {\n            rgb[0] = 0;\n            rgb[1] = Math.floor(255 * intensity * 4);    \n            rgb[2] = 255;\n          }\n          if ( (0.25 < intensity) && (intensity <= 0.50) )\n          {\n            rgb[0] = 0;\n            rgb[1] = 255;    \n            rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n          }\n          if ( (0.50 < intensity) && (intensity <= 0.75) )\n          {\n            rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n            rgb[1] = 255;    \n            rgb[2] = 0;\n          }\n          if ( (0.75 < intensity) && (intensity <= 1.0) )\n          {\n            rgb[0] = 255;\n            rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n            rgb[2] = 0;\n          }\n          return rgb;\n        }\n        function toggleColorScale()\n        {\n            colorScale = !colorScale;\n            if (colorScale)\n            {\n                $('#colorScaleButton').text('Color');\n            }\n            else\n            {\n                $('#colorScaleButton').text('Gray');\n            }\n            plotImage();\n        }\n        function toggleEnhancedScale(deltaEnhanced)\n        {\n            enhancementLevel = enhancementLevel + deltaEnhanced;\n            if (enhancementLevel >  2) enhancementLevel = 2;\n            if (enhancementLevel < -2) enhancementLevel = -2;\n            $('#enhancementLevel').text(enhancementLevel.toString());\n            plotImage();\n        }\n        function clearImage()\n        {\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);        \n            $('#snapshotTimeStamp').text('-');\n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var intensity = ibox / 8.0;\n                var pbox = 0.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(pbox.toString());\n            } \n            $('#pixelMaxBarPlot').hide();\n        }\n        function toggleSound()\n        {\n            audioAlarmOn = !audioAlarmOn;\n            if(audioAlarmOn)\n            {\n                $('#soundButtonId').css('color', 'black'); \n                $('#soundButtonId').css('background-color', 'green'); \n                $('#soundButtonId').text('On'); \n            }\n            else\n            {\n                $('#soundButtonId').css('color', 'black'); \n                $('#soundButtonId').css('background-color', 'grey'); \n                $('#soundButtonId').text('Off'); \n            }\n\n        }\n        function flipHorizontal()\n        {\n            if (device.flipHorizontal.value > 0)\n            {\n                device.flipHorizontal.value = 0;\n            }\n            else\n            {\n                device.flipHorizontal.value = 1;\n                \n            }\n            $('#flipHorizontalId').css('color', 'black'); \n            $('#flipHorizontalId').css('background-color', 'grey'); \n            $('#flipHorizontalId').text('?'); \n            var mqttMessage = \n            {\n                topic   : mqttDevice.project + '/' +  mqttDevice.deviceType + '/' +  mqttDevice.name + '/setting',\n                payload :  device\n            };\n            sendSettingToMqtt(mqttMessage);\n        }\n        function flipVertical()\n        {\n            if (device.flipVertical.value > 0)\n            {\n                device.flipVertical.value = 0;\n            }\n            else\n            {\n                device.flipVertical.value = 1;\n                \n            }\n            $('#flipVerticalId').css('color', 'black'); \n            $('#flipVerticalId').css('background-color', 'grey'); \n            $('#flipVerticalId').text('?'); \n            var mqttMessage = \n            {\n                topic   : mqttDevice.project + '/' +  mqttDevice.deviceType + '/' +  mqttDevice.name + '/setting',\n                payload :  device\n            };\n            sendSettingToMqtt(mqttMessage);\n        }\n        function setScalarValue(settingValue, attrName)\n        {\n            var settingAttr = device[attrName];\n            if ( (settingAttr.alarm.limits.lolo <= settingValue) && (settingValue <= settingAttr.alarm.limits.hihi) )\n            {\n                settingAttr.value = settingValue;\n                var mqttMessage = \n                {\n                    topic   : mqttDevice.project + '/' +  mqttDevice.deviceType + '/' +  mqttDevice.name + '/setting',\n                    payload :  device\n                };\n                sendSettingToMqtt(mqttMessage);\n            } \n            else\n            {\n                acknowledgeDialog('Acknowledge', 'Error', 'Entry outside range! (' + settingAttr.alarm.limits.lolo.toString() + '-' + settingAttr.alarm.limits.hihi.toString() + ' ' + settingAttr.unit);\n            }\n        }\n        function imageDelayChange()\n        {\n            imageDelayChanged = true;\n            $('#imageDelayButtonId').show();\n        }\n        function ultraSoundRangeChange()\n        {\n            ultraSoundRangeChanged = true;\n            $('#ultraSoundRangeButtonId').show();\n        }\n        function archiveMinTempChange()\n        {\n            archiveMinTempChanged = true;\n            $('#archiveMinTempButtonId').show();\n        }\n        function archivePixelPercentChange()\n        {\n            archivePixelPercentChanged = true;\n            $('#archivePixelPercentButtonId').show();\n        }\n        function imageDelay()\n        {\n            $('#imageDelayButtonId').hide();\n            if (isNaN($('#imageDelayInputId').val()))\n            {\n                imageDelayChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#imageDelayInputId').val()), 'imageDelay');\n            imageDelayChanged = false;\n        }\n        function ultraSoundRange()\n        {\n            $('#ultraSoundRangeButtonId').hide();\n            if (isNaN($('#ultraSoundRangeInputId').val()))\n            {\n                ultraSoundRangeChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#ultraSoundRangeInputId').val()), 'ultraSoundRange');\n            ultraSoundRangeChanged = false;\n        }\n        function archiveMinTemp()\n        {\n            $('#archiveMinTempButtonId').hide();\n            if (isNaN($('#archiveMinTempInputId').val()))\n            {\n                archiveMinTempChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#archiveMinTempInputId').val()), 'archiveMinTemp');\n            archiveMinTempChanged = false;\n        }\n        function archivePixelPercent()\n        {\n            $('#archivePixelPercentButtonId').hide();\n            if (isNaN($('#archivePixelPercentInputId').val()))\n            {\n                archivePixelPercentChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#archivePixelPercentInputId').val()), 'archivePixelPercent');\n            archivePixelPercentChanged = false;\n        }\n",
+        "template": "// Global Javascript\n        var plotConfig = \n        {\n            trace1Title : 'Temp (C)',\n            trace1Color : '#557a95',\n            trace1GridColor : '#beceda',\n            trace2Title : 'Distance (cm)',\n            trace2Color : '#f2a31f',\n            plotLength  : 600000,\n            width   : '',\n            height  :   '500',\n            htmlId  :   'historyStripChart'\n        };\n        let historyStripChart = new StripChart(plotConfig);\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var colorScale = true;\n        var enhancementLevel = 0;\n        var pgm = null;\n        var audioAlarm = new Audio('/audio/hold-your-horses.ogg');\n        var audioAlarmOn = true;\n        var imageDelayChanged = false;\n        var ultraSoundRangeChanged = false;\n        var archiveMinTempChanged = false;\n        var archivePixelPercentChanged = false;\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n            $('#imageDelayButtonId').hide();\n            $('#ultraSoundRangeButtonId').hide();\n            $('#archiveMinTempButtonId').hide();\n            $('#archivePixelPercentButtonId').hide();\n        }\n        function onWebSocketOpen()\n        {\n//            sendWebSocketMessageObject({topic : 'getLastImage',userID : userID});\n//            sendWebSocketMessageObject({topic : 'pingServer',userID : userID});\n//            setInterval(function(){sendWebSocketMessageObject({topic : 'pingServer',userID : userID});}, 10000);\n        }\n        function onWebSocketClose()\n        {\n            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        \n                    }\n                    break;\n                case 'lastImage':\n                    if (msg.userID == userID)\n                    {\n                        device = msg.payload;;\n                        if (device.imageData.value != null)\n                        {\n                            $('#snapshotTimeStamp').text(new Date(device.timeStamp).toLocaleString('en-SE', { timeZone: 'Europe/Stockholm' }));\n                            pgm = JSON.parse(JSON.stringify(device.imageData.value));\n                            plotImage();\n                            updatePixelMaxBarChart();\n                        }\n                    }\n                    break;\n                case 'getArchiveValues':\n                    if (msg.userID == userID)\n                    {\n                        if ((msg.payload.device.deviceType == restfulDevice.deviceType) && (msg.payload.device.name == restfulDevice.name) )\n                            putArchiveValues(msg.payload);\n                    }\n                    break;\n                case 'getJwtToken':\n                    if (msg.userID == userID) loadJwtToken(msg);\n                    break;\n                case 'settingAcknowledge':\n                    if (msg.userID == userID)\n                    {\n                        if (msg.payload != 'Success!') acknowledgeDialog('Acknowledge', 'Setting', msg.payload);\n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            $('#linkQualityId').text(device.linkQuality.value);\n            $('#signalLevelId').text(device.signalLevel.value);\n            if (!imageDelayChanged)$('#imageDelayInputId').val(device.imageDelay.value);\n            if (!ultraSoundRangeChanged)$('#ultraSoundRangeInputId').val(device.ultraSoundRange.value);\n            if (!archiveMinTempChanged)$('#archiveMinTempInputId').val(device.archiveMinTemp.value);\n            if (!archivePixelPercentChanged)$('#archivePixelPercentInputId').val(device.archivePixelPercent.value);\n            if (device.imageData.value != null)\n            {\n                historyStripChart.add3TracePoints(device.pixelMax.value, device.pixelMin.value, device.ultraSoundDistance.value);\n                $('#snapshotTimeStamp').text(new Date(device.timeStamp).toLocaleString('en-SE', { timeZone: 'Europe/Stockholm' }));\n                pgm = JSON.parse(JSON.stringify(device.imageData.value));\n                plotImage();\n                updatePixelMaxBarChart();\n                \n                var image1dArray = [];\n                var ipixel = 0;\n                var plow = (pgm.minval - 27315) / 100;\n                var phigh = (pgm.maxval - 27315) / 100;\n                if ((device.pixelMax.alarm.value == 2) || (device.pixelMax.alarm.value == 4))\n                {\n                    if (audioAlarmOn)\n                    {\n                        var playPromise = audioAlarm.play();\n                        if (playPromise !== undefined) \n                        {\n                            playPromise.then(_ => \n                            {\n                            // Automatic playback started!\n                            // Show playing UI.\n                            }).catch(error => \n                            {\n                            // Auto-play was prevented\n                            // Show paused UI.\n                            });\n                         }\n                    }\n                }\n                for (var irow = 0; irow < pgm.nrows; ++irow)\n                {\n                    for (var icol = 0; icol < pgm.ncols; ++icol)\n                    {\n                        image1dArray[ipixel] = (pgm.imageArray[irow][icol] / 256.0) * (phigh - plow) + plow;\n                         ++ipixel;\n                    }\n                }\n\n                var layout = {title: \"Temperature (C)\", xaxis: {title: \"Temperature (C)\"}, yaxis: {title: \"Count\"}};\n\n                Plotly.newPlot('pixelHistogramChart', [{x: image1dArray, type:'histogram',  autobinx: true }]);\n//              Plotly.newPlot('pixelHistogramChart', [{x: image1dArray, type:'histogram',  xbins: {size: 0.5,start: 0} }],layout);\n            }\n            else\n            {\n\n                historyStripChart.add1TracePoints(device.ultraSoundDistance.value);\n            }\n            \n            var buttonColor = 'green';\n            var buttonTextColor = 'black';\n            var buttonText = \"Off\";\n            if (device.flipHorizontal.value > 0) \n            {\n                buttonColor = 'red';\n                buttonText = 'On';\n            }\n            $('#flipHorizontalId').css('color', buttonTextColor); \n            $('#flipHorizontalId').css('background-color', buttonColor); \n            $('#flipHorizontalId').text(buttonText); \n\n            buttonColor = 'green';\n            buttonTextColor = 'black';\n            buttonText = \"Off\";\n            if (device.flipVertical.value > 0) \n            {\n                buttonColor = 'red';\n                buttonText = 'On';\n            }\n            $('#flipVerticalId').css('color', buttonTextColor); \n            $('#flipVerticalId').css('background-color', buttonColor); \n            $('#flipVerticalId').text(buttonText); \n        }\n        function plotImage()\n        {\n            var rgb = [];\n            var plow = (pgm.minval - 27315) / 100;\n            var phigh = (pgm.maxval - 27315) / 100;\n            var pdelta = phigh - plow;\n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var intensity = ibox / 8.0;\n                var pbox = Math.round(((phigh - plow) * intensity + plow) * 10.0) / 10.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(pbox.toString());\n                if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                if (colorScale)\n                {\n                    rgb = getRGB(intensity);\n                }\n                else\n                {\n                    rgb[0] = Math.floor(255 * intensity);\n                    rgb[1] = Math.floor(255 * intensity);\n                    rgb[2] = Math.floor(255 * intensity);\n                }\n                var style='width:88px;height:50px;background-color:' + 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                $('#box' + (ibox + 1).toString()).attr('style',style);\n            }\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var tipPointer = document.getElementById(\"tipPointer\");\n            var tipPointerContext = tipPointer.getContext(\"2d\");\n            var tip = document.getElementById(\"tip\");\n            var tipContext = tip.getContext(\"2d\");\n            tipContext.font = \"30px Arial\";\n            tipContext.fillStyle = \"cyan\";\n            tipPointerContext.fillStyle = \"cyan\";\n            if (colorScale) tipContext.fillStyle = \"black\";\n            if (colorScale) tipPointerContext.fillStyle = \"black\";\n            tipContext.textAlign = \"left\";\n\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            var rectWidth  = canvasWidth  / pgm.ncols;\n            var rectHeight = canvasHeight / pgm.nrows;\n            canvas.onmousemove = function (e) \n            {\n                var icol = Math.floor(e.layerX / rectWidth);\n                if (icol < 0) icol = 0;\n                if (icol >= pgm.ncols) icol = pgm.ncols - 1;\n                var irow = Math.floor((canvasHeight - e.layerY) / rectHeight);\n                if (irow < 0) irow = 0;\n                if (irow >= pgm.nrows) irow = pgm.nrows - 1;\n                var temp = Math.floor(100.0 * (pdelta * pgm.imageArray[irow][icol] / 256.0 + plow)) / 100;\n\n                tipPointer.style.top = (e.layerY  - tipPointer.height / 2).toString()  + \"px\";\n                tipPointer.style.left = (e.layerX - tipPointer.width / 2).toString() + \"px\";\n                tipPointerContext.clearRect(0, 0, tipPointer.width, tipPointer.height);\n                tipPointerContext.fillRect( 0, 0, tipPointer.width, tipPointer.height);\n\n                tip.style.top = (e.layerY - tip.height - tipPointer.height).toString()  + \"px\";\n                tip.style.left = (e.layerX).toString() + \"px\";\n                tipContext.clearRect(0, 0, tip.width, tip.height);\n                tipContext.fillText(temp.toString() + ' C', 0, 30);\n            };\n\n            for (var irow = 0; irow < pgm.nrows; ++irow)\n            {\n                for (var icol = 0; icol < pgm.ncols; ++icol)\n                {\n                    var intensity = pgm.imageArray[irow][icol] / 256.0;\n                    if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                    if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                    if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                    if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                    if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                    if (colorScale)\n                    {\n                        rgb = getRGB(intensity);\n                        rgb[0] = Math.floor(rgb[0]);\n                        rgb[1] = Math.floor(rgb[1]);\n                        rgb[2] = Math.floor(rgb[2]);\n                    }\n                    else\n                    {\n                        rgb[0] = Math.floor(255 * intensity);\n                        rgb[1] = Math.floor(255 * intensity);\n                        rgb[2] = Math.floor(255 * intensity);\n                    }\n                    canvasContext.fillStyle = 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                    if (intensity > 0.98) \n                    {\n                        canvasContext.fillStyle='magenta';\n                        if (colorScale) canvasContext.fillStyle='white';\n                    }\n\n                    canvasContext.fillRect(icol * rectWidth, canvasHeight - rectHeight - irow * rectHeight, rectWidth, rectHeight);\n                }    \n            }\n        }\n        function mouseLeftCanvas()\n        {\n            var tip = document.getElementById(\"tip\");\n            var tipContext = tip.getContext(\"2d\");\n            tipContext.clearRect(0, 0, tip.width, tip.height);\n            var tipPointer = document.getElementById(\"tipPointer\");\n            var tipPointerContext = tipPointer.getContext(\"2d\");\n            tipPointerContext.clearRect(0, 0, tipPointer.width, tipPointer.height);\n        }\n         function updatePixelMaxBarChart()\n        {\n            $('#pixelMaxBarPlot').show();\n            var pixelMaxBarConfig = \n                {\n                    lolo            : device.pixelMax.alarm.limits.lolo, \n                    low             : device.pixelMax.alarm.limits.low, \n                    high            : device.pixelMax.alarm.limits.high, \n                    hihi            : device.pixelMax.alarm.limits.hihi, \n                    value           : device.pixelMax.value, \n                    unit            : device.pixelMax.unit, \n                    textsize        : 38,\n                    label           : 'pixelMax', \n                    lowColor        : '#0000ff', \n                    mediumColor     : '#00ff00',\n                    highColor       : '#ff0000', \n                    backgroundColor : '#9eb5c7', \n                    labelColor      : '#000000', \n                    gridColor       : '#ffffff',\n                    height          : 200, \n                    htmlId          : 'pixelMaxBarPlot'\n                };\n            setHorzBarWidget(pixelMaxBarConfig);\n        }\n        function getRGB(intensity)\n        {\n          var rgb = [0,0,0];\n          if ( (0 <= intensity) && (intensity <= 0.25) )\n          {\n            rgb[0] = 0;\n            rgb[1] = Math.floor(255 * intensity * 4);    \n            rgb[2] = 255;\n          }\n          if ( (0.25 < intensity) && (intensity <= 0.50) )\n          {\n            rgb[0] = 0;\n            rgb[1] = 255;    \n            rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n          }\n          if ( (0.50 < intensity) && (intensity <= 0.75) )\n          {\n            rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n            rgb[1] = 255;    \n            rgb[2] = 0;\n          }\n          if ( (0.75 < intensity) && (intensity <= 1.0) )\n          {\n            rgb[0] = 255;\n            rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n            rgb[2] = 0;\n          }\n          return rgb;\n        }\n        function toggleColorScale()\n        {\n            colorScale = !colorScale;\n            if (colorScale)\n            {\n                $('#colorScaleButton').text('Color');\n            }\n            else\n            {\n                $('#colorScaleButton').text('Gray');\n            }\n            plotImage();\n        }\n        function toggleEnhancedScale(deltaEnhanced)\n        {\n            enhancementLevel = enhancementLevel + deltaEnhanced;\n            if (enhancementLevel >  2) enhancementLevel = 2;\n            if (enhancementLevel < -2) enhancementLevel = -2;\n            $('#enhancementLevel').text(enhancementLevel.toString());\n            plotImage();\n        }\n        function clearImage()\n        {\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);        \n            $('#snapshotTimeStamp').text('-');\n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var intensity = ibox / 8.0;\n                var pbox = 0.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(pbox.toString());\n            } \n            $('#pixelMaxBarPlot').hide();\n        }\n        function toggleSound()\n        {\n            audioAlarmOn = !audioAlarmOn;\n            if(audioAlarmOn)\n            {\n                $('#soundButtonId').css('color', 'black'); \n                $('#soundButtonId').css('background-color', 'green'); \n                $('#soundButtonId').text('On'); \n            }\n            else\n            {\n                $('#soundButtonId').css('color', 'black'); \n                $('#soundButtonId').css('background-color', 'grey'); \n                $('#soundButtonId').text('Off'); \n            }\n\n        }\n        function flipHorizontal()\n        {\n            if (device.flipHorizontal.value > 0)\n            {\n                device.flipHorizontal.value = 0;\n            }\n            else\n            {\n                device.flipHorizontal.value = 1;\n                \n            }\n            $('#flipHorizontalId').css('color', 'black'); \n            $('#flipHorizontalId').css('background-color', 'grey'); \n            $('#flipHorizontalId').text('?'); \n            var mqttMessage = \n            {\n                topic   : mqttDevice.project + '/' +  mqttDevice.deviceType + '/' +  mqttDevice.name + '/setting',\n                payload :  device\n            };\n            sendSettingToMqtt(mqttMessage);\n        }\n        function flipVertical()\n        {\n            if (device.flipVertical.value > 0)\n            {\n                device.flipVertical.value = 0;\n            }\n            else\n            {\n                device.flipVertical.value = 1;\n                \n            }\n            $('#flipVerticalId').css('color', 'black'); \n            $('#flipVerticalId').css('background-color', 'grey'); \n            $('#flipVerticalId').text('?'); \n            var mqttMessage = \n            {\n                topic   : mqttDevice.project + '/' +  mqttDevice.deviceType + '/' +  mqttDevice.name + '/setting',\n                payload :  device\n            };\n            sendSettingToMqtt(mqttMessage);\n        }\n        function setScalarValue(settingValue, attrName)\n        {\n            var settingAttr = device[attrName];\n            if ( (settingAttr.alarm.limits.lolo <= settingValue) && (settingValue <= settingAttr.alarm.limits.hihi) )\n            {\n                settingAttr.value = settingValue;\n                var mqttMessage = \n                {\n                    topic   : mqttDevice.project + '/' +  mqttDevice.deviceType + '/' +  mqttDevice.name + '/setting',\n                    payload :  device\n                };\n                sendSettingToMqtt(mqttMessage);\n            } \n            else\n            {\n                acknowledgeDialog('Acknowledge', 'Error', 'Entry outside range! (' + settingAttr.alarm.limits.lolo.toString() + '-' + settingAttr.alarm.limits.hihi.toString() + ' ' + settingAttr.unit);\n            }\n        }\n        function imageDelayChange()\n        {\n            imageDelayChanged = true;\n            $('#imageDelayButtonId').show();\n        }\n        function ultraSoundRangeChange()\n        {\n            ultraSoundRangeChanged = true;\n            $('#ultraSoundRangeButtonId').show();\n        }\n        function archiveMinTempChange()\n        {\n            archiveMinTempChanged = true;\n            $('#archiveMinTempButtonId').show();\n        }\n        function archivePixelPercentChange()\n        {\n            archivePixelPercentChanged = true;\n            $('#archivePixelPercentButtonId').show();\n        }\n        function imageDelay()\n        {\n            $('#imageDelayButtonId').hide();\n            if (isNaN($('#imageDelayInputId').val()))\n            {\n                imageDelayChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#imageDelayInputId').val()), 'imageDelay');\n            imageDelayChanged = false;\n        }\n        function ultraSoundRange()\n        {\n            $('#ultraSoundRangeButtonId').hide();\n            if (isNaN($('#ultraSoundRangeInputId').val()))\n            {\n                ultraSoundRangeChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#ultraSoundRangeInputId').val()), 'ultraSoundRange');\n            ultraSoundRangeChanged = false;\n        }\n        function archiveMinTemp()\n        {\n            $('#archiveMinTempButtonId').hide();\n            if (isNaN($('#archiveMinTempInputId').val()))\n            {\n                archiveMinTempChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#archiveMinTempInputId').val()), 'archiveMinTemp');\n            archiveMinTempChanged = false;\n        }\n        function archivePixelPercent()\n        {\n            $('#archivePixelPercentButtonId').hide();\n            if (isNaN($('#archivePixelPercentInputId').val()))\n            {\n                archivePixelPercentChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#archivePixelPercentInputId').val()), 'archivePixelPercent');\n            archivePixelPercentChanged = false;\n        }\n",
         "output": "str",
         "x": 650,
         "y": 80,
@@ -1011,7 +1016,9 @@
         "x": 460,
         "y": 320,
         "wires": [
-            []
+            [
+                "c40dd8f4.63a9d8"
+            ]
         ]
     },
     {
@@ -1143,8 +1150,7 @@
         "y": 640,
         "wires": [
             [
-                "f062c2f5.4fb63",
-                "620ca605.e38238"
+                "f062c2f5.4fb63"
             ],
             [],
             []
@@ -1160,7 +1166,7 @@
         "retain": "false",
         "broker": "516aef81.a2867",
         "x": 950,
-        "y": 580,
+        "y": 540,
         "wires": []
     },
     {
@@ -1291,8 +1297,8 @@
         "links": [
             "6c15c07a.68169"
         ],
-        "x": 1075,
-        "y": 1120,
+        "x": 715,
+        "y": 1220,
         "wires": []
     },
     {
@@ -1300,11 +1306,11 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "sendSettingToMqtt",
-        "func": "return {\n    topic   : msg.payload.mqttMessage.topic, \n    payload : msg.payload.mqttMessage.payload, \n    token   : msg.payload.token, \n    userID  : msg.payload.userID };\n",
+        "func": "return {\n    topic   : msg.payload.mqttMessage.topic, \n    payload : msg.payload.mqttMessage.payload, \n    userID  : msg.payload.userID };\n",
         "outputs": 1,
         "noerr": 0,
         "x": 590,
-        "y": 1120,
+        "y": 1220,
         "wires": [
             [
                 "58aa550c.06cb4c"
@@ -1334,7 +1340,7 @@
         "repair": false,
         "outputs": 2,
         "x": 410,
-        "y": 1120,
+        "y": 1220,
         "wires": [
             [
                 "3a1fb97e.c10786"
@@ -1353,7 +1359,7 @@
         "action": "",
         "pretty": false,
         "x": 290,
-        "y": 1120,
+        "y": 1220,
         "wires": [
             [
                 "f270bcda.23518"
@@ -1368,7 +1374,7 @@
         "server": "44b51478.9c022c",
         "client": "",
         "x": 120,
-        "y": 1120,
+        "y": 1220,
         "wires": [
             [
                 "75bcac45.dd63c4"
@@ -1415,8 +1421,8 @@
         "func": "msg.payload = 0;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 640,
-        "y": 520,
+        "x": 1240,
+        "y": 740,
         "wires": [
             [
                 "f8d673c5.5bd28"
@@ -1428,11 +1434,11 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "set to 1",
-        "func": "if (msg.payload.length < 1) return null;\nmsg.payload = 1;\nreturn msg;",
+        "func": "msg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 500,
-        "y": 460,
+        "x": 960,
+        "y": 720,
         "wires": [
             [
                 "78708c9a.23eac4",
@@ -1446,7 +1452,7 @@
         "z": "5f562f66.a301e",
         "name": "",
         "pauseType": "delay",
-        "timeout": "1",
+        "timeout": "2",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -1455,81 +1461,11 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 640,
-        "y": 480,
+        "x": 1100,
+        "y": 740,
         "wires": [
             [
                 "56b21d74.f13534"
-            ]
-        ]
-    },
-    {
-        "id": "f8d673c5.5bd28",
-        "type": "rpi-gpio out",
-        "z": "5f562f66.a301e",
-        "name": "Blue LED",
-        "pin": "35",
-        "set": true,
-        "level": "0",
-        "freq": "",
-        "out": "out",
-        "x": 820,
-        "y": 460,
-        "wires": []
-    },
-    {
-        "id": "583afec6.7dee4",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "set to 0",
-        "func": "msg.payload = 0;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 820,
-        "y": 1400,
-        "wires": [
-            [
-                "83563b17.c1c958"
-            ]
-        ]
-    },
-    {
-        "id": "b9fe4f39.4802b",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "set to 1",
-        "func": "msg.payload = 1;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 480,
-        "y": 1400,
-        "wires": [
-            [
-                "813910c2.7a6ad",
-                "83563b17.c1c958"
-            ]
-        ]
-    },
-    {
-        "id": "813910c2.7a6ad",
-        "type": "delay",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "1",
-        "timeoutUnits": "seconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "x": 680,
-        "y": 1400,
-        "wires": [
-            [
-                "583afec6.7dee4"
             ]
         ]
     },
@@ -1542,217 +1478,8 @@
         "outputs": 0,
         "noerr": 0,
         "x": 580,
-        "y": 1180,
+        "y": 1280,
         "wires": []
-    },
-    {
-        "id": "93c753e9.c8707",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "set to 0",
-        "func": "msg.payload = 0;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 620,
-        "y": 1520,
-        "wires": [
-            [
-                "f10c4981.8f8b28",
-                "83563b17.c1c958"
-            ]
-        ]
-    },
-    {
-        "id": "a6981dbe.2292",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "set to 1",
-        "func": "msg.payload = 1;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 480,
-        "y": 1440,
-        "wires": [
-            [
-                "ae6cad36.b9871",
-                "83563b17.c1c958"
-            ]
-        ]
-    },
-    {
-        "id": "ae6cad36.b9871",
-        "type": "delay",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "100",
-        "timeoutUnits": "milliseconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "x": 570,
-        "y": 1480,
-        "wires": [
-            [
-                "93c753e9.c8707"
-            ]
-        ]
-    },
-    {
-        "id": "83563b17.c1c958",
-        "type": "rpi-gpio out",
-        "z": "5f562f66.a301e",
-        "name": "Yellow LED",
-        "pin": "33",
-        "set": true,
-        "level": "0",
-        "freq": "",
-        "out": "out",
-        "x": 1250,
-        "y": 1600,
-        "wires": []
-    },
-    {
-        "id": "501ad6fa.f091e8",
-        "type": "inject",
-        "z": "5f562f66.a301e",
-        "name": "2 sec",
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "repeat": "2",
-        "crontab": "",
-        "once": true,
-        "onceDelay": "2",
-        "x": 130,
-        "y": 1440,
-        "wires": [
-            [
-                "ae8390fb.efa5b"
-            ]
-        ]
-    },
-    {
-        "id": "ae8390fb.efa5b",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Check for connection",
-        "func": "if ((new Date().getTime() - global.get('websocketPing')) < 9000)\n{\n    return [null,msg,null];\n}\nelse\n{\n    if (global.get('signalLevel') > -100)\n    {\n        return [msg, null, null];\n    }\n    else\n    {\n        return [null,null,msg]\n    }\n}\nreturn [null,null,null];\n",
-        "outputs": 3,
-        "noerr": 0,
-        "x": 300,
-        "y": 1440,
-        "wires": [
-            [
-                "b9fe4f39.4802b"
-            ],
-            [
-                "a6981dbe.2292"
-            ],
-            [
-                "ff1f9003.0e333"
-            ]
-        ]
-    },
-    {
-        "id": "ff1f9003.0e333",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "set to 1",
-        "func": "msg.payload = 1;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 820,
-        "y": 1720,
-        "wires": [
-            [
-                "83563b17.c1c958"
-            ]
-        ]
-    },
-    {
-        "id": "f3e94a0d.2a3758",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "set to 1",
-        "func": "msg.payload = 1;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 700,
-        "y": 1600,
-        "wires": [
-            [
-                "83563b17.c1c958",
-                "10ff2d41.d8fa73"
-            ]
-        ]
-    },
-    {
-        "id": "f10c4981.8f8b28",
-        "type": "delay",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "100",
-        "timeoutUnits": "milliseconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "x": 670,
-        "y": 1560,
-        "wires": [
-            [
-                "f3e94a0d.2a3758"
-            ]
-        ]
-    },
-    {
-        "id": "10ff2d41.d8fa73",
-        "type": "delay",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "100",
-        "timeoutUnits": "milliseconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "x": 770,
-        "y": 1640,
-        "wires": [
-            [
-                "cd4dd94a.352328",
-                "83563b17.c1c958"
-            ]
-        ]
-    },
-    {
-        "id": "cd4dd94a.352328",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "set to 0",
-        "func": "msg.payload = 0;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 820,
-        "y": 1680,
-        "wires": [
-            [
-                "83563b17.c1c958"
-            ]
-        ]
     },
     {
         "id": "a59831a8.7ff9",
@@ -1806,8 +1533,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 740,
-        "y": 880,
+        "x": 800,
+        "y": 940,
         "wires": [
             [
                 "5fe1f713.dae2a8"
@@ -1882,7 +1609,7 @@
         "fieldType": "msg",
         "format": "javascript",
         "syntax": "mustache",
-        "template": "// StripChart Widget\n        class StripChart\n        {\n           constructor(plotConfig) \n            {\n                this.plotConfig = plotConfig;\n                this.plotStartTime = new Date().getTime();\n                this.layout =\n                {\n                    showlegend  : true,\n                    legend      : { x: 0, y: 1.15},\n                    height      : plotConfig.height,\n                    width       : plotConfig.width,\n                    xaxis       :\n                    {\n//                        title: 'Seconds since ' + new Date(this.plotStartTime).toLocaleString(),\n                        type: 'date'\n                    },\n                    yaxis:\n                    {\n                        title           : plotConfig.trace1Title,\n                        titlefont       : {color: plotConfig.trace1Color},\n                        tickfont        : {color:plotConfig.trace1Color},\n                        gridcolor       : plotConfig.trace1GridColor,\n                        zerolinecolor   : plotConfig.trace1GridColor,\n                        linecolor       : plotConfig.trace1GridColor,\n//                        range: [0, 2]\n        \n                    },\n                    yaxis2:\n                    {\n                        title           : plotConfig.trace2Title,\n                        titlefont       : {color: plotConfig.trace2Color},\n                        tickfont        : {color:plotConfig.trace2Color},\n                        gridcolor       : plotConfig.trace2GridColor,\n                        zerolinecolor   : plotConfig.trace2GridColor,\n                        linecolor       : plotConfig.trace2GridColor,\n                        overlaying: 'y',\n                        side: 'right',\n//                        range: [0, 2]\n                    },\n                    margin: \n                        {\n                            t: 30, //top margin\n        //                    l: 0, //left margin\n        //                    r: 0, //right margin\n        //                    b: 20 //bottom margin\n                        },\n                };\n                this.trace1 = \n                {\n                    x: [],\n                    y: [],\n                    name: 'Max Temp',\n                    yaxis: 'y1',\n                    type: 'scatter',\n                    mode: 'markers',\n                    marker: {\n                        color: 'red',\n                        size: 10,\n                        symbol: 'circle'\n                    }\n                };\n                this.trace2 = \n                {\n                    x: [],\n                    y: [],\n                    name: 'Min Temp',\n                    yaxis: 'y1',\n                    type: 'scatter',\n                    mode: 'markers',\n                    marker: {\n                        color: 'green',\n                        size: 10,\n                        symbol: 'square'\n                    }\n                };\n                this.trace3 = \n                {\n                    x: [],\n                    y: [],\n                    name: 'Distance',\n                    yaxis: 'y2',\n                    type: 'scatter',\n                    mode: 'markers',\n                    marker: {\n                        color: this.plotConfig.trace2Color,\n                        size: 5,\n                        symbol: 'diamond'\n                    }\n                };\n            }\n            add1TracePoints(trace3Pt)\n            {\n                var now = new Date().getTime();\n                var plotBeginning = now - this.plotConfig.plotLength;\n                var removeDone = false;\n                while(!removeDone)\n                {\n                    if (this.trace1.x[0] < plotBeginning)\n                    {\n                        this.trace1.x.shift();\n                        this.trace1.y.shift();\n                    }\n                    else\n                    {\n                        removeDone = true;\n                    }\n                }\n                removeDone = false;\n                while(!removeDone)\n                {\n                    if (this.trace2.x[0] < plotBeginning)\n                    {\n                        this.trace2.x.shift();\n                        this.trace2.y.shift();\n                    }\n                    else\n                    {\n                        removeDone = true;\n                    }\n                }\n                removeDone = false;\n                while(!removeDone)\n                {\n                    if (this.trace3.x[0] < plotBeginning)\n                    {\n                        this.trace3.x.shift();\n                        this.trace3.y.shift();\n                    }\n                    else\n                    {\n                        removeDone = true;\n                    }\n                }\n        \n                this.trace3.x.push(now);\n                this.trace3.y.push(trace3Pt);\n                Plotly.newPlot(this.plotConfig.htmlId, [this.trace1, this.trace2, this.trace3], this.layout);\n            }\n            add3TracePoints(trace1Pt, trace2Pt, trace3Pt)\n            {\n                var now = new Date().getTime();\n                var plotBeginning = now - this.plotConfig.plotLength;\n                var removeDone = false;\n                while(!removeDone)\n                {\n                    if (this.trace1.x[0] < plotBeginning)\n                    {\n                        this.trace1.x.shift();\n                        this.trace1.y.shift();\n                    }\n                    else\n                    {\n                        removeDone = true;\n                    }\n                }\n                removeDone = false;\n                while(!removeDone)\n                {\n                    if (this.trace2.x[0] < plotBeginning)\n                    {\n                        this.trace2.x.shift();\n                        this.trace2.y.shift();\n                    }\n                    else\n                    {\n                        removeDone = true;\n                    }\n                }\n                removeDone = false;\n                while(!removeDone)\n                {\n                    if (this.trace3.x[0] < plotBeginning)\n                    {\n                        this.trace3.x.shift();\n                        this.trace3.y.shift();\n                    }\n                    else\n                    {\n                        removeDone = true;\n                    }\n                }\n        \n                this.trace1.x.push(now);\n                this.trace1.y.push(trace1Pt);\n                this.trace2.x.push(now);\n                this.trace2.y.push(trace2Pt);\n                this.trace3.x.push(now);\n                this.trace3.y.push(trace3Pt);\n                Plotly.newPlot(this.plotConfig.htmlId, [this.trace1, this.trace2, this.trace3], this.layout);\n            }\n        }\n",
+        "template": "// StripChart Widget\n        class StripChart\n        {\n           constructor(plotConfig) \n            {\n                this.plotConfig = plotConfig;\n                this.plotStartTime = new Date().getTime();\n                this.layout =\n                {\n                    showlegend  : true,\n                    legend      : { x: 0, y: 1.15},\n                    height      : plotConfig.height,\n                    width       : plotConfig.width,\n                    xaxis       :\n                    {\n//                        title: 'Seconds since ' + new Date(this.plotStartTime).toLocaleString(),\n                        type: 'date'\n                    },\n                    yaxis:\n                    {\n                        title           : plotConfig.trace1Title,\n                        titlefont       : {color: plotConfig.trace1Color},\n                        tickfont        : {color:plotConfig.trace1Color},\n                        gridcolor       : plotConfig.trace1GridColor,\n                        zerolinecolor   : plotConfig.trace1GridColor,\n                        linecolor       : plotConfig.trace1GridColor,\n//                        range: [0, 2]\n        \n                    },\n                    yaxis2:\n                    {\n                        title           : plotConfig.trace2Title,\n                        titlefont       : {color: plotConfig.trace2Color},\n                        tickfont        : {color:plotConfig.trace2Color},\n                        gridcolor       : plotConfig.trace2GridColor,\n                        zerolinecolor   : plotConfig.trace2GridColor,\n                        linecolor       : plotConfig.trace2GridColor,\n                        overlaying: 'y',\n                        side: 'right',\n//                        range: [0, 2]\n                    },\n                    margin: \n                        {\n                            t: 30, //top margin\n        //                    l: 0, //left margin\n        //                    r: 0, //right margin\n        //                    b: 20 //bottom margin\n                        },\n                };\n                this.trace1 = \n                {\n                    x: [],\n                    y: [],\n                    name: 'Max Temp',\n                    yaxis: 'y1',\n                    type: 'scatter',\n                    mode: 'markers',\n                    marker: {\n                        color: 'red',\n                        size: 10,\n                        symbol: 'circle'\n                    }\n                };\n                this.trace2 = \n                {\n                    x: [],\n                    y: [],\n                    name: 'Min Temp',\n                    yaxis: 'y1',\n                    type: 'scatter',\n                    mode: 'markers',\n                    marker: {\n                        color: 'green',\n                        size: 10,\n                        symbol: 'square'\n                    }\n                };\n                this.trace3 = \n                {\n                    x: [],\n                    y: [],\n                    name: 'Distance',\n                    yaxis: 'y2',\n                    type: 'scatter',\n                    mode: 'markers',\n                    marker: {\n                        color: this.plotConfig.trace2Color,\n                        size: 5,\n                        symbol: 'diamond'\n                    }\n                };\n            }\n            add1TracePoints(trace3Pt)\n            {\n                var now = new Date().getTime();\n                var plotBeginning = now - this.plotConfig.plotLength;\n                var removeDone = false;\n                while(!removeDone && (this.trace1.x.length > 0))\n                {\n                    if (this.trace1.x[0] < plotBeginning)\n                    {\n                        this.trace1.x.shift();\n                        this.trace1.y.shift();\n                    }\n                    else\n                    {\n                        removeDone = true;\n                    }\n                }\n                removeDone = false;\n                while(!removeDone && (this.trace2.x.length > 0))\n                {\n                    if (this.trace2.x[0] < plotBeginning)\n                    {\n                        this.trace2.x.shift();\n                        this.trace2.y.shift();\n                    }\n                    else\n                    {\n                        removeDone = true;\n                    }\n                }\n                removeDone = false;\n                while(!removeDone && (this.trace3.x.length > 0))\n                {\n                    if (this.trace3.x[0] < plotBeginning)\n                    {\n                        this.trace3.x.shift();\n                        this.trace3.y.shift();\n                    }\n                    else\n                    {\n                        removeDone = true;\n                    }\n                }\n        \n                this.trace3.x.push(now);\n                this.trace3.y.push(trace3Pt);\n                if (this.trace1.x.length > 0)\n                {\n                    Plotly.newPlot(this.plotConfig.htmlId, [this.trace1, this.trace2, this.trace3], this.layout);\n                }\n                else\n                {\n                    Plotly.newPlot(this.plotConfig.htmlId, [this.trace3], this.layout);\n                }\n            }\n            add3TracePoints(trace1Pt, trace2Pt, trace3Pt)\n            {\n                var now = new Date().getTime();\n                var plotBeginning = now - this.plotConfig.plotLength;\n                var removeDone = false;\n                while(!removeDone)\n                {\n                    if (this.trace1.x[0] < plotBeginning)\n                    {\n                        this.trace1.x.shift();\n                        this.trace1.y.shift();\n                    }\n                    else\n                    {\n                        removeDone = true;\n                    }\n                }\n                removeDone = false;\n                while(!removeDone)\n                {\n                    if (this.trace2.x[0] < plotBeginning)\n                    {\n                        this.trace2.x.shift();\n                        this.trace2.y.shift();\n                    }\n                    else\n                    {\n                        removeDone = true;\n                    }\n                }\n                removeDone = false;\n                while(!removeDone)\n                {\n                    if (this.trace3.x[0] < plotBeginning)\n                    {\n                        this.trace3.x.shift();\n                        this.trace3.y.shift();\n                    }\n                    else\n                    {\n                        removeDone = true;\n                    }\n                }\n        \n                this.trace1.x.push(now);\n                this.trace1.y.push(trace1Pt);\n                this.trace2.x.push(now);\n                this.trace2.y.push(trace2Pt);\n                this.trace3.x.push(now);\n                this.trace3.y.push(trace3Pt);\n                Plotly.newPlot(this.plotConfig.htmlId, [this.trace1, this.trace2, this.trace3], this.layout);\n            }\n        }\n",
         "output": "str",
         "x": 680,
         "y": 120,
@@ -1916,7 +1643,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Check  Target Distance",
-        "func": "if (flow.get('device') == undefined) return [null,null];\nif (flow.get('resettingCamera') == undefined) return [null,null];\nflow.get('device').archiveData.value = 0;\nflow.set('pgm',null);\nflow.get('device').ultraSoundDistance.value = msg.payload;\nvar minTime = flow.get('device').imageDelay.value;\nvar range = flow.get('device').ultraSoundRange.value;\nvar lastTriggerTime = context.get('lastTriggerTime');\nif (lastTriggerTime == undefined) \n{\n    lastTriggerTime = new Date().getTime();\n    context.set('lastTriggerTime',lastTriggerTime);\n}\nvar nowTime = new Date().getTime();\nif ((nowTime - lastTriggerTime) > minTime)\n{\n    if (msg.payload < range)\n    {\n        context.set('lastTriggerTime',nowTime);\n        if (!flow.get('resettingCamera')) return [msg, null];\n    }\n}\nreturn [null, msg];",
+        "func": "if (flow.get('device') == undefined) return [null,null];\nif (flow.get('resettingCamera') == undefined) return [null,null];\nflow.get('device').archiveData.value = 0;\nflow.set('pgm',null);\nflow.get('device').ultraSoundDistance.value = msg.payload;\nvar minTime = flow.get('device').imageDelay.value;\nvar range = flow.get('device').ultraSoundRange.value;\n\nvar lastImageTime = flow.get('lastImageTime');\nif (lastImageTime == undefined) \n{\n    lastImageTime = new Date().getTime();\n    flow.set('lastImageTime',lastImageTime);\n}\nvar nowTime = new Date().getTime();\nif ((nowTime - lastImageTime) > minTime)\n{\n    if (msg.payload < range)\n    {\n        if (!flow.get('resettingCamera')) return [msg, null];\n    }\n}\nreturn [null, msg];",
         "outputs": 2,
         "noerr": 0,
         "x": 480,
@@ -1999,7 +1726,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Initialize Stuff",
-        "func": "flow.set('resettingCamera',true);\nreturn msg;",
+        "func": "flow.set('resettingCamera',true);\nflow.set('lastImageTime',new Date().getTime());\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "x": 270,
@@ -2018,8 +1745,8 @@
         "func": "flow.set('resettingCamera',false);\nreturn msg;",
         "outputs": 0,
         "noerr": 0,
-        "x": 1890,
-        "y": 880,
+        "x": 1950,
+        "y": 940,
         "wires": []
     },
     {
@@ -2032,8 +1759,8 @@
         "level": "0",
         "freq": "",
         "out": "out",
-        "x": 1720,
-        "y": 760,
+        "x": 1600,
+        "y": 640,
         "wires": []
     },
     {
@@ -2044,8 +1771,8 @@
         "func": "var burstCount = context.get('burstCount');\nif (burstCount == undefined) burstCount = 0;\nif (msg.topic == 'tooHotAlarm') burstCount = 0;\n++burstCount;\ncontext.set('burstCount',burstCount)\nif (burstCount < 20) return msg;\nreturn null;",
         "outputs": 1,
         "noerr": 0,
-        "x": 1100,
-        "y": 760,
+        "x": 980,
+        "y": 640,
         "wires": [
             [
                 "b47bb87.ee68148",
@@ -2061,8 +1788,8 @@
         "func": "msg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 1460,
-        "y": 760,
+        "x": 1340,
+        "y": 640,
         "wires": [
             [
                 "efc84a31.d4d1e8"
@@ -2084,8 +1811,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 1290,
-        "y": 800,
+        "x": 1170,
+        "y": 680,
         "wires": [
             [
                 "3b27ec2a.410934"
@@ -2100,8 +1827,8 @@
         "func": "return {topic:'redLed',payload:0};",
         "outputs": 1,
         "noerr": 0,
-        "x": 1460,
-        "y": 800,
+        "x": 1340,
+        "y": 680,
         "wires": [
             [
                 "efc84a31.d4d1e8",
@@ -2124,8 +1851,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 1290,
-        "y": 760,
+        "x": 1170,
+        "y": 640,
         "wires": [
             [
                 "51f565be.01b09c"
@@ -2735,8 +2462,8 @@
         "timer": "",
         "oldrc": false,
         "name": "setFfcStateToManual",
-        "x": 1200,
-        "y": 880,
+        "x": 1260,
+        "y": 940,
         "wires": [
             [
                 "34b6f055.70dd4"
@@ -2756,8 +2483,8 @@
         "timer": "",
         "oldrc": false,
         "name": "reboot",
-        "x": 870,
-        "y": 880,
+        "x": 930,
+        "y": 940,
         "wires": [
             [
                 "4105c23f.1181bc"
@@ -2781,8 +2508,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 1020,
-        "y": 880,
+        "x": 1080,
+        "y": 940,
         "wires": [
             [
                 "1cd59f0.d6f2e61"
@@ -2804,8 +2531,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 1400,
-        "y": 880,
+        "x": 1460,
+        "y": 940,
         "wires": [
             [
                 "844f0fc.e7ab8f"
@@ -2823,8 +2550,8 @@
         "timer": "",
         "oldrc": false,
         "name": "performFfc",
-        "x": 1550,
-        "y": 880,
+        "x": 1610,
+        "y": 940,
         "wires": [
             [
                 "fcf0c780.08c1d8"
@@ -2848,8 +2575,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 1720,
-        "y": 880,
+        "x": 1780,
+        "y": 940,
         "wires": [
             [
                 "fd6e82bc.30235"
@@ -2868,8 +2595,8 @@
         "crontab": "",
         "once": true,
         "onceDelay": "60",
-        "x": 1020,
-        "y": 980,
+        "x": 1000,
+        "y": 1040,
         "wires": [
             [
                 "1ee58b30.404be5"
@@ -2884,8 +2611,8 @@
         "func": "flow.set('resettingCamera',true);\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 1210,
-        "y": 980,
+        "x": 1190,
+        "y": 1040,
         "wires": [
             [
                 "808c8caf.d76fb"
@@ -2907,8 +2634,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 1560,
-        "y": 960,
+        "x": 1540,
+        "y": 1020,
         "wires": [
             [
                 "bef6edc2.3d633"
@@ -2926,8 +2653,8 @@
         "timer": "",
         "oldrc": false,
         "name": "performFfc",
-        "x": 1370,
-        "y": 980,
+        "x": 1350,
+        "y": 1040,
         "wires": [
             [
                 "2fcf61df.b03cce"
@@ -2944,8 +2671,156 @@
         "func": "flow.set('resettingCamera',false);\nreturn msg;",
         "outputs": 0,
         "noerr": 0,
-        "x": 1740,
-        "y": 960,
+        "x": 1720,
+        "y": 1020,
         "wires": []
+    },
+    {
+        "id": "ad74465e.369b88",
+        "type": "rpi-gpio out",
+        "z": "5f562f66.a301e",
+        "name": "Yellow LED",
+        "pin": "33",
+        "set": true,
+        "level": "0",
+        "freq": "",
+        "out": "out",
+        "x": 1410,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "f8d673c5.5bd28",
+        "type": "rpi-gpio out",
+        "z": "5f562f66.a301e",
+        "name": "Blue LED",
+        "pin": "35",
+        "set": true,
+        "level": "0",
+        "freq": "",
+        "out": "out",
+        "x": 1400,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "cf253b68.57e198",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 1",
+        "func": "msg.payload = 1;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1240,
+        "y": 800,
+        "wires": [
+            [
+                "ad74465e.369b88"
+            ]
+        ]
+    },
+    {
+        "id": "247ec1cc.5f8a1e",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 0",
+        "func": "msg.payload = 0;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 960,
+        "y": 780,
+        "wires": [
+            [
+                "168951fc.8f349e",
+                "ad74465e.369b88"
+            ]
+        ]
+    },
+    {
+        "id": "168951fc.8f349e",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "2",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 1100,
+        "y": 800,
+        "wires": [
+            [
+                "cf253b68.57e198"
+            ]
+        ]
+    },
+    {
+        "id": "5615880c.5e0d98",
+        "type": "inject",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "topic": "",
+        "payload": "1",
+        "payloadType": "num",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "1",
+        "x": 1090,
+        "y": 840,
+        "wires": [
+            [
+                "cf253b68.57e198"
+            ]
+        ]
+    },
+    {
+        "id": "c40dd8f4.63a9d8",
+        "type": "link out",
+        "z": "3f2da72f.995ab8",
+        "name": "Get Signal Quality out",
+        "links": [
+            "6d0d620b.cc2c0c"
+        ],
+        "x": 595,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "6d0d620b.cc2c0c",
+        "type": "link in",
+        "z": "5f562f66.a301e",
+        "name": "Check Target distance in",
+        "links": [
+            "c40dd8f4.63a9d8"
+        ],
+        "x": 135,
+        "y": 1060,
+        "wires": [
+            [
+                "4476ac96.b88ec4"
+            ]
+        ]
+    },
+    {
+        "id": "4476ac96.b88ec4",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Distance 4 m",
+        "func": "return {topic:'targetDistance',payload:400};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 250,
+        "y": 1060,
+        "wires": [
+            [
+                "e2249214.f4375"
+            ]
+        ]
     }
 ]
