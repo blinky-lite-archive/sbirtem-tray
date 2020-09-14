@@ -396,7 +396,7 @@
         "wires": [
             [
                 "a3ff8e5.b79de7",
-                "e3701624.e0da58"
+                "964a3443.6e7ed8"
             ],
             [
                 "16929cec.74f3b3",
@@ -1175,8 +1175,8 @@
         "qos": "0",
         "retain": "false",
         "broker": "516aef81.a2867",
-        "x": 950,
-        "y": 540,
+        "x": 970,
+        "y": 520,
         "wires": []
     },
     {
@@ -2875,7 +2875,7 @@
         "fieldType": "msg",
         "format": "javascript",
         "syntax": "mustache",
-        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var pgm = null;\n        var audioAlarm = new Audio('/audio/hold-your-horses.ogg');\n        var audioAlarmOn = true;\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n        }\n        function onWebSocketOpen()\n        {\n        }\n        function onWebSocketClose()\n        {\n            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        \n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            $('#snapshotTimeStamp').text(new Date(device.timeStamp).toLocaleString('en-SE', { timeZone: 'Europe/Stockholm' }));\n            $('#maxTemp').text(device.pixelMax.toString() + \" C\");\n            setTimeout(function ()\n                {\n                    $('#snapshotTimeStamp').text('');\n                    $('#maxTemp').text('');\n                }, 5000);\n        }\n",
+        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var pgm = null;\n        var audioAlarm = new Audio('/audio/hold-your-horses.ogg');\n        var audioAlarmOn = true;\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n        }\n        function onWebSocketOpen()\n        {\n        }\n        function onWebSocketClose()\n        {\n            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        \n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            $('#snapshotTimeStamp').text(new Date(device.timeStamp).toLocaleString('en-SE', { timeZone: 'Europe/Stockholm' }));\n            $('#maxTemp').text(device.pixelMax.toString() + \" C\");\n        }\n",
         "output": "str",
         "x": 630,
         "y": 540,
@@ -2949,8 +2949,8 @@
         "name": "/simple/websocket",
         "server": "7168c499.ac148c",
         "client": "",
-        "x": 1250,
-        "y": 480,
+        "x": 1330,
+        "y": 560,
         "wires": []
     },
     {
@@ -3029,5 +3029,28 @@
         "x": 870,
         "y": 460,
         "wires": []
+    },
+    {
+        "id": "964a3443.6e7ed8",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "200",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 790,
+        "y": 520,
+        "wires": [
+            [
+                "e3701624.e0da58"
+            ]
+        ]
     }
 ]
