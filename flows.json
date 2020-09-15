@@ -262,13 +262,6 @@
         "wholemsg": "false"
     },
     {
-        "id": "7168c499.ac148c",
-        "type": "websocket-listener",
-        "z": "",
-        "path": "/simple/websocket",
-        "wholemsg": "false"
-    },
-    {
         "id": "5902d0c0.241a6",
         "type": "file",
         "z": "5f562f66.a301e",
@@ -396,7 +389,7 @@
         "wires": [
             [
                 "a3ff8e5.b79de7",
-                "964a3443.6e7ed8"
+                "e3701624.e0da58"
             ],
             [
                 "16929cec.74f3b3",
@@ -432,12 +425,11 @@
         "func": "var mqttArray = msg.topic.split('/');\nvar device = \n{\n    project     : mqttArray[0],\n    deviceType  : mqttArray[1],\n    name        : mqttArray[2],\n    prop        : mqttArray[3],\n};\nreturn {topic : msg.topic, payload:{topic:'readings', mqttDevice : device, payload:msg.payload}};",
         "outputs": 1,
         "noerr": 0,
-        "x": 950,
-        "y": 600,
+        "x": 970,
+        "y": 560,
         "wires": [
             [
-                "107beeed.934ed1",
-                "27f51732.7c03a8"
+                "107beeed.934ed1"
             ]
         ]
     },
@@ -449,7 +441,7 @@
         "server": "44b51478.9c022c",
         "client": "",
         "x": 1150,
-        "y": 600,
+        "y": 560,
         "wires": []
     },
     {
@@ -1176,7 +1168,7 @@
         "retain": "false",
         "broker": "516aef81.a2867",
         "x": 970,
-        "y": 520,
+        "y": 500,
         "wires": []
     },
     {
@@ -2830,226 +2822,6 @@
         "wires": [
             [
                 "e2249214.f4375"
-            ]
-        ]
-    },
-    {
-        "id": "96b55c63.011d",
-        "type": "http in",
-        "z": "c4285970.3276d8",
-        "name": "/simple",
-        "url": "/simple",
-        "method": "get",
-        "upload": false,
-        "swaggerDoc": "",
-        "x": 130,
-        "y": 540,
-        "wires": [
-            [
-                "897a0864.657d58"
-            ]
-        ]
-    },
-    {
-        "id": "897a0864.657d58",
-        "type": "function",
-        "z": "c4285970.3276d8",
-        "name": "Set Name And Device Type",
-        "func": "msg.payload['script'] = {};\nmsg.payload['script']['name'] = global.get('deviceNameA')\nmsg.payload['script']['deviceType'] = global.get('deviceTypeA');\nmsg.payload['script']['project'] = global.get('project');\nreturn msg;\n",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 340,
-        "y": 540,
-        "wires": [
-            [
-                "6bf5fe0a.62de6"
-            ]
-        ]
-    },
-    {
-        "id": "6bf5fe0a.62de6",
-        "type": "template",
-        "z": "c4285970.3276d8",
-        "name": "script.global",
-        "field": "payload.script.global",
-        "fieldType": "msg",
-        "format": "javascript",
-        "syntax": "mustache",
-        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var pgm = null;\n        var audioAlarm = new Audio('/audio/hold-your-horses.ogg');\n        var audioAlarmOn = true;\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n        }\n        function onWebSocketOpen()\n        {\n        }\n        function onWebSocketClose()\n        {\n            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        \n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            $('#snapshotTimeStamp').text(new Date(device.timeStamp).toLocaleString('en-SE', { timeZone: 'Europe/Stockholm' }));\n            $('#maxTemp').text(device.pixelMax.toString() + \" C\");\n        }\n",
-        "output": "str",
-        "x": 630,
-        "y": 540,
-        "wires": [
-            [
-                "cb9b6c0e.d17a4"
-            ]
-        ]
-    },
-    {
-        "id": "cb9b6c0e.d17a4",
-        "type": "template",
-        "z": "c4285970.3276d8",
-        "name": "javascript",
-        "field": "payload.javascript",
-        "fieldType": "msg",
-        "format": "javascript",
-        "syntax": "mustache",
-        "template": "{{{payload.script.stripChartWidget}}}\n{{{payload.script.global}}}\n{{{payload.script.horzbarWidget}}}\n{{{payload.script.editDevice}}}\n{{{payload.script.dangerZone}}}\n",
-        "output": "str",
-        "x": 620,
-        "y": 580,
-        "wires": [
-            [
-                "c951e100.d91ef"
-            ]
-        ]
-    },
-    {
-        "id": "4f404fdf.0ddb6",
-        "type": "template",
-        "z": "c4285970.3276d8",
-        "name": "body",
-        "field": "payload.body",
-        "fieldType": "msg",
-        "format": "html",
-        "syntax": "mustache",
-        "template": "    <div width=\"100%\">\n        <div class='row' style='padding-bottom: 10px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.display}}}\n            </div>\n        </div>\n    </div>\n",
-        "output": "str",
-        "x": 830,
-        "y": 580,
-        "wires": [
-            [
-                "23cb42c3.1c61de"
-            ]
-        ]
-    },
-    {
-        "id": "c951e100.d91ef",
-        "type": "template",
-        "z": "c4285970.3276d8",
-        "name": "html.display",
-        "field": "payload.html.display",
-        "fieldType": "msg",
-        "format": "html",
-        "syntax": "mustache",
-        "template": "<!-- Dashboard HTML -->\n                <div class=\"container-fluid \" align=\"center\" style='padding-top: 0px;'>\n                    <table width='100%'>\n                        <tr>\n                            <td width='100%' align='center'>\n                                <span  style='font-size:500%; font-weight:900; color:white' id='snapshotTimeStamp'></span>\n                            </td>\n                        </tr>\n                        <tr></tr>\n                        <tr>\n                            <td width='100%' align='center'>\n                                <span  style='font-size:900%; font-weight:900; color:blue' id='maxTemp'></span>\n                            </td>\n                        </tr>\n                    </table>\n                </div>\n",
-        "output": "str",
-        "x": 850,
-        "y": 540,
-        "wires": [
-            [
-                "4f404fdf.0ddb6"
-            ]
-        ]
-    },
-    {
-        "id": "e86419c2.8a1768",
-        "type": "websocket out",
-        "z": "5f562f66.a301e",
-        "name": "/simple/websocket",
-        "server": "7168c499.ac148c",
-        "client": "",
-        "x": 1330,
-        "y": 560,
-        "wires": []
-    },
-    {
-        "id": "23cb42c3.1c61de",
-        "type": "template",
-        "z": "c4285970.3276d8",
-        "name": "CSS",
-        "field": "payload.css",
-        "fieldType": "msg",
-        "format": "css",
-        "syntax": "mustache",
-        "template": "        :root \n        {\n          --color1: #415c71;\n          --color2: #547792;\n          --color3: #9eb5c7;\n          --color4: #c6c2bb;\n          --color5: #fdc300;\n          --big-text-size :300%;\n          --bold-text :900;\n          --vert-pad : 25px;\n          --horz-pad : 25px;\n        }\n        body \n        {\n          background-color: black !important;\n          padding-left:25px;\n          padding-right:25px;\n        }\n        \n        img \n        {\n          object-fit: contain;\n        }\n        a\n        {\n            color: white;\n        }\n        a:visited \n        { \n            color: var(--white);\n        }\n        a:hover \n        { \n            color: var(--color5);\n        }\n\n        .jumbotron \n        {\n          background-color: var(--color2) !important;\n          color: white;\n          padding-top:25px;\n          padding-bottom:25px;\n        }\n        .jumbotron-title\n        {\n          color:var(--color5);\n        }\n        .jumbotron-button\n        {\n          color: white;\n          background-color: var(--color1);\n       }\n        .card\n        {\n          background-color: var(--color2) !important;\n          text-align: center;\n        }\n        .card-body\n        {\n          background-color: var(--color3);;\n        }\n        .card-button\n        {\n          color: var(--color5) !important;\n          background-color: var(--color1) !important;\n          font-weight: bold;\n        }\n        .card-title\n        {\n          color: var(--color5);\n          font-weight: var(--bold-text);\n          font-size: var(--big-text-size);\n         }\n        .card-text\n        {\n          color: white;\n          text-align: left;\n          font-size: var(--big-text-size);\n        }\n        .danger-card\n        {\n          background-color: yellow !important;\n          text-align: center;\n        }\n        .danger-card-body\n        {\n          background-color: yellow;\n        }\n        .danger-card-button\n        {\n          color: yellow !important;\n          background-color: red !important;\n          font-weight: bold;\n        }\n        .danger-card-title\n        {\n          color: red;\n          font-weight: var(--bold-text);\n          font-size: var(--big-text-size);\n         }\n        .danger-card-text\n        {\n          color: white;\n          text-align: left;\n          font-size: var(--big-text-size);\n        }\n        .tableHeading\n        {\n          color:var(--container-title-color);\n        }\n        .tableText\n        {\n          color:var(--container-text-color);\n          font-size: var(--big-text-size);\n        }\n       .vert-pad\n        {\n            padding-top:var(--vert-pad);;\n            padding-bottom:var(--vert-pad);;\n        }\n        .horz-pad\n        {\n            padding-left:var(--horz-pad);;\n            padding-right:var(--horz-pad);;\n        }\n        .big-text\n        {\n            font-size: var(--big-text-size);\n        }\n        .bold-text\n        {\n            font-weight: var(--bold-text);\n        }\n        .ui-slider\n        {\n            height: 90px;\n            background-color: var(--color1) !important;\n        }\n        .ui-slider .ui-slider-handle \n        {\n            height: 100px;\n            width: 100px;\n            background-color: var(--color5) !important;\n        }\n        .ui-dialog-titlebar-close \n        {\n            visibility: hidden;\n        }\n",
-        "output": "str",
-        "x": 1010,
-        "y": 580,
-        "wires": [
-            [
-                "1ae8503.50373b"
-            ]
-        ]
-    },
-    {
-        "id": "1ae8503.50373b",
-        "type": "template",
-        "z": "c4285970.3276d8",
-        "name": "navBar",
-        "field": "payload.navBar",
-        "fieldType": "msg",
-        "format": "html",
-        "syntax": "mustache",
-        "template": "<!-- navBar -->\n",
-        "output": "str",
-        "x": 1160,
-        "y": 580,
-        "wires": [
-            [
-                "e998e7fb.b59a28"
-            ]
-        ]
-    },
-    {
-        "id": "e998e7fb.b59a28",
-        "type": "subflow:188d93e1.8dcc1c",
-        "z": "c4285970.3276d8",
-        "name": "",
-        "x": 1310,
-        "y": 580,
-        "wires": []
-    },
-    {
-        "id": "27f51732.7c03a8",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Remove image",
-        "func": "if (msg.payload.payload.imageData.value == null) return null;\nvar newPayload = {timeStamp : msg.payload.payload.timeStamp, pixelMax: msg.payload.payload.pixelMax.value}\nmsg.payload.payload = newPayload;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 1140,
-        "y": 560,
-        "wires": [
-            [
-                "e86419c2.8a1768"
-            ]
-        ]
-    },
-    {
-        "id": "27368913.fd1a16",
-        "type": "debug",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "x": 870,
-        "y": 460,
-        "wires": []
-    },
-    {
-        "id": "964a3443.6e7ed8",
-        "type": "delay",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "200",
-        "timeoutUnits": "milliseconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "x": 790,
-        "y": 520,
-        "wires": [
-            [
-                "e3701624.e0da58"
             ]
         ]
     }
