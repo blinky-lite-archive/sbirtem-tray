@@ -2,15 +2,15 @@
   "deviceType": "vad-kul",
   "name": "06",
   "arcPeriod": 60000,
-  "timeStamp": 1600200511040,
+  "timeStamp": 1600345780732,
   "lastArchive": 1599844915124,
   "linkQuality": {
     "action": "reading",
     "type": "scalar",
-    "value": 70,
+    "value": 32,
     "unit": "/70",
     "alarm": {
-      "value": 0,
+      "value": 1,
       "limits": {
         "lolo": 30,
         "low": 40,
@@ -27,10 +27,10 @@
   "signalLevel": {
     "action": "reading",
     "type": "scalar",
-    "value": -26,
+    "value": -78,
     "unit": "dBm",
     "alarm": {
-      "value": 0,
+      "value": 3,
       "limits": {
         "lolo": -70,
         "low": -60,
@@ -47,7 +47,7 @@
   "pixelMin": {
     "action": "reading",
     "type": "scalar",
-    "value": 21.21,
+    "value": 15.79,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -67,7 +67,7 @@
   "pixelMax": {
     "action": "reading",
     "type": "scalar",
-    "value": 34.71,
+    "value": 33.18,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -87,7 +87,7 @@
   "ultraSoundDistance": {
     "action": "reading",
     "type": "scalar",
-    "value": 155,
+    "value": 262,
     "unit": "cm",
     "alarm": {
       "value": 0,
@@ -107,7 +107,7 @@
   "ultraSoundRange": {
     "action": "setting",
     "type": "scalar",
-    "value": 200,
+    "value": 150,
     "unit": "cm",
     "alarm": {
       "value": 0,
@@ -127,7 +127,7 @@
   "imageDelay": {
     "action": "setting",
     "type": "scalar",
-    "value": 500,
+    "value": 1000,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -147,7 +147,7 @@
   "bodyTemp": {
     "action": "reading",
     "type": "scalar",
-    "value": 37.71,
+    "value": 37.93,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -167,7 +167,7 @@
   "offsetTemp": {
     "action": "setting",
     "type": "scalar",
-    "value": 3,
+    "value": 3.75,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -247,7 +247,7 @@
   "flipVertical": {
     "action": "setting",
     "type": "scalar",
-    "value": 1,
+    "value": 0,
     "unit": "unit",
     "alarm": {
       "value": 0,
