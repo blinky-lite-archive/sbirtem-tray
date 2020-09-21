@@ -274,7 +274,9 @@
         "x": 1090,
         "y": 140,
         "wires": [
-            []
+            [
+                "c3a5e7cc.0c33b8"
+            ]
         ]
     },
     {
@@ -381,7 +383,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Readings Alarm Scan",
-        "func": "device = flow.get('device');\ndevice.imageData.value = null;\nvar pgm = flow.get('pgm');\nvar tooHotMsg = null;\nvar notHotMsg = null;\nif (pgm != null)\n{\n    flow.set('lastImageTime',new Date().getTime());\n    device.pixelMin.value = (pgm.minval - 27315) / 100;\n    device.pixelMax.value  = (pgm.maxval - 27315) / 100;\n    device.imageData.value = pgm;\n    device.timeStamp = pgm.timeStamp;\n    device.bodyTemp.value = device.pixelMax.value + device.offsetTemp.value;\n    device.bodyTemp.value = Math.round(device.bodyTemp.value * 10) / 10;\n    if (device.pixelMax.value >= device.pixelMax.alarm.limits.high)\n    {\n        tooHotMsg = {topic:'tooHotAlarm', payload:true};\n    }\n    else\n    {\n        notHotMsg = {topic:'notHotAlarm', payload:true};\n    }\n}\n\ndevice.linkQuality.value     = global.get('linkQuality');\ndevice.signalLevel.value     = global.get('signalLevel');\nscalarAlarmScan(device, 'reading');\nvar toppy = global.get('project') + '/' + global.get('deviceTypeA') + '/' + global.get('deviceNameA') + '/reading';\nreturn [{topic:toppy, payload:device},tooHotMsg, notHotMsg];\n\nfunction getActionArray(device, type, actionType)\n{\n    var actionArray = [];\n    var keys = Object.keys(device);\n    for (var ii = 0; ii < keys.length; ++ii)\n    {\n        if (device[keys[ii]].hasOwnProperty('type'))\n        {\n            if (device[keys[ii]].type == type)\n            {\n                if (device[keys[ii]].action == actionType)\n                {\n                    actionArray.push(device[keys[ii]]);\n                }\n            }\n        }\n    }\n    return actionArray;\n}\nfunction scalarAlarmScan(device, actionType)\n{\n    var actionArray = getActionArray(device, 'scalar', actionType);\n    if (actionArray.length > 0)\n    {\n        for (var ii = 0; ii < actionArray.length; ++ii)\n        {\n            actionArray[ii].alarm.value = 0;\n            if (!isNaN(actionArray[ii].value))\n            {\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.low)  actionArray[ii].alarm.value = 1;\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.lolo) actionArray[ii].alarm.value = 3;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.high) actionArray[ii].alarm.value = 2;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.hihi) actionArray[ii].alarm.value = 4;\n            }\n        }\n    }\n}\n",
+        "func": "device = flow.get('device');\ndevice.imageData.value = null;\nvar pgm = flow.get('pgm');\nvar tooHotMsg = null;\nvar notHotMsg = null;\nif (pgm != null)\n{\n    flow.set('lastImageTime',new Date().getTime());\n    device.pixelMin.value = (pgm.minval - 27315) / 100;\n    device.pixelMax.value  = (pgm.maxval - 27315) / 100;\n    device.imageData.value = pgm;\n    device.timeStamp = pgm.timeStamp;\n    device.bodyTemp.value = device.pixelMax.value + device.offsetTemp.value;\n    device.bodyTemp.value = Math.round(device.bodyTemp.value * 10) / 10;\n    if (device.bodyTemp.value >= device.bodyTemp.alarm.limits.high)\n    {\n        tooHotMsg = {topic:'tooHotAlarm', payload:true};\n    }\n    else\n    {\n        notHotMsg = {topic:'notHotAlarm', payload:true};\n    }\n}\n\ndevice.linkQuality.value     = global.get('linkQuality');\ndevice.signalLevel.value     = global.get('signalLevel');\nscalarAlarmScan(device, 'reading');\nvar toppy = global.get('project') + '/' + global.get('deviceTypeA') + '/' + global.get('deviceNameA') + '/reading';\nreturn [{topic:toppy, payload:device},tooHotMsg, notHotMsg];\n\nfunction getActionArray(device, type, actionType)\n{\n    var actionArray = [];\n    var keys = Object.keys(device);\n    for (var ii = 0; ii < keys.length; ++ii)\n    {\n        if (device[keys[ii]].hasOwnProperty('type'))\n        {\n            if (device[keys[ii]].type == type)\n            {\n                if (device[keys[ii]].action == actionType)\n                {\n                    actionArray.push(device[keys[ii]]);\n                }\n            }\n        }\n    }\n    return actionArray;\n}\nfunction scalarAlarmScan(device, actionType)\n{\n    var actionArray = getActionArray(device, 'scalar', actionType);\n    if (actionArray.length > 0)\n    {\n        for (var ii = 0; ii < actionArray.length; ++ii)\n        {\n            actionArray[ii].alarm.value = 0;\n            if (!isNaN(actionArray[ii].value))\n            {\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.low)  actionArray[ii].alarm.value = 1;\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.lolo) actionArray[ii].alarm.value = 3;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.high) actionArray[ii].alarm.value = 2;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.hihi) actionArray[ii].alarm.value = 4;\n            }\n        }\n    }\n}\n",
         "outputs": 3,
         "noerr": 0,
         "x": 720,
@@ -392,12 +394,10 @@
                 "e3701624.e0da58"
             ],
             [
-                "16929cec.74f3b3",
-                "247ec1cc.5f8a1e"
+                "16929cec.74f3b3"
             ],
             [
-                "620ca605.e38238",
-                "247ec1cc.5f8a1e"
+                "620ca605.e38238"
             ]
         ]
     },
@@ -1283,7 +1283,7 @@
         "z": "5f562f66.a301e",
         "name": "",
         "pauseType": "delay",
-        "timeout": "2",
+        "timeout": "1",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -2354,7 +2354,8 @@
         "y": 1040,
         "wires": [
             [
-                "1ee58b30.404be5"
+                "1ee58b30.404be5",
+                "38ff25f5.65419a"
             ]
         ]
     },
@@ -2393,7 +2394,8 @@
         "y": 1020,
         "wires": [
             [
-                "bef6edc2.3d633"
+                "bef6edc2.3d633",
+                "c9309be.7782e68"
             ]
         ]
     },
@@ -2431,20 +2433,6 @@
         "wires": []
     },
     {
-        "id": "ad74465e.369b88",
-        "type": "rpi-gpio out",
-        "z": "5f562f66.a301e",
-        "name": "Yellow LED",
-        "pin": "33",
-        "set": true,
-        "level": "0",
-        "freq": "",
-        "out": "out",
-        "x": 1410,
-        "y": 780,
-        "wires": []
-    },
-    {
         "id": "f8d673c5.5bd28",
         "type": "rpi-gpio out",
         "z": "5f562f66.a301e",
@@ -2457,82 +2445,6 @@
         "x": 1400,
         "y": 720,
         "wires": []
-    },
-    {
-        "id": "cf253b68.57e198",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "set to 1",
-        "func": "msg.payload = 1;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 1240,
-        "y": 800,
-        "wires": [
-            [
-                "ad74465e.369b88"
-            ]
-        ]
-    },
-    {
-        "id": "247ec1cc.5f8a1e",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "set to 0",
-        "func": "msg.payload = 0;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 960,
-        "y": 780,
-        "wires": [
-            [
-                "168951fc.8f349e",
-                "ad74465e.369b88"
-            ]
-        ]
-    },
-    {
-        "id": "168951fc.8f349e",
-        "type": "delay",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "2",
-        "timeoutUnits": "seconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "x": 1100,
-        "y": 800,
-        "wires": [
-            [
-                "cf253b68.57e198"
-            ]
-        ]
-    },
-    {
-        "id": "5615880c.5e0d98",
-        "type": "inject",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "topic": "",
-        "payload": "1",
-        "payloadType": "num",
-        "repeat": "",
-        "crontab": "",
-        "once": true,
-        "onceDelay": "1",
-        "x": 1090,
-        "y": 840,
-        "wires": [
-            [
-                "cf253b68.57e198"
-            ]
-        ]
     },
     {
         "id": "c40dd8f4.63a9d8",
@@ -3058,13 +2970,149 @@
         "fieldType": "msg",
         "format": "html",
         "syntax": "mustache",
-        "template": "                <div class='card'>\n                    <div class='row'>\n                        <div class='col-md-3'>\n                            <a class='btn btn-block card-button big-text' href='/setup'>Setup</a>\n                        </div>\n                        <div class='col-md-6'>\n                            <p class='card-title'>Body Temperature</p>\n                         </div>\n                        <div class='col-md-3'>\n                            <button class='btn btn-block card-button big-text' id=\"pixelMaxButton\" onclick=\"editDevice('pixelMax')\" >Edit</button>\n                        </div>\n                    </div>\n                    <div class='card-body' align=\"center\">\n                        <div class='row'>\n                            <div class='col-md-12'>\n                                <div id=\"pixelMaxBarPlot\" width=\"100%\" ></div>\n                           </div>\n                        </div>\n                    </div>\n                </div>\n                <div id=\"editDeviceDialog\" title=\"Edit Device\" class='card'>\n                    <p class='card-title' id='editDeviceDialogAttribute'>Attribute</p>\n                    <div class='card-body'>\n                        <table>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">LoLo</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"loloAlarm\" type=\"text\" value=\"0\" /></td>\n                            </tr>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">LOW</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"lowAlarm\" type=\"text\" value=\"0\" /></td>\n                            </tr>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">HIGH</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"highAlarm\" type=\"text\" value=\"0\" /></td>\n                            </tr>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">HiHi</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"hihiAlarm\" type=\"text\" value=\"0\" /></td>\n                            </tr>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">Notify Name</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"notifyName\" type=\"text\" value=\"\" /></td>\n                            </tr>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">Notify Number</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"notifyNumber\" type=\"text\" value=\"\" /></td>\n                            </tr>\n                        </table>\n                    </div>\n                </div>",
+        "template": "                <div class='card'>\n                    <div class='row'>\n                        <div class='col-md-3'>\n                            <a class='btn btn-block card-button big-text' href='/setup'>Setup</a>\n                        </div>\n                        <div class='col-md-6'>\n                            <p class='card-title'>Body Temperature</p>\n                         </div>\n                        <div class='col-md-3'>\n                            <button class='btn btn-block card-button big-text' id=\"pixelMaxButton\" onclick=\"editDevice('bodyTemp')\" >Edit</button>\n                        </div>\n                    </div>\n                    <div class='card-body' align=\"center\">\n                        <div class='row'>\n                            <div class='col-md-12'>\n                                <div id=\"pixelMaxBarPlot\" width=\"100%\" ></div>\n                           </div>\n                        </div>\n                    </div>\n                </div>\n                <div id=\"editDeviceDialog\" title=\"Edit Device\" class='card'>\n                    <p class='card-title' id='editDeviceDialogAttribute'>Attribute</p>\n                    <div class='card-body'>\n                        <table>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">LoLo</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"loloAlarm\" type=\"text\" value=\"0\" /></td>\n                            </tr>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">LOW</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"lowAlarm\" type=\"text\" value=\"0\" /></td>\n                            </tr>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">HIGH</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"highAlarm\" type=\"text\" value=\"0\" /></td>\n                            </tr>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">HiHi</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"hihiAlarm\" type=\"text\" value=\"0\" /></td>\n                            </tr>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">Notify Name</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"notifyName\" type=\"text\" value=\"\" /></td>\n                            </tr>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">Notify Number</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"notifyNumber\" type=\"text\" value=\"\" /></td>\n                            </tr>\n                        </table>\n                    </div>\n                </div>",
         "output": "str",
         "x": 990,
         "y": 80,
         "wires": [
             [
                 "fd846092.bca31"
+            ]
+        ]
+    },
+    {
+        "id": "c3a5e7cc.0c33b8",
+        "type": "debug",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 1290,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "f3ff0af9.c4fdb8",
+        "type": "rpi-gpio out",
+        "z": "5f562f66.a301e",
+        "name": "Yellow LED",
+        "pin": "33",
+        "set": true,
+        "level": "0",
+        "freq": "",
+        "out": "out",
+        "x": 1530,
+        "y": 1200,
+        "wires": []
+    },
+    {
+        "id": "939d3b6e.eb78b8",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 0",
+        "func": "msg.payload = 0;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1380,
+        "y": 1240,
+        "wires": [
+            [
+                "f3ff0af9.c4fdb8"
+            ]
+        ]
+    },
+    {
+        "id": "1f98b300.d5ce3d",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "12",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 1240,
+        "y": 1240,
+        "wires": [
+            [
+                "939d3b6e.eb78b8"
+            ]
+        ]
+    },
+    {
+        "id": "3b2b856f.216a6a",
+        "type": "inject",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "topic": "",
+        "payload": "1",
+        "payloadType": "num",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "1",
+        "x": 1110,
+        "y": 1200,
+        "wires": [
+            [
+                "1f98b300.d5ce3d",
+                "bedf1dc7.17282"
+            ]
+        ]
+    },
+    {
+        "id": "bedf1dc7.17282",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 1",
+        "func": "msg.payload = 1;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1300,
+        "y": 1200,
+        "wires": [
+            [
+                "f3ff0af9.c4fdb8"
+            ]
+        ]
+    },
+    {
+        "id": "38ff25f5.65419a",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 1",
+        "func": "msg.payload = 1;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1200,
+        "y": 1100,
+        "wires": [
+            [
+                "f3ff0af9.c4fdb8"
+            ]
+        ]
+    },
+    {
+        "id": "c9309be.7782e68",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 0",
+        "func": "msg.payload = 0;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1380,
+        "y": 1100,
+        "wires": [
+            [
+                "f3ff0af9.c4fdb8"
             ]
         ]
     }

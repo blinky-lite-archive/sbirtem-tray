@@ -2,12 +2,12 @@
   "deviceType": "vad-kul",
   "name": "06",
   "arcPeriod": 60000,
-  "timeStamp": 1600345780732,
-  "lastArchive": 1599844915124,
+  "timeStamp": 1600675477226,
+  "lastArchive": 1600666610745,
   "linkQuality": {
     "action": "reading",
     "type": "scalar",
-    "value": 32,
+    "value": 34,
     "unit": "/70",
     "alarm": {
       "value": 1,
@@ -27,7 +27,7 @@
   "signalLevel": {
     "action": "reading",
     "type": "scalar",
-    "value": -78,
+    "value": -76,
     "unit": "dBm",
     "alarm": {
       "value": 3,
@@ -47,7 +47,7 @@
   "pixelMin": {
     "action": "reading",
     "type": "scalar",
-    "value": 15.79,
+    "value": 17.76,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -67,18 +67,18 @@
   "pixelMax": {
     "action": "reading",
     "type": "scalar",
-    "value": 33.18,
+    "value": 29.71,
     "unit": "C",
     "alarm": {
       "value": 0,
       "limits": {
-        "lolo": 30,
-        "low": 33,
+        "lolo": 25,
+        "low": 27,
         "high": 36,
         "hihi": 39
       },
       "notify": {
-        "name": "",
+        "name": "Dave",
         "number": "",
         "time": 0
       }
@@ -87,7 +87,7 @@
   "ultraSoundDistance": {
     "action": "reading",
     "type": "scalar",
-    "value": 262,
+    "value": 111,
     "unit": "cm",
     "alarm": {
       "value": 0,
@@ -107,7 +107,7 @@
   "ultraSoundRange": {
     "action": "setting",
     "type": "scalar",
-    "value": 150,
+    "value": 200,
     "unit": "cm",
     "alarm": {
       "value": 0,
@@ -147,10 +147,10 @@
   "bodyTemp": {
     "action": "reading",
     "type": "scalar",
-    "value": 37.93,
+    "value": 33.2,
     "unit": "C",
     "alarm": {
-      "value": 0,
+      "value": 1,
       "limits": {
         "lolo": 33,
         "low": 36,
@@ -158,7 +158,7 @@
         "hihi": 42
       },
       "notify": {
-        "name": "",
+        "name": "Dave",
         "number": "",
         "time": 0
       }
@@ -167,7 +167,7 @@
   "offsetTemp": {
     "action": "setting",
     "type": "scalar",
-    "value": 3.75,
+    "value": 3.5,
     "unit": "C",
     "alarm": {
       "value": 0,
