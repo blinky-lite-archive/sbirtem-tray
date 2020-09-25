@@ -875,7 +875,7 @@
         "func": "global.set(msg.topic,msg.payload);\nglobal.set('websocketPing',0);\nreturn msg;",
         "outputs": 0,
         "noerr": 0,
-        "x": 360,
+        "x": 460,
         "y": 100,
         "wires": []
     },
@@ -3060,8 +3060,39 @@
         "y": 500,
         "wires": [
             [
-                "6324594e.203638"
+                "6324594e.203638",
+                "355fe832.48ff88"
             ]
         ]
+    },
+    {
+        "id": "355fe832.48ff88",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "make pretty",
+        "func": "var jsonPretty = JSON.stringify(msg.payload) + '$';\nreturn {topic: 'displayDevice', payload:jsonPretty};",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1430,
+        "y": 560,
+        "wires": [
+            [
+                "9fce4a01.b36cd8"
+            ]
+        ]
+    },
+    {
+        "id": "9fce4a01.b36cd8",
+        "type": "tcp out",
+        "z": "5f562f66.a301e",
+        "host": "$(DISPLAYIP)",
+        "port": "50505",
+        "beserver": "client",
+        "base64": false,
+        "end": false,
+        "name": "Vad-Kul display",
+        "x": 1660,
+        "y": 560,
+        "wires": []
     }
 ]
