@@ -2,12 +2,12 @@
   "deviceType": "vad-kul",
   "name": "14",
   "arcPeriod": 60000,
-  "timeStamp": 1601063936561,
+  "timeStamp": 1601141800429,
   "lastArchive": 1600666610745,
   "linkQuality": {
     "action": "reading",
     "type": "scalar",
-    "value": 70,
+    "value": 68,
     "unit": "/70",
     "alarm": {
       "value": 0,
@@ -27,7 +27,7 @@
   "signalLevel": {
     "action": "reading",
     "type": "scalar",
-    "value": -38,
+    "value": -42,
     "unit": "dBm",
     "alarm": {
       "value": 0,
@@ -47,7 +47,7 @@
   "pixelMin": {
     "action": "reading",
     "type": "scalar",
-    "value": 22.32,
+    "value": 21.66,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -67,7 +67,7 @@
   "pixelMax": {
     "action": "reading",
     "type": "scalar",
-    "value": 34.72,
+    "value": 34.36,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -87,7 +87,7 @@
   "ultraSoundDistance": {
     "action": "reading",
     "type": "scalar",
-    "value": 400,
+    "value": 240,
     "unit": "cm",
     "alarm": {
       "value": 0,
@@ -147,7 +147,7 @@
   "bodyTemp": {
     "action": "reading",
     "type": "scalar",
-    "value": 37.3,
+    "value": 36.2,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -167,7 +167,7 @@
   "offsetTemp": {
     "action": "setting",
     "type": "scalar",
-    "value": 2.2,
+    "value": 1.6,
     "unit": "C",
     "alarm": {
       "value": 0,
