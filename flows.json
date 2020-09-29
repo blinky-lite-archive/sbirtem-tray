@@ -1112,7 +1112,8 @@
         "y": 740,
         "wires": [
             [
-                "3132ba84.59a1f6"
+                "3132ba84.59a1f6",
+                "9067a4c6.5d4488"
             ]
         ]
     },
@@ -2776,7 +2777,7 @@
         "level": "0",
         "freq": "",
         "out": "out",
-        "x": 1530,
+        "x": 1710,
         "y": 1200,
         "wires": []
     },
@@ -2792,7 +2793,7 @@
         "y": 1240,
         "wires": [
             [
-                "f3ff0af9.c4fdb8"
+                "30a567e5.1d7ed8"
             ]
         ]
     },
@@ -2852,7 +2853,7 @@
         "y": 1200,
         "wires": [
             [
-                "f3ff0af9.c4fdb8"
+                "30a567e5.1d7ed8"
             ]
         ]
     },
@@ -2868,7 +2869,7 @@
         "y": 1100,
         "wires": [
             [
-                "f3ff0af9.c4fdb8"
+                "e880ae95.bdd76"
             ]
         ]
     },
@@ -2880,11 +2881,11 @@
         "func": "msg.payload = 0;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 1380,
-        "y": 1100,
+        "x": 1540,
+        "y": 1060,
         "wires": [
             [
-                "f3ff0af9.c4fdb8"
+                "e880ae95.bdd76"
             ]
         ]
     },
@@ -3380,6 +3381,144 @@
         "wires": [
             [
                 "de5b9489.b52618"
+            ]
+        ]
+    },
+    {
+        "id": "7cda0883.f05b98",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 0",
+        "func": "msg.payload = 0;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1400,
+        "y": 1340,
+        "wires": [
+            [
+                "81c528f.cc489d8"
+            ]
+        ]
+    },
+    {
+        "id": "7715b574.9845ec",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "300",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 1250,
+        "y": 1340,
+        "wires": [
+            [
+                "7cda0883.f05b98"
+            ]
+        ]
+    },
+    {
+        "id": "a2c2d344.6b769",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 1",
+        "func": "msg.payload = 1;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1300,
+        "y": 1300,
+        "wires": [
+            [
+                "81c528f.cc489d8"
+            ]
+        ]
+    },
+    {
+        "id": "fd2fd36.4a5dc3",
+        "type": "link in",
+        "z": "5f562f66.a301e",
+        "name": "Hung Process Toggle in",
+        "links": [
+            "9067a4c6.5d4488"
+        ],
+        "x": 1055,
+        "y": 1300,
+        "wires": [
+            [
+                "a2c2d344.6b769",
+                "7715b574.9845ec"
+            ]
+        ]
+    },
+    {
+        "id": "81c528f.cc489d8",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "Hung Process Toggle out",
+        "links": [
+            "316e94c2.271bec"
+        ],
+        "x": 1495,
+        "y": 1300,
+        "wires": []
+    },
+    {
+        "id": "9067a4c6.5d4488",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "Process hung out",
+        "links": [
+            "fd2fd36.4a5dc3"
+        ],
+        "x": 495,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "30a567e5.1d7ed8",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "Init toggle out",
+        "links": [
+            "316e94c2.271bec"
+        ],
+        "x": 1475,
+        "y": 1200,
+        "wires": []
+    },
+    {
+        "id": "e880ae95.bdd76",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "FFC Toggle Out",
+        "links": [
+            "316e94c2.271bec"
+        ],
+        "x": 1375,
+        "y": 1100,
+        "wires": []
+    },
+    {
+        "id": "316e94c2.271bec",
+        "type": "link in",
+        "z": "5f562f66.a301e",
+        "name": "Yellow Led In",
+        "links": [
+            "30a567e5.1d7ed8",
+            "81c528f.cc489d8",
+            "e880ae95.bdd76"
+        ],
+        "x": 1600,
+        "y": 1200,
+        "wires": [
+            [
+                "f3ff0af9.c4fdb8"
             ]
         ]
     }
