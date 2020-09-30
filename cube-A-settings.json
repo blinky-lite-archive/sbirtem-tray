@@ -2,7 +2,7 @@
   "deviceType": "vad-kul",
   "name": "14",
   "arcPeriod": 60000,
-  "timeStamp": 1601401833348,
+  "timeStamp": 1601446237379,
   "lastArchive": 1600666610745,
   "linkQuality": {
     "action": "reading",
@@ -27,7 +27,7 @@
   "signalLevel": {
     "action": "reading",
     "type": "scalar",
-    "value": -33,
+    "value": -32,
     "unit": "dBm",
     "alarm": {
       "value": 0,
@@ -47,7 +47,7 @@
   "pixelMin": {
     "action": "reading",
     "type": "scalar",
-    "value": 21.04,
+    "value": 19.35,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -67,7 +67,7 @@
   "pixelMax": {
     "action": "reading",
     "type": "scalar",
-    "value": 34.05,
+    "value": 33.32,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -147,7 +147,7 @@
   "bodyTemp": {
     "action": "reading",
     "type": "scalar",
-    "value": 37.6,
+    "value": 36.1,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -245,6 +245,26 @@
     }
   },
   "flipVertical": {
+    "action": "setting",
+    "type": "scalar",
+    "value": 1,
+    "unit": "unit",
+    "alarm": {
+      "value": 0,
+      "limits": {
+        "lolo": -2,
+        "low": -1,
+        "high": 2,
+        "hihi": 3
+      },
+      "notify": {
+        "name": "",
+        "number": "",
+        "time": 0
+      }
+    }
+  },
+  "processImage": {
     "action": "setting",
     "type": "scalar",
     "value": 1,
