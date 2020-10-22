@@ -14,6 +14,13 @@
         "info": ""
     },
     {
+        "id": "f94fb9c0.1069e8",
+        "type": "tab",
+        "label": "Gate Cube",
+        "disabled": false,
+        "info": ""
+    },
+    {
         "id": "c4285970.3276d8",
         "type": "tab",
         "label": "web-app",
@@ -276,6 +283,26 @@
         "wholemsg": "false"
     },
     {
+        "id": "32535557.87f7ca",
+        "type": "serial-port",
+        "z": "",
+        "serialport": "/dev/rfcomm0",
+        "serialbaud": "9600",
+        "databits": "8",
+        "parity": "none",
+        "stopbits": "1",
+        "waitfor": "",
+        "dtr": "none",
+        "rts": "none",
+        "cts": "none",
+        "dsr": "none",
+        "newline": "12",
+        "bin": "bin",
+        "out": "count",
+        "addchar": "",
+        "responsetimeout": "1000"
+    },
+    {
         "id": "5902d0c0.241a6",
         "type": "file",
         "z": "5f562f66.a301e",
@@ -411,7 +438,8 @@
                 "16929cec.74f3b3"
             ],
             [
-                "620ca605.e38238"
+                "620ca605.e38238",
+                "b5941048.75cd6"
             ]
         ]
     },
@@ -3638,5 +3666,332 @@
                 "a851f6f5.3a80f8"
             ]
         ]
+    },
+    {
+        "id": "fcab85f7.5f93c8",
+        "type": "serial in",
+        "z": "f94fb9c0.1069e8",
+        "name": "",
+        "serial": "32535557.87f7ca",
+        "x": 150,
+        "y": 180,
+        "wires": [
+            [
+                "c704f192.ac2e8"
+            ]
+        ]
+    },
+    {
+        "id": "c704f192.ac2e8",
+        "type": "function",
+        "z": "f94fb9c0.1069e8",
+        "name": "Read Serial Handshake",
+        "func": "var ib;\nvar dataView     = new DataView(new ArrayBuffer(4));\nvar newSettingDone = 0;\nvar cubeInit = 0;\n\nfor (ib = 0; ib < 4; ++ib)   dataView.setUint8(ib, msg.payload[0 * 4 + 3 - ib]);\ncubeInit = dataView.getInt32(0);\nfor (ib = 0; ib < 4; ++ib)   dataView.setUint8(ib, msg.payload[1 * 4 + 3 - ib]);\nnewSettingDone = dataView.getInt32(0);\n\nvar newMsg = {topic:'userData', payload:[]};\nfor (var ii = 8; ii < msg.payload.length; ++ii) newMsg.payload[ii - 8] = msg.payload[ii];\n\nif (newSettingDone > 0) \n{\n    flow.get('gate').newSetting = 0;\n}\nif(cubeInit == 1) \n{\n    flow.get('gate').noStepsToTurn = 0;\n    flow.get('gate').stayAwakeAfterRotation = 0;\n    flow.get('gate').newSetting = 1;\n}\n//node.warn('newSettingDone = ' + newSettingDone.toString());\n//node.warn('cubeInit = ' + cubeInit.toString());\n\nreturn newMsg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 360,
+        "y": 180,
+        "wires": [
+            [
+                "829c3d8f.72633",
+                "82e29173.190f5"
+            ]
+        ]
+    },
+    {
+        "id": "82e29173.190f5",
+        "type": "function",
+        "z": "f94fb9c0.1069e8",
+        "name": "CreateSettings",
+        "func": "var bufsize = 24;\nvar buffer = new ArrayBuffer(bufsize);\nvar settingsView = new DataView(buffer);\nsettingsView.setInt32(0, flow.get('gate').newSetting, true);\nsettingsView.setInt32(4, flow.get('gate').noStepsToTurn, true);\nsettingsView.setInt32(8, flow.get('gate').motorDirection, true);\nsettingsView.setInt32(12, flow.get('gate').stepDelayuS, true);\nsettingsView.setInt32(16, flow.get('gate').stayAwakeAfterRotation, true);\nsettingsView.setInt32(20, flow.get('gate').loopDelay, true);\n\nreturn {topic:'settings',payload:Buffer.from(buffer)};\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 630,
+        "y": 320,
+        "wires": [
+            [
+                "3302fbef.302054"
+            ]
+        ]
+    },
+    {
+        "id": "829c3d8f.72633",
+        "type": "function",
+        "z": "f94fb9c0.1069e8",
+        "name": "Create Readings",
+        "func": "var ib;\nvar dataView     = new DataView(new ArrayBuffer(4));\n\nfor (ib = 0; ib < 4; ++ib)   dataView.setUint8(ib, msg.payload[0 * 4 + 3 - ib]);\nvar stepLocation = dataView.getInt32(0);\n\n\nreturn {topic : 'reading', payload : stepLocation};\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 650,
+        "y": 180,
+        "wires": [
+            [
+                "f8fe2ae6.1898a8"
+            ]
+        ]
+    },
+    {
+        "id": "3302fbef.302054",
+        "type": "serial out",
+        "z": "f94fb9c0.1069e8",
+        "name": "",
+        "serial": "32535557.87f7ca",
+        "x": 850,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "a921542.074e1a8",
+        "type": "function",
+        "z": "f94fb9c0.1069e8",
+        "name": "Gate Control",
+        "func": "if(msg.payload == 1) \n{\n    flow.get('gate').noStepsToTurn = 50;\n    flow.get('gate').stayAwakeAfterRotation = 1;\n    flow.get('gate').motorDirection = 1;\n    flow.get('gate').newSetting = 1;\n}\nif(msg.payload == -1) \n{\n    flow.get('gate').noStepsToTurn = 50;\n    flow.get('gate').stayAwakeAfterRotation = 1;\n    flow.get('gate').motorDirection = 0;\n    flow.get('gate').newSetting = 1;\n}\nif(msg.payload == 0) \n{\n    flow.get('gate').noStepsToTurn = 0;\n    flow.get('gate').stayAwakeAfterRotation = 0;\n    flow.get('gate').motorDirection = 0;\n    flow.get('gate').newSetting = 1;\n}\nreturn null;",
+        "outputs": 0,
+        "noerr": 0,
+        "x": 950,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "12ac6a89.217e15",
+        "type": "inject",
+        "z": "f94fb9c0.1069e8",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "x": 170,
+        "y": 80,
+        "wires": [
+            [
+                "23b2c39d.17756c"
+            ]
+        ]
+    },
+    {
+        "id": "23b2c39d.17756c",
+        "type": "function",
+        "z": "f94fb9c0.1069e8",
+        "name": "Initialize Gate",
+        "func": "var gate = \n{\n    noStepsToTurn : 0,\n    motorDirection :1,\n    stepDelayuS : 10000,\n    stayAwakeAfterRotation : 0,\n    loopDelay : 1000,\n    newSetting : 1\n}\nflow.set('gate',gate);\nflow.set('gateInUse',false);\nreturn msg;",
+        "outputs": 0,
+        "noerr": 0,
+        "x": 340,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "77feb5a4.2c9b0c",
+        "type": "function",
+        "z": "f94fb9c0.1069e8",
+        "name": "Gate State Open",
+        "func": "if (flow.get('gateInUse')) return null;\nflow.set('gateInUse',true);\nmsg.payload = 1;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 430,
+        "y": 460,
+        "wires": [
+            [
+                "a921542.074e1a8",
+                "8c69a756.723608"
+            ]
+        ]
+    },
+    {
+        "id": "bedb732.8b3069",
+        "type": "function",
+        "z": "f94fb9c0.1069e8",
+        "name": "Gate State Rest",
+        "func": "msg.payload = 0;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 680,
+        "y": 600,
+        "wires": [
+            [
+                "a921542.074e1a8",
+                "ea2c703f.899b2"
+            ]
+        ]
+    },
+    {
+        "id": "d044676f.288748",
+        "type": "function",
+        "z": "f94fb9c0.1069e8",
+        "name": "Gate State Close",
+        "func": "msg.payload = -1;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 690,
+        "y": 540,
+        "wires": [
+            [
+                "a921542.074e1a8"
+            ]
+        ]
+    },
+    {
+        "id": "1936d828.631d78",
+        "type": "delay",
+        "z": "f94fb9c0.1069e8",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 500,
+        "y": 600,
+        "wires": [
+            [
+                "bedb732.8b3069"
+            ]
+        ]
+    },
+    {
+        "id": "8c69a756.723608",
+        "type": "delay",
+        "z": "f94fb9c0.1069e8",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "10",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 500,
+        "y": 540,
+        "wires": [
+            [
+                "d044676f.288748",
+                "1936d828.631d78"
+            ]
+        ]
+    },
+    {
+        "id": "ff85c1c3.a4c78",
+        "type": "inject",
+        "z": "f94fb9c0.1069e8",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 220,
+        "y": 460,
+        "wires": [
+            [
+                "77feb5a4.2c9b0c"
+            ]
+        ]
+    },
+    {
+        "id": "f8fe2ae6.1898a8",
+        "type": "debug",
+        "z": "f94fb9c0.1069e8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 860,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "b5941048.75cd6",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Open Gate",
+        "func": "if (flow.get('device').triggerMode.value != 0) return null;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 980,
+        "y": 820,
+        "wires": [
+            [
+                "d382f2a2.4f8a6"
+            ]
+        ]
+    },
+    {
+        "id": "ea2c703f.899b2",
+        "type": "delay",
+        "z": "f94fb9c0.1069e8",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 880,
+        "y": 600,
+        "wires": [
+            [
+                "d3ff7b91.e74888"
+            ]
+        ]
+    },
+    {
+        "id": "d3ff7b91.e74888",
+        "type": "function",
+        "z": "f94fb9c0.1069e8",
+        "name": "Set Gate State not in use",
+        "func": "flow.set('gateInUse',false);\n",
+        "outputs": 0,
+        "noerr": 0,
+        "x": 1090,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "b57978ca.6b7588",
+        "type": "link in",
+        "z": "f94fb9c0.1069e8",
+        "name": "Open Gate Input",
+        "links": [
+            "d382f2a2.4f8a6"
+        ],
+        "x": 220,
+        "y": 400,
+        "wires": [
+            [
+                "77feb5a4.2c9b0c"
+            ]
+        ]
+    },
+    {
+        "id": "d382f2a2.4f8a6",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "Open Gate Cammand",
+        "links": [
+            "b57978ca.6b7588"
+        ],
+        "x": 1095,
+        "y": 820,
+        "wires": []
     }
 ]
