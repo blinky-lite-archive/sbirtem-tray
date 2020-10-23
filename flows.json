@@ -14,13 +14,6 @@
         "info": ""
     },
     {
-        "id": "f94fb9c0.1069e8",
-        "type": "tab",
-        "label": "Gate Cube",
-        "disabled": false,
-        "info": ""
-    },
-    {
         "id": "c4285970.3276d8",
         "type": "tab",
         "label": "web-app",
@@ -424,7 +417,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Readings Alarm Scan",
-        "func": "device = flow.get('device');\ndevice.imageData.value = null;\nvar pgm = flow.get('pgm');\nvar tooHotMsg = null;\nvar notHotMsg = null;\nif (pgm != null)\n{\n    flow.set('lastImageTime',new Date().getTime());\n    var imageArray = null;\n    if (device.processImage.value == 0) imageArray = pgm.imageArray;\n    if (device.processImage.value == 1) imageArray = blurImage(pgm.imageArray);\n    var minMax = findTempRange(imageArray);\n    device.pixelMin.value = minMax[0];\n    device.pixelMax.value  = minMax[1];\n    device.imageData.value = pgm;\n    device.timeStamp = pgm.timeStamp;\n    device.bodyTemp.value = device.pixelMax.value + device.offsetTemp.value;\n    device.bodyTemp.value = Math.round(device.bodyTemp.value * 10) / 10;\n    if (device.bodyTemp.value >= device.bodyTemp.alarm.limits.high)\n    {\n        tooHotMsg = {topic:'tooHotAlarm', payload:true};\n    }\n    else\n    {\n        notHotMsg = {topic:'notHotAlarm', payload:true};\n    }\n    if (device.triggerMode.value == 2)\n    {\n        tooHotMsg = null;\n        notHotMsg = {topic:'notHotAlarm', payload:true};\n    }\n}\nelse\n{\n    if (device.ultraSoundDistance.value != 400) return null;\n}\n\ndevice.linkQuality.value     = global.get('linkQuality');\ndevice.signalLevel.value     = global.get('signalLevel');\nscalarAlarmScan(device, 'reading');\nvar toppy = global.get('project') + '/' + global.get('deviceTypeA') + '/' + global.get('deviceNameA') + '/reading';\nreturn [{topic:toppy, payload:device},tooHotMsg, notHotMsg];\n\nfunction getActionArray(device, type, actionType)\n{\n    var actionArray = [];\n    var keys = Object.keys(device);\n    for (var ii = 0; ii < keys.length; ++ii)\n    {\n        if (device[keys[ii]].hasOwnProperty('type'))\n        {\n            if (device[keys[ii]].type == type)\n            {\n                if (device[keys[ii]].action == actionType)\n                {\n                    actionArray.push(device[keys[ii]]);\n                }\n            }\n        }\n    }\n    return actionArray;\n}\nfunction scalarAlarmScan(device, actionType)\n{\n    var actionArray = getActionArray(device, 'scalar', actionType);\n    if (actionArray.length > 0)\n    {\n        for (var ii = 0; ii < actionArray.length; ++ii)\n        {\n            actionArray[ii].alarm.value = 0;\n            if (!isNaN(actionArray[ii].value))\n            {\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.low)  actionArray[ii].alarm.value = 1;\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.lolo) actionArray[ii].alarm.value = 3;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.high) actionArray[ii].alarm.value = 2;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.hihi) actionArray[ii].alarm.value = 4;\n            }\n        }\n    }\n}\nfunction blurImage(inputImage)\n{\n    var kernal = [[1,2,1], [2,4,2], [1,2,1]];\n    var blurImage = [];\n    var nrows = inputImage.length;\n    var ncols = inputImage[0].length;\n    for (var irow = 0; irow < nrows; ++irow)\n    {\n        blurImage[irow] = [];\n        for (var icol = 0; icol < ncols; ++icol)\n        {\n            if ((irow == 0) || (irow == (nrows - 1)))\n            {\n                blurImage[irow][icol] =  inputImage[irow][icol];\n            }\n            else\n            {\n                if ((icol == 0) || (icol == (ncols - 1)))\n                {\n                    blurImage[irow][icol] =  inputImage[irow][icol];\n                }\n                else\n                {\n                    blurImage[irow][icol] = 0;\n                    for (var ikrow = 0; ikrow < 3; ++ikrow)\n                    {\n                        for (var ikcol = 0; ikcol < 3; ++ikcol)\n                        {\n                            blurImage[irow][icol] = blurImage[irow][icol] + inputImage[irow + ikrow - 1][icol + ikcol - 1] * kernal[ikrow][ikcol];\n                        }\n                    }\n                    blurImage[irow][icol] = Math.round(blurImage[irow][icol] / 16.0);\n                }\n            }\n        }\n    }\n    return blurImage;\n}\nfunction findTempRange(inputImage)\n{\n    var nrows = inputImage.length;\n    var ncols = inputImage[0].length;\n    var minMax = [];\n    minMax[0] = inputImage[0][0];\n    minMax[1] = inputImage[0][0];\n    var nrows = inputImage.length;\n    var ncols = inputImage[0].length;\n    for (var irow = 0; irow < nrows; ++irow)\n    {\n        for (var icol = 0; icol < ncols; ++icol)\n        {\n            if (minMax[0] > inputImage[irow][icol]) minMax[0] = inputImage[irow][icol];\n            if (minMax[1] < inputImage[irow][icol]) minMax[1] = inputImage[irow][icol];\n        }\n    }\n    minMax[0] = Math.round(((pgm.maxval - pgm.minval) * minMax[0] / 255.0) + pgm.minval  - 27315) / 100;\n    minMax[1] = Math.round(((pgm.maxval - pgm.minval) * minMax[1] / 255.0) + pgm.minval  - 27315) / 100;\n    return minMax;\n}\n",
+        "func": "device = flow.get('device');\ndevice.imageData.value = null;\nvar pgm = flow.get('pgm');\nvar tooHotMsg = null;\nvar notHotMsg = null;\nif (pgm != null)\n{\n    flow.set('lastImageTime',new Date().getTime());\n    var imageArray = null;\n    if (device.processImage.value == 0) imageArray = pgm.imageArray;\n    if (device.processImage.value == 1) imageArray = blurImage(pgm.imageArray);\n    var minMax = findTempRange(imageArray);\n    device.pixelMin.value = minMax[0];\n    device.pixelMax.value  = minMax[1];\n    device.imageData.value = pgm;\n    device.timeStamp = pgm.timeStamp;\n    device.bodyTemp.value = device.pixelMax.value + device.offsetTemp.value;\n    device.bodyTemp.value = Math.round(device.bodyTemp.value * 10) / 10;\n    if (device.triggerMode.value == 0)\n    {\n        if ((device.bodyTemp.alarm.limits.low < device.bodyTemp.value) && (device.bodyTemp.value < device.bodyTemp.alarm.limits.high))\n        {\n            notHotMsg = {topic:'notHotAlarm', payload:true};\n        }\n        if ((device.bodyTemp.alarm.limits.high < device.bodyTemp.value) && (device.bodyTemp.value < device.bodyTemp.alarm.limits.hihi))\n        {\n            tooHotMsg = {topic:'tooHotAlarm', payload:true};\n        }\n    }\n}\nelse\n{\n    if (device.ultraSoundDistance.value != 400) return null;\n}\n\ndevice.linkQuality.value     = global.get('linkQuality');\ndevice.signalLevel.value     = global.get('signalLevel');\nscalarAlarmScan(device, 'reading');\nvar toppy = global.get('project') + '/' + global.get('deviceTypeA') + '/' + global.get('deviceNameA') + '/reading';\nreturn [{topic:toppy, payload:device},tooHotMsg, notHotMsg];\n\nfunction getActionArray(device, type, actionType)\n{\n    var actionArray = [];\n    var keys = Object.keys(device);\n    for (var ii = 0; ii < keys.length; ++ii)\n    {\n        if (device[keys[ii]].hasOwnProperty('type'))\n        {\n            if (device[keys[ii]].type == type)\n            {\n                if (device[keys[ii]].action == actionType)\n                {\n                    actionArray.push(device[keys[ii]]);\n                }\n            }\n        }\n    }\n    return actionArray;\n}\nfunction scalarAlarmScan(device, actionType)\n{\n    var actionArray = getActionArray(device, 'scalar', actionType);\n    if (actionArray.length > 0)\n    {\n        for (var ii = 0; ii < actionArray.length; ++ii)\n        {\n            actionArray[ii].alarm.value = 0;\n            if (!isNaN(actionArray[ii].value))\n            {\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.low)  actionArray[ii].alarm.value = 1;\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.lolo) actionArray[ii].alarm.value = 3;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.high) actionArray[ii].alarm.value = 2;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.hihi) actionArray[ii].alarm.value = 4;\n            }\n        }\n    }\n}\nfunction blurImage(inputImage)\n{\n    var kernal = [[1,2,1], [2,4,2], [1,2,1]];\n    var blurImage = [];\n    var nrows = inputImage.length;\n    var ncols = inputImage[0].length;\n    for (var irow = 0; irow < nrows; ++irow)\n    {\n        blurImage[irow] = [];\n        for (var icol = 0; icol < ncols; ++icol)\n        {\n            if ((irow == 0) || (irow == (nrows - 1)))\n            {\n                blurImage[irow][icol] =  inputImage[irow][icol];\n            }\n            else\n            {\n                if ((icol == 0) || (icol == (ncols - 1)))\n                {\n                    blurImage[irow][icol] =  inputImage[irow][icol];\n                }\n                else\n                {\n                    blurImage[irow][icol] = 0;\n                    for (var ikrow = 0; ikrow < 3; ++ikrow)\n                    {\n                        for (var ikcol = 0; ikcol < 3; ++ikcol)\n                        {\n                            blurImage[irow][icol] = blurImage[irow][icol] + inputImage[irow + ikrow - 1][icol + ikcol - 1] * kernal[ikrow][ikcol];\n                        }\n                    }\n                    blurImage[irow][icol] = Math.round(blurImage[irow][icol] / 16.0);\n                }\n            }\n        }\n    }\n    return blurImage;\n}\nfunction findTempRange(inputImage)\n{\n    var nrows = inputImage.length;\n    var ncols = inputImage[0].length;\n    var minMax = [];\n    minMax[0] = inputImage[0][0];\n    minMax[1] = inputImage[0][0];\n    var nrows = inputImage.length;\n    var ncols = inputImage[0].length;\n    for (var irow = 0; irow < nrows; ++irow)\n    {\n        for (var icol = 0; icol < ncols; ++icol)\n        {\n            if (minMax[0] > inputImage[irow][icol]) minMax[0] = inputImage[irow][icol];\n            if (minMax[1] < inputImage[irow][icol]) minMax[1] = inputImage[irow][icol];\n        }\n    }\n    minMax[0] = Math.round(((pgm.maxval - pgm.minval) * minMax[0] / 255.0) + pgm.minval  - 27315) / 100;\n    minMax[1] = Math.round(((pgm.maxval - pgm.minval) * minMax[1] / 255.0) + pgm.minval  - 27315) / 100;\n    return minMax;\n}\n",
         "outputs": 3,
         "noerr": 0,
         "x": 720,
@@ -437,10 +430,7 @@
             [
                 "16929cec.74f3b3"
             ],
-            [
-                "620ca605.e38238",
-                "b5941048.75cd6"
-            ]
+            []
         ]
     },
     {
@@ -1296,11 +1286,11 @@
         "func": "msg.payload = 0;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 1240,
-        "y": 740,
+        "x": 1380,
+        "y": 1440,
         "wires": [
             [
-                "f8d673c5.5bd28"
+                "a325a9ec.7e9188"
             ]
         ]
     },
@@ -1312,12 +1302,12 @@
         "func": "msg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 960,
-        "y": 720,
+        "x": 1100,
+        "y": 1420,
         "wires": [
             [
                 "78708c9a.23eac4",
-                "f8d673c5.5bd28"
+                "a325a9ec.7e9188"
             ]
         ]
     },
@@ -1336,8 +1326,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 1100,
-        "y": 740,
+        "x": 1240,
+        "y": 1440,
         "wires": [
             [
                 "56b21d74.f13534"
@@ -1442,7 +1432,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Check  Target Distance",
-        "func": "if (flow.get('device') == undefined) return [null,null];\nif (flow.get('resettingCamera') == undefined) return [null,null];\nflow.get('device').archiveData.value = 0;\nflow.set('pgm',null);\nflow.get('device').ultraSoundDistance.value = msg.payload;\nvar minTime = flow.get('device').imageDelay.value;\nvar range = flow.get('device').ultraSoundRange.value;\n\nvar lastImageTime = flow.get('lastImageTime');\nif (lastImageTime == undefined) \n{\n    lastImageTime = new Date().getTime();\n    flow.set('lastImageTime',lastImageTime);\n}\nvar nowTime = new Date().getTime();\nif ((nowTime - lastImageTime) > minTime)\n{\n    if (msg.payload < range)\n    {\n        if (!flow.get('resettingCamera')) return [msg, null];\n    }\n}\nreturn [null, msg];",
+        "func": "if (flow.get('device') == undefined) return [null,null];\nif (flow.get('resettingCamera') == undefined) return [null,null];\nflow.get('device').archiveData.value = 0;\nflow.set('pgm',null);\nflow.get('device').ultraSoundDistance.value = msg.payload;\nvar minTime = flow.get('device').imageDelay.value;\nvar range = flow.get('device').ultraSoundRange.value;\n\nvar lastImageTime = flow.get('lastImageTime');\nif (lastImageTime == undefined) \n{\n    lastImageTime = new Date().getTime();\n    flow.set('lastImageTime',lastImageTime);\n}\nvar nowTime = new Date().getTime();\nif ((nowTime - lastImageTime) > minTime)\n{\n    if (msg.payload < range)\n    {\n        if (!flow.get('resettingCamera') && !flow.get('gateInUse')) return [msg, null];\n    }\n}\nreturn [null, msg];",
         "outputs": 2,
         "noerr": 0,
         "x": 480,
@@ -1558,7 +1548,7 @@
         "level": "0",
         "freq": "",
         "out": "out",
-        "x": 1600,
+        "x": 1720,
         "y": 640,
         "wires": []
     },
@@ -1591,7 +1581,7 @@
         "y": 640,
         "wires": [
             [
-                "efc84a31.d4d1e8"
+                "eabf67c.b431f98"
             ]
         ]
     },
@@ -1630,8 +1620,8 @@
         "y": 680,
         "wires": [
             [
-                "efc84a31.d4d1e8",
-                "16929cec.74f3b3"
+                "16929cec.74f3b3",
+                "eabf67c.b431f98"
             ]
         ]
     },
@@ -2488,7 +2478,7 @@
         "level": "0",
         "freq": "",
         "out": "out",
-        "x": 1400,
+        "x": 1720,
         "y": 720,
         "wires": []
     },
@@ -3061,7 +3051,8 @@
         "wires": [
             [
                 "6324594e.203638",
-                "cf5e2ba4.3a2458"
+                "cf5e2ba4.3a2458",
+                "3cee692a.639e86"
             ]
         ]
     },
@@ -3199,7 +3190,7 @@
         "fieldType": "msg",
         "format": "javascript",
         "syntax": "mustache",
-        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var colorScale = true;\n        var enhancementLevel = 0;\n        var pgm = null;\n        var lastUpdate = new Date().getTime();\n        var maxDisplayTime = 5000;\n        var imageArray =  null;\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n            $('#tempLegend').hide();\n            $('#pixelMaxBarPlot').hide();\n            setInterval(function()\n            {\n                if ((new Date().getTime() - lastUpdate) > maxDisplayTime)\n                {\n                    $('#thumb').attr(\"src\", \"/img/blackThumb.png\");\n                    $('#maxTemp').text(\" \");\n                    clearImage();\n                    $('#tempLegend').hide();\n                    $('#pixelMaxBarPlot').hide();\n                    \n                }\n            }, 1000);\n        }\n        function onWebSocketOpen()\n        {\n        }\n        function onWebSocketClose()\n        {\n            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        \n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            if (device.imageData.value != null)\n            {\n                var style = 'font-size:300%; font-weight:300; color:cyan';\n                var thumbAttr = \"/img/cyanThumb.png\";\n                if (device.bodyTemp.value >= device.bodyTemp.alarm.limits.high)\n                {\n                    style = 'font-size:300%; font-weight:300; color:pink';\n                    thumbAttr = \"/img/pinkThumb.png\";\n                }\n                $('#maxTemp').attr(\"style\", style);\n                $('#thumb').attr(\"src\", thumbAttr);\n                $('#maxTemp').text(device.bodyTemp.value.toString() + \" C\");\n                lastUpdate = new Date().getTime();\n            }\n            if (device.imageData.value != null)\n            {\n                pgm = JSON.parse(JSON.stringify(device.imageData.value));\n                var processImage = 1;\n                try {processImage = device.processImage.value;} catch(err) {processImage = 1;}\n                switch (processImage)\n                {\n                    case 0:  \n                        imageArray = pgm.imageArray;\n                        break;\n                    case 1:  \n                        imageArray = blurImage(pgm.imageArray);\n                        break;\n                    default: \n                        imageArray = blurImage(pgm.imageArray);\n                        break;\n                }\n                plotImage();\n                $('#pixelMaxBarPlot').show();\n                var pixelMaxBarConfig = \n                    {\n                        lolo            : device.bodyTemp.alarm.limits.lolo, \n                        low             : device.bodyTemp.alarm.limits.low, \n                        high            : device.bodyTemp.alarm.limits.high, \n                        hihi            : device.bodyTemp.alarm.limits.hihi, \n                        value           : device.bodyTemp.value, \n                        unit            : device.bodyTemp.unit, \n                        textsize        : 20,\n                        label           : 'body temp', \n                        lowColor        : '#0000ff', \n                        mediumColor     : '#00ff00',\n                        highColor       : '#ff0000', \n                        backgroundColor : '#000000', \n                        labelColor      : '#ffffff', \n                        gridColor       : '#000000',\n                        height          : 50, \n                        htmlId          : 'pixelMaxBarPlot'\n                    };\n                setHorzBarWidget(pixelMaxBarConfig);\n             }\n        }\n        function plotImage()\n        {\n            $('#tempLegend').show();\n            var rgb = [];\n            var plow = (pgm.minval - 27315) / 100;\n            var phigh = (pgm.maxval - 27315) / 100;\n            var pdelta = phigh - plow;\n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var intensity = ibox / 8.0;\n                var pbox = Math.round(((phigh - plow) * intensity + plow) * 10.0) / 10.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(pbox.toString());\n                if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                if (colorScale)\n                {\n                    rgb = getRGB(intensity);\n                }\n                else\n                {\n                    rgb[0] = Math.floor(255 * intensity);\n                    rgb[1] = Math.floor(255 * intensity);\n                    rgb[2] = Math.floor(255 * intensity);\n                }\n                var style='width:44px;height:25px;background-color:' + 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                $('#box' + (ibox + 1).toString()).attr('style',style);\n            }\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var tipPointer = document.getElementById(\"tipPointer\");\n            var tipPointerContext = tipPointer.getContext(\"2d\");\n            var tip = document.getElementById(\"tip\");\n            var tipContext = tip.getContext(\"2d\");\n            tipContext.font = \"15px Arial\";\n            tipContext.fillStyle = \"cyan\";\n            tipPointerContext.fillStyle = \"cyan\";\n            if (colorScale) tipContext.fillStyle = \"black\";\n            if (colorScale) tipPointerContext.fillStyle = \"black\";\n            tipContext.textAlign = \"left\";\n\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            var rectWidth  = canvasWidth  / pgm.ncols;\n            var rectHeight = canvasHeight / pgm.nrows;\n            canvas.onmousemove = function (e) \n            {\n                var icol = Math.floor(e.layerX / rectWidth);\n                if (icol < 0) icol = 0;\n                if (icol >= pgm.ncols) icol = pgm.ncols - 1;\n                var irow = Math.floor((canvasHeight - e.layerY) / rectHeight);\n                if (irow < 0) irow = 0;\n                if (irow >= pgm.nrows) irow = pgm.nrows - 1;\n                var temp = Math.floor(100.0 * (pdelta * imageArray[irow][icol] / 256.0 + plow)) / 100;\n\n                tipPointer.style.top = (e.layerY  - tipPointer.height / 2).toString()  + \"px\";\n                tipPointer.style.left = (e.layerX - tipPointer.width / 2).toString() + \"px\";\n                tipPointerContext.clearRect(0, 0, tipPointer.width, tipPointer.height);\n                tipPointerContext.fillRect( 0, 0, tipPointer.width, tipPointer.height);\n\n                tip.style.top = (e.layerY - tip.height - tipPointer.height).toString()  + \"px\";\n                tip.style.left = (e.layerX).toString() + \"px\";\n                tipContext.clearRect(0, 0, tip.width, tip.height);\n                tipContext.fillText(temp.toString() + ' C', 0, 30);\n            };\n\n            for (var irow = 0; irow < pgm.nrows; ++irow)\n            {\n                for (var icol = 0; icol < pgm.ncols; ++icol)\n                {\n                    var intensity = imageArray[irow][icol] / 256.0;\n                    if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                    if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                    if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                    if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                    if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                    if (colorScale)\n                    {\n                        rgb = getRGB(intensity);\n                        rgb[0] = Math.floor(rgb[0]);\n                        rgb[1] = Math.floor(rgb[1]);\n                        rgb[2] = Math.floor(rgb[2]);\n                    }\n                    else\n                    {\n                        rgb[0] = Math.floor(255 * intensity);\n                        rgb[1] = Math.floor(255 * intensity);\n                        rgb[2] = Math.floor(255 * intensity);\n                    }\n                    canvasContext.fillStyle = 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                    if (intensity > 0.98) \n                    {\n                        canvasContext.fillStyle='magenta';\n                        if (colorScale) canvasContext.fillStyle='white';\n                    }\n\n                    canvasContext.fillRect(icol * rectWidth, canvasHeight - rectHeight - irow * rectHeight, rectWidth, rectHeight);\n                }    \n            }\n        }\n        function blurImage(inputImage)\n        {\n            var kernal = [[1,2,1], [2,4,2], [1,2,1]];\n            var blurImage = [];\n            var nrows = inputImage.length;\n            var ncols = inputImage[0].length;\n            for (var irow = 0; irow < nrows; ++irow)\n            {\n                blurImage[irow] = [];\n                for (var icol = 0; icol < ncols; ++icol)\n                {\n                    if ((irow == 0) || (irow == (nrows - 1)))\n                    {\n                        blurImage[irow][icol] =  inputImage[irow][icol];\n                    }\n                    else\n                    {\n                        if ((icol == 0) || (icol == (ncols - 1)))\n                        {\n                            blurImage[irow][icol] =  inputImage[irow][icol];\n                        }\n                        else\n                        {\n                            blurImage[irow][icol] = 0;\n                            for (var ikrow = 0; ikrow < 3; ++ikrow)\n                            {\n                                for (var ikcol = 0; ikcol < 3; ++ikcol)\n                                {\n                                    blurImage[irow][icol] = blurImage[irow][icol] + inputImage[irow + ikrow - 1][icol + ikcol - 1] * kernal[ikrow][ikcol];\n                                }\n                            }\n                            blurImage[irow][icol] = Math.round(blurImage[irow][icol] / 16.0);\n                        }\n                    }\n                }\n            }\n            return blurImage;\n        }\n        function mouseLeftCanvas()\n        {\n            var tip = document.getElementById(\"tip\");\n            var tipContext = tip.getContext(\"2d\");\n            tipContext.clearRect(0, 0, tip.width, tip.height);\n            var tipPointer = document.getElementById(\"tipPointer\");\n            var tipPointerContext = tipPointer.getContext(\"2d\");\n            tipPointerContext.clearRect(0, 0, tipPointer.width, tipPointer.height);\n        }\n        function getRGB(intensity)\n        {\n          var rgb = [0,0,0];\n          if ( (0 <= intensity) && (intensity <= 0.25) )\n          {\n            rgb[0] = 0;\n            rgb[1] = Math.floor(255 * intensity * 4);    \n            rgb[2] = 255;\n          }\n          if ( (0.25 < intensity) && (intensity <= 0.50) )\n          {\n            rgb[0] = 0;\n            rgb[1] = 255;    \n            rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n          }\n          if ( (0.50 < intensity) && (intensity <= 0.75) )\n          {\n            rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n            rgb[1] = 255;    \n            rgb[2] = 0;\n          }\n          if ( (0.75 < intensity) && (intensity <= 1.0) )\n          {\n            rgb[0] = 255;\n            rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n            rgb[2] = 0;\n          }\n          return rgb;\n        }\n       function clearImage()\n        {\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);        \n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var pbox = 0.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(' ');\n            } \n        }\n",
+        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var colorScale = true;\n        var enhancementLevel = 0;\n        var pgm = null;\n        var lastUpdate = new Date().getTime();\n        var maxDisplayTime = 5000;\n        var imageArray =  null;\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n            $('#tempLegend').hide();\n            $('#pixelMaxBarPlot').hide();\n            setInterval(function()\n            {\n                if ((new Date().getTime() - lastUpdate) > maxDisplayTime)\n                {\n/*\n                    $('#thumb').attr(\"src\", \"/img/blackThumb.png\");\n                    $('#maxTemp').text(\" \");\n                    clearImage();\n                    $('#tempLegend').hide();\n                    $('#pixelMaxBarPlot').hide();\n*/                    \n                }\n            }, 1000);\n        }\n        function onWebSocketOpen()\n        {\n        }\n        function onWebSocketClose()\n        {\n            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        \n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            if (device.imageData.value != null)\n            {\n                var style = 'font-size:300%; font-weight:300; color:cyan';\n                var thumbAttr = \"/img/cyanThumb.png\";\n                if (device.bodyTemp.value >= device.bodyTemp.alarm.limits.high)\n                {\n                    style = 'font-size:300%; font-weight:300; color:pink';\n                    thumbAttr = \"/img/pinkThumb.png\";\n                }\n                $('#maxTemp').attr(\"style\", style);\n                $('#thumb').attr(\"src\", thumbAttr);\n                $('#maxTemp').text(device.bodyTemp.value.toString() + \" C\");\n                lastUpdate = new Date().getTime();\n            }\n            if (device.imageData.value != null)\n            {\n                pgm = JSON.parse(JSON.stringify(device.imageData.value));\n                var processImage = 1;\n                try {processImage = device.processImage.value;} catch(err) {processImage = 1;}\n                switch (processImage)\n                {\n                    case 0:  \n                        imageArray = pgm.imageArray;\n                        break;\n                    case 1:  \n                        imageArray = blurImage(pgm.imageArray);\n                        break;\n                    default: \n                        imageArray = blurImage(pgm.imageArray);\n                        break;\n                }\n                plotImage();\n                $('#pixelMaxBarPlot').show();\n                var pixelMaxBarConfig = \n                    {\n                        lolo            : device.bodyTemp.alarm.limits.lolo, \n                        low             : device.bodyTemp.alarm.limits.low, \n                        high            : device.bodyTemp.alarm.limits.high, \n                        hihi            : device.bodyTemp.alarm.limits.hihi, \n                        value           : device.bodyTemp.value, \n                        unit            : device.bodyTemp.unit, \n                        textsize        : 20,\n                        label           : 'body temp', \n                        lowColor        : '#0000ff', \n                        mediumColor     : '#00ff00',\n                        highColor       : '#ff0000', \n                        backgroundColor : '#000000', \n                        labelColor      : '#ffffff', \n                        gridColor       : '#000000',\n                        height          : 50, \n                        htmlId          : 'pixelMaxBarPlot'\n                    };\n                setHorzBarWidget(pixelMaxBarConfig);\n             }\n        }\n        function plotImage()\n        {\n            $('#tempLegend').show();\n            var rgb = [];\n            var plow = (pgm.minval - 27315) / 100;\n            var phigh = (pgm.maxval - 27315) / 100;\n            var pdelta = phigh - plow;\n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var intensity = ibox / 8.0;\n                var pbox = Math.round(((phigh - plow) * intensity + plow) * 10.0) / 10.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(pbox.toString());\n                if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                if (colorScale)\n                {\n                    rgb = getRGB(intensity);\n                }\n                else\n                {\n                    rgb[0] = Math.floor(255 * intensity);\n                    rgb[1] = Math.floor(255 * intensity);\n                    rgb[2] = Math.floor(255 * intensity);\n                }\n                var style='width:44px;height:25px;background-color:' + 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                $('#box' + (ibox + 1).toString()).attr('style',style);\n            }\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var tipPointer = document.getElementById(\"tipPointer\");\n            var tipPointerContext = tipPointer.getContext(\"2d\");\n            var tip = document.getElementById(\"tip\");\n            var tipContext = tip.getContext(\"2d\");\n            tipContext.font = \"15px Arial\";\n            tipContext.fillStyle = \"cyan\";\n            tipPointerContext.fillStyle = \"cyan\";\n            if (colorScale) tipContext.fillStyle = \"black\";\n            if (colorScale) tipPointerContext.fillStyle = \"black\";\n            tipContext.textAlign = \"left\";\n\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            var rectWidth  = canvasWidth  / pgm.ncols;\n            var rectHeight = canvasHeight / pgm.nrows;\n            canvas.onmousemove = function (e) \n            {\n                var icol = Math.floor(e.layerX / rectWidth);\n                if (icol < 0) icol = 0;\n                if (icol >= pgm.ncols) icol = pgm.ncols - 1;\n                var irow = Math.floor((canvasHeight - e.layerY) / rectHeight);\n                if (irow < 0) irow = 0;\n                if (irow >= pgm.nrows) irow = pgm.nrows - 1;\n                var temp = Math.floor(100.0 * (pdelta * imageArray[irow][icol] / 256.0 + plow)) / 100;\n\n                tipPointer.style.top = (e.layerY  - tipPointer.height / 2).toString()  + \"px\";\n                tipPointer.style.left = (e.layerX - tipPointer.width / 2).toString() + \"px\";\n                tipPointerContext.clearRect(0, 0, tipPointer.width, tipPointer.height);\n                tipPointerContext.fillRect( 0, 0, tipPointer.width, tipPointer.height);\n\n                tip.style.top = (e.layerY - tip.height - tipPointer.height).toString()  + \"px\";\n                tip.style.left = (e.layerX).toString() + \"px\";\n                tipContext.clearRect(0, 0, tip.width, tip.height);\n                tipContext.fillText(temp.toString() + ' C', 0, 30);\n            };\n\n            for (var irow = 0; irow < pgm.nrows; ++irow)\n            {\n                for (var icol = 0; icol < pgm.ncols; ++icol)\n                {\n                    var intensity = imageArray[irow][icol] / 256.0;\n                    if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                    if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                    if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                    if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                    if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                    if (colorScale)\n                    {\n                        rgb = getRGB(intensity);\n                        rgb[0] = Math.floor(rgb[0]);\n                        rgb[1] = Math.floor(rgb[1]);\n                        rgb[2] = Math.floor(rgb[2]);\n                    }\n                    else\n                    {\n                        rgb[0] = Math.floor(255 * intensity);\n                        rgb[1] = Math.floor(255 * intensity);\n                        rgb[2] = Math.floor(255 * intensity);\n                    }\n                    canvasContext.fillStyle = 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                    if (intensity > 0.98) \n                    {\n                        canvasContext.fillStyle='magenta';\n                        if (colorScale) canvasContext.fillStyle='white';\n                    }\n\n                    canvasContext.fillRect(icol * rectWidth, canvasHeight - rectHeight - irow * rectHeight, rectWidth, rectHeight);\n                }    \n            }\n            var ellipseWidth = 100;\n            var ellipseHeight = 150;\n            canvasContext.fillStyle='black';\n            drawEllipse(canvasContext, (canvasWidth - ellipseWidth) / 2, (canvasHeight -  ellipseHeight)/ 2, ellipseWidth, ellipseHeight);\n        }\n        function blurImage(inputImage)\n        {\n            var kernal = [[1,2,1], [2,4,2], [1,2,1]];\n            var blurImage = [];\n            var nrows = inputImage.length;\n            var ncols = inputImage[0].length;\n            for (var irow = 0; irow < nrows; ++irow)\n            {\n                blurImage[irow] = [];\n                for (var icol = 0; icol < ncols; ++icol)\n                {\n                    if ((irow == 0) || (irow == (nrows - 1)))\n                    {\n                        blurImage[irow][icol] =  inputImage[irow][icol];\n                    }\n                    else\n                    {\n                        if ((icol == 0) || (icol == (ncols - 1)))\n                        {\n                            blurImage[irow][icol] =  inputImage[irow][icol];\n                        }\n                        else\n                        {\n                            blurImage[irow][icol] = 0;\n                            for (var ikrow = 0; ikrow < 3; ++ikrow)\n                            {\n                                for (var ikcol = 0; ikcol < 3; ++ikcol)\n                                {\n                                    blurImage[irow][icol] = blurImage[irow][icol] + inputImage[irow + ikrow - 1][icol + ikcol - 1] * kernal[ikrow][ikcol];\n                                }\n                            }\n                            blurImage[irow][icol] = Math.round(blurImage[irow][icol] / 16.0);\n                        }\n                    }\n                }\n            }\n            return blurImage;\n        }\n        function mouseLeftCanvas()\n        {\n            var tip = document.getElementById(\"tip\");\n            var tipContext = tip.getContext(\"2d\");\n            tipContext.clearRect(0, 0, tip.width, tip.height);\n            var tipPointer = document.getElementById(\"tipPointer\");\n            var tipPointerContext = tipPointer.getContext(\"2d\");\n            tipPointerContext.clearRect(0, 0, tipPointer.width, tipPointer.height);\n        }\n        function getRGB(intensity)\n        {\n          var rgb = [0,0,0];\n          if ( (0 <= intensity) && (intensity <= 0.25) )\n          {\n            rgb[0] = 0;\n            rgb[1] = Math.floor(255 * intensity * 4);    \n            rgb[2] = 255;\n          }\n          if ( (0.25 < intensity) && (intensity <= 0.50) )\n          {\n            rgb[0] = 0;\n            rgb[1] = 255;    \n            rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n          }\n          if ( (0.50 < intensity) && (intensity <= 0.75) )\n          {\n            rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n            rgb[1] = 255;    \n            rgb[2] = 0;\n          }\n          if ( (0.75 < intensity) && (intensity <= 1.0) )\n          {\n            rgb[0] = 255;\n            rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n            rgb[2] = 0;\n          }\n          return rgb;\n        }\n       function clearImage()\n        {\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);        \n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var pbox = 0.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(' ');\n            } \n        }\n        function drawEllipse(ctx, x, y, w, h) \n        {\n            var kappa = .5522848,\n              ox = (w / 2) * kappa, // control point offset horizontal\n              oy = (h / 2) * kappa, // control point offset vertical\n              xe = x + w,           // x-end\n              ye = y + h,           // y-end\n              xm = x + w / 2,       // x-middle\n              ym = y + h / 2;       // y-middle\n            \n            ctx.beginPath();\n            ctx.moveTo(x, ym);\n            ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);\n            ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);\n            ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);\n            ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);\n            //ctx.closePath(); // not used correctly, see comments (use to close off open path)\n            ctx.stroke();\n        }\n",
         "output": "str",
         "x": 630,
         "y": 880,
@@ -3454,7 +3445,9 @@
         "z": "5f562f66.a301e",
         "name": "Hung Process Toggle out",
         "links": [
-            "316e94c2.271bec"
+            "316e94c2.271bec",
+            "40a9c1f6.4c508",
+            "c9d85cd7.b10c5"
         ],
         "x": 1495,
         "y": 1300,
@@ -3505,7 +3498,8 @@
         "links": [
             "30a567e5.1d7ed8",
             "81c528f.cc489d8",
-            "e880ae95.bdd76"
+            "e880ae95.bdd76",
+            "a325a9ec.7e9188"
         ],
         "x": 1600,
         "y": 1200,
@@ -3668,254 +3662,6 @@
         ]
     },
     {
-        "id": "fcab85f7.5f93c8",
-        "type": "serial in",
-        "z": "f94fb9c0.1069e8",
-        "name": "",
-        "serial": "32535557.87f7ca",
-        "x": 150,
-        "y": 180,
-        "wires": [
-            [
-                "c704f192.ac2e8"
-            ]
-        ]
-    },
-    {
-        "id": "c704f192.ac2e8",
-        "type": "function",
-        "z": "f94fb9c0.1069e8",
-        "name": "Read Serial Handshake",
-        "func": "var ib;\nvar dataView     = new DataView(new ArrayBuffer(4));\nvar newSettingDone = 0;\nvar cubeInit = 0;\n\nfor (ib = 0; ib < 4; ++ib)   dataView.setUint8(ib, msg.payload[0 * 4 + 3 - ib]);\ncubeInit = dataView.getInt32(0);\nfor (ib = 0; ib < 4; ++ib)   dataView.setUint8(ib, msg.payload[1 * 4 + 3 - ib]);\nnewSettingDone = dataView.getInt32(0);\n\nvar newMsg = {topic:'userData', payload:[]};\nfor (var ii = 8; ii < msg.payload.length; ++ii) newMsg.payload[ii - 8] = msg.payload[ii];\n\nif (newSettingDone > 0) \n{\n    flow.get('gate').newSetting = 0;\n}\nif(cubeInit == 1) \n{\n    flow.get('gate').noStepsToTurn = 0;\n    flow.get('gate').stayAwakeAfterRotation = 0;\n    flow.get('gate').newSetting = 1;\n}\n//node.warn('newSettingDone = ' + newSettingDone.toString());\n//node.warn('cubeInit = ' + cubeInit.toString());\n\nreturn newMsg;\n",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 360,
-        "y": 180,
-        "wires": [
-            [
-                "829c3d8f.72633",
-                "82e29173.190f5"
-            ]
-        ]
-    },
-    {
-        "id": "82e29173.190f5",
-        "type": "function",
-        "z": "f94fb9c0.1069e8",
-        "name": "CreateSettings",
-        "func": "var bufsize = 24;\nvar buffer = new ArrayBuffer(bufsize);\nvar settingsView = new DataView(buffer);\nsettingsView.setInt32(0, flow.get('gate').newSetting, true);\nsettingsView.setInt32(4, flow.get('gate').noStepsToTurn, true);\nsettingsView.setInt32(8, flow.get('gate').motorDirection, true);\nsettingsView.setInt32(12, flow.get('gate').stepDelayuS, true);\nsettingsView.setInt32(16, flow.get('gate').stayAwakeAfterRotation, true);\nsettingsView.setInt32(20, flow.get('gate').loopDelay, true);\n\nreturn {topic:'settings',payload:Buffer.from(buffer)};\n",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 630,
-        "y": 320,
-        "wires": [
-            [
-                "3302fbef.302054"
-            ]
-        ]
-    },
-    {
-        "id": "829c3d8f.72633",
-        "type": "function",
-        "z": "f94fb9c0.1069e8",
-        "name": "Create Readings",
-        "func": "var ib;\nvar dataView     = new DataView(new ArrayBuffer(4));\n\nfor (ib = 0; ib < 4; ++ib)   dataView.setUint8(ib, msg.payload[0 * 4 + 3 - ib]);\nvar stepLocation = dataView.getInt32(0);\n\n\nreturn {topic : 'reading', payload : stepLocation};\n",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 650,
-        "y": 180,
-        "wires": [
-            [
-                "f8fe2ae6.1898a8"
-            ]
-        ]
-    },
-    {
-        "id": "3302fbef.302054",
-        "type": "serial out",
-        "z": "f94fb9c0.1069e8",
-        "name": "",
-        "serial": "32535557.87f7ca",
-        "x": 850,
-        "y": 320,
-        "wires": []
-    },
-    {
-        "id": "a921542.074e1a8",
-        "type": "function",
-        "z": "f94fb9c0.1069e8",
-        "name": "Gate Control",
-        "func": "if(msg.payload == 1) \n{\n    flow.get('gate').noStepsToTurn = 50;\n    flow.get('gate').stayAwakeAfterRotation = 1;\n    flow.get('gate').motorDirection = 1;\n    flow.get('gate').newSetting = 1;\n}\nif(msg.payload == -1) \n{\n    flow.get('gate').noStepsToTurn = 50;\n    flow.get('gate').stayAwakeAfterRotation = 1;\n    flow.get('gate').motorDirection = 0;\n    flow.get('gate').newSetting = 1;\n}\nif(msg.payload == 0) \n{\n    flow.get('gate').noStepsToTurn = 0;\n    flow.get('gate').stayAwakeAfterRotation = 0;\n    flow.get('gate').motorDirection = 0;\n    flow.get('gate').newSetting = 1;\n}\nreturn null;",
-        "outputs": 0,
-        "noerr": 0,
-        "x": 950,
-        "y": 540,
-        "wires": []
-    },
-    {
-        "id": "12ac6a89.217e15",
-        "type": "inject",
-        "z": "f94fb9c0.1069e8",
-        "name": "",
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "repeat": "",
-        "crontab": "",
-        "once": true,
-        "onceDelay": 0.1,
-        "x": 170,
-        "y": 80,
-        "wires": [
-            [
-                "23b2c39d.17756c"
-            ]
-        ]
-    },
-    {
-        "id": "23b2c39d.17756c",
-        "type": "function",
-        "z": "f94fb9c0.1069e8",
-        "name": "Initialize Gate",
-        "func": "var gate = \n{\n    noStepsToTurn : 0,\n    motorDirection :1,\n    stepDelayuS : 10000,\n    stayAwakeAfterRotation : 0,\n    loopDelay : 1000,\n    newSetting : 1\n}\nflow.set('gate',gate);\nflow.set('gateInUse',false);\nreturn msg;",
-        "outputs": 0,
-        "noerr": 0,
-        "x": 340,
-        "y": 80,
-        "wires": []
-    },
-    {
-        "id": "77feb5a4.2c9b0c",
-        "type": "function",
-        "z": "f94fb9c0.1069e8",
-        "name": "Gate State Open",
-        "func": "if (flow.get('gateInUse')) return null;\nflow.set('gateInUse',true);\nmsg.payload = 1;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 430,
-        "y": 460,
-        "wires": [
-            [
-                "a921542.074e1a8",
-                "8c69a756.723608"
-            ]
-        ]
-    },
-    {
-        "id": "bedb732.8b3069",
-        "type": "function",
-        "z": "f94fb9c0.1069e8",
-        "name": "Gate State Rest",
-        "func": "msg.payload = 0;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 680,
-        "y": 600,
-        "wires": [
-            [
-                "a921542.074e1a8",
-                "ea2c703f.899b2"
-            ]
-        ]
-    },
-    {
-        "id": "d044676f.288748",
-        "type": "function",
-        "z": "f94fb9c0.1069e8",
-        "name": "Gate State Close",
-        "func": "msg.payload = -1;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 690,
-        "y": 540,
-        "wires": [
-            [
-                "a921542.074e1a8"
-            ]
-        ]
-    },
-    {
-        "id": "1936d828.631d78",
-        "type": "delay",
-        "z": "f94fb9c0.1069e8",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "5",
-        "timeoutUnits": "seconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "x": 500,
-        "y": 600,
-        "wires": [
-            [
-                "bedb732.8b3069"
-            ]
-        ]
-    },
-    {
-        "id": "8c69a756.723608",
-        "type": "delay",
-        "z": "f94fb9c0.1069e8",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "10",
-        "timeoutUnits": "seconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "x": 500,
-        "y": 540,
-        "wires": [
-            [
-                "d044676f.288748",
-                "1936d828.631d78"
-            ]
-        ]
-    },
-    {
-        "id": "ff85c1c3.a4c78",
-        "type": "inject",
-        "z": "f94fb9c0.1069e8",
-        "name": "",
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "x": 220,
-        "y": 460,
-        "wires": [
-            [
-                "77feb5a4.2c9b0c"
-            ]
-        ]
-    },
-    {
-        "id": "f8fe2ae6.1898a8",
-        "type": "debug",
-        "z": "f94fb9c0.1069e8",
-        "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "x": 860,
-        "y": 180,
-        "wires": []
-    },
-    {
         "id": "b5941048.75cd6",
         "type": "function",
         "z": "5f562f66.a301e",
@@ -3927,14 +3673,193 @@
         "y": 820,
         "wires": [
             [
-                "d382f2a2.4f8a6"
+                "d382f2a2.4f8a6",
+                "661626f9.396268"
             ]
         ]
     },
     {
-        "id": "ea2c703f.899b2",
+        "id": "d382f2a2.4f8a6",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "Open Gate Cammand",
+        "links": [
+            "b57978ca.6b7588",
+            "1c3d6801.198de8"
+        ],
+        "x": 1115,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "979a220e.d1a5c",
+        "type": "serial in",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "serial": "32535557.87f7ca",
+        "x": 130,
+        "y": 1600,
+        "wires": [
+            [
+                "a179fc1c.4fe37"
+            ]
+        ]
+    },
+    {
+        "id": "a179fc1c.4fe37",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Read Serial Handshake",
+        "func": "var ib;\nvar dataView     = new DataView(new ArrayBuffer(4));\nvar newSettingDone = 0;\nvar cubeInit = 0;\n\nfor (ib = 0; ib < 4; ++ib)   dataView.setUint8(ib, msg.payload[0 * 4 + 3 - ib]);\ncubeInit = dataView.getInt32(0);\nfor (ib = 0; ib < 4; ++ib)   dataView.setUint8(ib, msg.payload[1 * 4 + 3 - ib]);\nnewSettingDone = dataView.getInt32(0);\n\nvar newMsg = {topic:'userData', payload:[]};\nfor (var ii = 8; ii < msg.payload.length; ++ii) newMsg.payload[ii - 8] = msg.payload[ii];\n\nif (newSettingDone > 0) \n{\n    flow.get('gate').newSetting = 0;\n}\nif(cubeInit == 1) \n{\n    flow.get('gate').noStepsToTurn = 0;\n    flow.get('gate').stayAwakeAfterRotation = 0;\n    flow.get('gate').newSetting = 1;\n}\n//node.warn('newSettingDone = ' + newSettingDone.toString());\n//node.warn('cubeInit = ' + cubeInit.toString());\n\nreturn newMsg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 340,
+        "y": 1600,
+        "wires": [
+            [
+                "da003c14.5360e",
+                "716f188f.a84c68"
+            ]
+        ]
+    },
+    {
+        "id": "716f188f.a84c68",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "CreateSettings",
+        "func": "var bufsize = 24;\nvar buffer = new ArrayBuffer(bufsize);\nvar settingsView = new DataView(buffer);\nsettingsView.setInt32(0, flow.get('gate').newSetting, true);\nsettingsView.setInt32(4, flow.get('gate').noStepsToTurn, true);\nsettingsView.setInt32(8, flow.get('gate').motorDirection, true);\nsettingsView.setInt32(12, flow.get('gate').stepDelayuS, true);\nsettingsView.setInt32(16, flow.get('gate').stayAwakeAfterRotation, true);\nsettingsView.setInt32(20, flow.get('gate').loopDelay, true);\n\nreturn {topic:'settings',payload:Buffer.from(buffer)};\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 620,
+        "y": 1660,
+        "wires": [
+            [
+                "cd21d50.6e06828"
+            ]
+        ]
+    },
+    {
+        "id": "da003c14.5360e",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Create Readings",
+        "func": "var ib;\nvar dataView     = new DataView(new ArrayBuffer(4));\n\nfor (ib = 0; ib < 4; ++ib)   dataView.setUint8(ib, msg.payload[0 * 4 + 3 - ib]);\nvar stepLocation = dataView.getInt32(0);\n\n\nreturn {topic : 'reading', payload : stepLocation};\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 630,
+        "y": 1600,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "cd21d50.6e06828",
+        "type": "serial out",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "serial": "32535557.87f7ca",
+        "x": 840,
+        "y": 1660,
+        "wires": []
+    },
+    {
+        "id": "5315590c.3b1118",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Gate Control",
+        "func": "if(msg.payload == 1) \n{\n    flow.get('gate').noStepsToTurn = 50;\n    flow.get('gate').stayAwakeAfterRotation = 1;\n    flow.get('gate').motorDirection = 1;\n    flow.get('gate').newSetting = 1;\n}\nif(msg.payload == -1) \n{\n    flow.get('gate').noStepsToTurn = 50;\n    flow.get('gate').stayAwakeAfterRotation = 1;\n    flow.get('gate').motorDirection = 0;\n    flow.get('gate').newSetting = 1;\n}\nif(msg.payload == 0) \n{\n    flow.get('gate').noStepsToTurn = 0;\n    flow.get('gate').stayAwakeAfterRotation = 0;\n    flow.get('gate').motorDirection = 0;\n    flow.get('gate').newSetting = 1;\n}\nreturn null;",
+        "outputs": 0,
+        "noerr": 0,
+        "x": 850,
+        "y": 1840,
+        "wires": []
+    },
+    {
+        "id": "d1ecd31c.85848",
+        "type": "inject",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "x": 130,
+        "y": 1540,
+        "wires": [
+            [
+                "3eeb6d78.e660d2"
+            ]
+        ]
+    },
+    {
+        "id": "3eeb6d78.e660d2",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Initialize Gate",
+        "func": "var gate = \n{\n    noStepsToTurn : 0,\n    motorDirection :1,\n    stepDelayuS : 10000,\n    stayAwakeAfterRotation : 0,\n    loopDelay : 1000,\n    newSetting : 1\n}\nflow.set('gate',gate);\nflow.set('gateInUse',false);\nreturn msg;",
+        "outputs": 0,
+        "noerr": 0,
+        "x": 300,
+        "y": 1540,
+        "wires": []
+    },
+    {
+        "id": "8d4900c5.10495",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Gate State Open",
+        "func": "if (flow.get('gateInUse')) return null;\nflow.set('gateInUse',true);\nmsg.payload = 1;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 330,
+        "y": 1760,
+        "wires": [
+            [
+                "5315590c.3b1118",
+                "10afd993.3a5476"
+            ]
+        ]
+    },
+    {
+        "id": "b6cee558.861ca8",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Gate State Rest",
+        "func": "msg.payload = 0;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 580,
+        "y": 1900,
+        "wires": [
+            [
+                "5315590c.3b1118",
+                "6228d70b.c12288"
+            ]
+        ]
+    },
+    {
+        "id": "29ad2f9d.4ef79",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Gate State Close",
+        "func": "msg.payload = -1;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 590,
+        "y": 1840,
+        "wires": [
+            [
+                "5315590c.3b1118"
+            ]
+        ]
+    },
+    {
+        "id": "f02718de.991428",
         "type": "delay",
-        "z": "f94fb9c0.1069e8",
+        "z": "5f562f66.a301e",
         "name": "",
         "pauseType": "delay",
         "timeout": "5",
@@ -3946,52 +3871,308 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 880,
-        "y": 600,
+        "x": 400,
+        "y": 1900,
         "wires": [
             [
-                "d3ff7b91.e74888"
+                "b6cee558.861ca8"
             ]
         ]
     },
     {
-        "id": "d3ff7b91.e74888",
+        "id": "10afd993.3a5476",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "10",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 400,
+        "y": 1840,
+        "wires": [
+            [
+                "29ad2f9d.4ef79",
+                "f02718de.991428"
+            ]
+        ]
+    },
+    {
+        "id": "ada0569a.a42ec8",
+        "type": "inject",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 120,
+        "y": 1760,
+        "wires": [
+            [
+                "8d4900c5.10495"
+            ]
+        ]
+    },
+    {
+        "id": "6228d70b.c12288",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 780,
+        "y": 1900,
+        "wires": [
+            [
+                "7e0f54ac.ff713c",
+                "b805d53b.883178"
+            ]
+        ]
+    },
+    {
+        "id": "7e0f54ac.ff713c",
         "type": "function",
-        "z": "f94fb9c0.1069e8",
+        "z": "5f562f66.a301e",
         "name": "Set Gate State not in use",
         "func": "flow.set('gateInUse',false);\n",
         "outputs": 0,
         "noerr": 0,
-        "x": 1090,
-        "y": 600,
+        "x": 990,
+        "y": 1900,
         "wires": []
     },
     {
-        "id": "b57978ca.6b7588",
+        "id": "1c3d6801.198de8",
         "type": "link in",
-        "z": "f94fb9c0.1069e8",
+        "z": "5f562f66.a301e",
         "name": "Open Gate Input",
         "links": [
             "d382f2a2.4f8a6"
         ],
-        "x": 220,
-        "y": 400,
+        "x": 120,
+        "y": 1700,
         "wires": [
             [
-                "77feb5a4.2c9b0c"
+                "8d4900c5.10495",
+                "90a53647.669d68"
             ]
         ]
     },
     {
-        "id": "d382f2a2.4f8a6",
+        "id": "9ab88a0e.378688",
+        "type": "exec",
+        "z": "5f562f66.a301e",
+        "command": "espeak \"Please Enter\" --stdout | aplay",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "espeak Please Enter",
+        "x": 1640,
+        "y": 840,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "661626f9.396268",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Body Temp Speak",
+        "func": "msg.payload = ' \"Temperature ' + flow.get('device').bodyTemp.value.toString() + '\" --stdout | aplay'\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1200,
+        "y": 840,
+        "wires": [
+            [
+                "de2bd818.1a34c8"
+            ]
+        ]
+    },
+    {
+        "id": "de2bd818.1a34c8",
+        "type": "exec",
+        "z": "5f562f66.a301e",
+        "command": "espeak ",
+        "addpay": true,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "espeak Body Temp",
+        "x": 1410,
+        "y": 840,
+        "wires": [
+            [
+                "9ab88a0e.378688"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "eabf67c.b431f98",
         "type": "link out",
         "z": "5f562f66.a301e",
-        "name": "Open Gate Cammand",
+        "name": "Red alarm Burst Out",
         "links": [
-            "b57978ca.6b7588"
+            "40a9c1f6.4c508"
         ],
-        "x": 1095,
-        "y": 820,
+        "x": 1495,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "40a9c1f6.4c508",
+        "type": "link in",
+        "z": "5f562f66.a301e",
+        "name": "Red LED In",
+        "links": [
+            "eabf67c.b431f98",
+            "81c528f.cc489d8"
+        ],
+        "x": 1615,
+        "y": 640,
+        "wires": [
+            [
+                "efc84a31.d4d1e8"
+            ]
+        ]
+    },
+    {
+        "id": "a325a9ec.7e9188",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "1 sec blink out",
+        "links": [
+            "316e94c2.271bec"
+        ],
+        "x": 1635,
+        "y": 1420,
+        "wires": []
+    },
+    {
+        "id": "c9d85cd7.b10c5",
+        "type": "link in",
+        "z": "5f562f66.a301e",
+        "name": "Blue LED In",
+        "links": [
+            "81c528f.cc489d8",
+            "852a59a8.761b68",
+            "d0988296.efa1"
+        ],
+        "x": 1615,
+        "y": 720,
+        "wires": [
+            [
+                "f8d673c5.5bd28"
+            ]
+        ]
+    },
+    {
+        "id": "a5fe01b6.38107",
+        "type": "link in",
+        "z": "5f562f66.a301e",
+        "name": "1 sec blink in",
+        "links": [
+            "3cee692a.639e86"
+        ],
+        "x": 995,
+        "y": 1420,
+        "wires": [
+            [
+                "620ca605.e38238"
+            ]
+        ]
+    },
+    {
+        "id": "3cee692a.639e86",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "Image blink out",
+        "links": [
+            "a5fe01b6.38107"
+        ],
+        "x": 1375,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "90a53647.669d68",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 1",
+        "func": "msg.payload = 1;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 300,
+        "y": 1700,
+        "wires": [
+            [
+                "852a59a8.761b68"
+            ]
+        ]
+    },
+    {
+        "id": "852a59a8.761b68",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "Gate Open to 1",
+        "links": [
+            "c9d85cd7.b10c5"
+        ],
+        "x": 395,
+        "y": 1700,
+        "wires": []
+    },
+    {
+        "id": "b805d53b.883178",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 0",
+        "func": "msg.payload = 0;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 940,
+        "y": 1960,
+        "wires": [
+            [
+                "d0988296.efa1"
+            ]
+        ]
+    },
+    {
+        "id": "d0988296.efa1",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "Gat Finish to 0",
+        "links": [
+            "c9d85cd7.b10c5"
+        ],
+        "x": 1055,
+        "y": 1960,
         "wires": []
     }
 ]
