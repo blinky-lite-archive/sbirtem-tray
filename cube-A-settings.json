@@ -2,8 +2,8 @@
   "deviceType": "vad-kul",
   "name": "07",
   "arcPeriod": 60000,
-  "timeStamp": 1603426864611,
-  "lastArchive": 1603381379342,
+  "timeStamp": 1603619829035,
+  "lastArchive": 1603618377850,
   "linkQuality": {
     "action": "reading",
     "type": "scalar",
@@ -27,7 +27,7 @@
   "signalLevel": {
     "action": "reading",
     "type": "scalar",
-    "value": -34,
+    "value": -37,
     "unit": "dBm",
     "alarm": {
       "value": 0,
@@ -47,7 +47,7 @@
   "pixelMin": {
     "action": "reading",
     "type": "scalar",
-    "value": 20.9,
+    "value": 19.1,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -67,15 +67,15 @@
   "pixelMax": {
     "action": "reading",
     "type": "scalar",
-    "value": 34.42,
+    "value": 23.2,
     "unit": "C",
     "alarm": {
       "value": 0,
       "limits": {
-        "lolo": 25,
-        "low": 27,
-        "high": 36,
-        "hihi": 39
+        "lolo": 15,
+        "low": 20,
+        "high": 35,
+        "hihi": 45
       },
       "notify": {
         "name": "Dave",
@@ -144,16 +144,36 @@
       }
     }
   },
-  "bodyTemp": {
+  "autoModeAction": {
     "action": "reading",
     "type": "scalar",
-    "value": 36.2,
-    "unit": "C",
+    "value": 0,
+    "unit": "unit",
     "alarm": {
       "value": 0,
       "limits": {
+        "lolo": -1,
+        "low": -1,
+        "high": 4,
+        "hihi": 4
+      },
+      "notify": {
+        "name": "Dave",
+        "number": "",
+        "time": 0
+      }
+    }
+  },
+  "bodyTemp": {
+    "action": "reading",
+    "type": "scalar",
+    "value": 0,
+    "unit": "C",
+    "alarm": {
+      "value": 3,
+      "limits": {
         "lolo": 32,
-        "low": 34,
+        "low": 34.5,
         "high": 38.5,
         "hihi": 41
       },
@@ -167,7 +187,7 @@
   "offsetTemp": {
     "action": "setting",
     "type": "scalar",
-    "value": 1.75,
+    "value": 3.9,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -187,10 +207,10 @@
   "archiveMinTemp": {
     "action": "setting",
     "type": "scalar",
-    "value": 28,
+    "value": 25,
     "unit": "C",
     "alarm": {
-      "value": 0,
+      "value": 1,
       "limits": {
         "lolo": 25,
         "low": 26,
@@ -207,15 +227,15 @@
   "archivePixelPercent": {
     "action": "setting",
     "type": "scalar",
-    "value": 1,
+    "value": 35,
     "unit": "%",
     "alarm": {
-      "value": 1,
+      "value": 0,
       "limits": {
         "lolo": 1,
-        "low": 1.1,
-        "high": 25,
-        "hihi": 30
+        "low": 2,
+        "high": 99,
+        "hihi": 100
       },
       "notify": {
         "name": "",
