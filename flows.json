@@ -262,17 +262,10 @@
         "wholemsg": "false"
     },
     {
-        "id": "f18b1c2a.67b3a",
-        "type": "websocket-listener",
-        "z": "",
-        "path": "/simple/websocket",
-        "wholemsg": "false"
-    },
-    {
         "id": "e8ef1dd0.f4c9a",
         "type": "websocket-listener",
         "z": "",
-        "path": "/profile/websocket",
+        "path": "/monitor/websocket",
         "wholemsg": "false"
     },
     {
@@ -829,7 +822,7 @@
         "z": "c4285970.3276d8",
         "name": "",
         "x": 1130,
-        "y": 320,
+        "y": 280,
         "wires": []
     },
     {
@@ -841,10 +834,10 @@
         "fieldType": "msg",
         "format": "html",
         "syntax": "mustache",
-        "template": "    <div width=\"100%\">\n        <div class='row' style='padding-bottom: 10px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.spectrogram}}}\n            </div>\n        </div>\n        <div class='row' style='padding-bottom: 10px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.history}}}\n            </div>\n        </div>\n        <div class='row' style='padding-bottom: 10px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.histogram}}}\n            </div>\n        </div>\n        <div class='row' style='padding-bottom: 10px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.controls}}}\n            </div>\n        </div>\n    </div>\n",
+        "template": "    <div width=\"100%\">\n        <div class='row' style='padding-bottom: 10px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.spectrogram}}}\n            </div>\n        </div>\n        <div class='row' style='padding-bottom: 10px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.history}}}\n            </div>\n        </div>\n        <div class='row' style='padding-bottom: 10px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.controls}}}\n            </div>\n        </div>\n    </div>\n",
         "output": "str",
         "x": 950,
-        "y": 320,
+        "y": 280,
         "wires": [
             [
                 "f078068d.c90bc8"
@@ -994,7 +987,8 @@
                 "9115ea87.0ca208"
             ],
             [
-                "bf3bbeb6.27c5f"
+                "bf3bbeb6.27c5f",
+                "cb2332f8.29c65"
             ]
         ]
     },
@@ -1514,7 +1508,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Initialize Stuff",
-        "func": "flow.set('resettingCamera',true);\nflow.set('lastImageTime',new Date().getTime());\nreturn msg;",
+        "func": "flow.set('resettingCamera',true);\nflow.set('lastImageTime',new Date().getTime());\nvar voiceWarnings = [\n    [\"\"        , \"\"        ,\"\"            ,\"\"          ,\"\"         ,\"\"                   ,\"\"],\n    [\"Welcome\" ,\"Välkommen\",\"καλως ΗΡΘΑΤΕ\",\"Bienvenido\",\"Benvenuto\",\"Herzlich willkommen\",\"Bienvenu\"],\n    [\"Good bye\",\"Hej då\"   ,\"Αντιο σας\"   ,\"Adiós\"     ,\"Addio\"    ,\"Auf Wiedersehen\"    ,\"Au revoir\"],\n    [\"\"        ,\"\"         ,\"\"            ,\"\"          ,\"\"         ,\"\"                   ,\"\"] ];\nflow.set('voiceWarnings',voiceWarnings);\nvar languageFlags = [' -v en',' -v sv',' -v el',' -v es',' -v it',' -v de',' -v fr'];\nflow.set('languageFlags',languageFlags);\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "x": 270,
@@ -2258,7 +2252,8 @@
         "wires": [
             [
                 "fd6e82bc.30235",
-                "9c6b0903.4ea858"
+                "9c6b0903.4ea858",
+                "c7d887e1.faf408"
             ]
         ]
     },
@@ -2410,7 +2405,7 @@
         "fieldType": "msg",
         "format": "javascript",
         "syntax": "mustache",
-        "template": "// Global Javascript\n        var plotConfig = \n        {\n            trace1Title : 'Temp (C)',\n            trace1Color : '#557a95',\n            trace1GridColor : '#beceda',\n            trace2Title : 'Distance (cm)',\n            trace2Color : '#f2a31f',\n            plotLength  : 600000,\n            width   : '',\n            height  :   '500',\n            htmlId  :   'historyStripChart'\n        };\n        let historyStripChart = new StripChart(plotConfig);\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var colorScale = true;\n        var enhancementLevel = 0;\n        var pgm = null;\n        var imageArray = null;\n        var programStarted = false;\n        var audioAlarm = new Audio('/audio/hold-your-horses.ogg');\n        var audioAlarmOn = true;\n        var imageDelayChanged = false;\n        var ultraSoundRangeChanged = false;\n        var offsetTempChanged = false;\n        var archiveMinTempChanged = false;\n        var archivePixelPercentChanged = false;\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n            $('#imageDelayButtonId').hide();\n            $('#ultraSoundRangeButtonId').hide();\n            $('#offsetTempButtonId').hide();\n            $('#archiveMinTempButtonId').hide();\n            $('#archivePixelPercentButtonId').hide();\n        }\n        function onWebSocketOpen()\n        {\n            if (!programStarted)\n            {\n                programStarted = true;\n                sendWebSocketMessageObject({topic : 'getLastImage', userID : userID, 'restfulDevice': restfulDevice});\n            }\n        }\n        function onWebSocketClose()\n        {\n//            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        \n                    }\n                    break;\n                case 'lastImage':\n                    if (msg.userID == userID)\n                    {\n                        device = msg.payload;\n                        if (device.imageData.value != null)\n                        {\n                            $('#snapshotTimeStamp').text(new Date(device.timeStamp).toLocaleString('en-SE', { timeZone: 'Europe/Stockholm' }));\n                            pgm = JSON.parse(JSON.stringify(device.imageData.value));\n                            var processImage = 1;\n                            try {processImage = device.processImage.value;} catch(err) {processImage = 1;}\n                            switch (processImage)\n                            {\n                                case 0:  \n                                    imageArray = pgm.imageArray;\n                                    break;\n                                case 1:  \n                                    imageArray = blurImage(pgm.imageArray);\n                                    break;\n                                default: \n                                    imageArray = blurImage(pgm.imageArray);\n                                    break;\n                            }\n                            $('#sensorName').text('Sensor ' + device.name + ' @ ' + device.pixelMax.value.toString() + ' C');\n                            plotImage();\n                        }\n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            if (!imageDelayChanged)$('#imageDelayInputId').val(device.imageDelay.value);\n            if (!ultraSoundRangeChanged)$('#ultraSoundRangeInputId').val(device.ultraSoundRange.value);\n            if (!archiveMinTempChanged)$('#archiveMinTempInputId').val(device.archiveMinTemp.value);\n            if (!offsetTempChanged)$('#offsetTempInputId').val(device.offsetTemp.value);\n            if (!archivePixelPercentChanged)$('#archivePixelPercentInputId').val(device.archivePixelPercent.value);\n            $('#processImageInputId').val(device.processImage.value);\n            $('#triggerModeInputId').val(device.triggerMode.value);\n            if (device.triggerMode.value == 2)\n            {\n                $('#manualTrigger').show();\n            }\n            else\n            {\n                $('#manualTrigger').hide();\n            }\n            $('#linkQualityId').text(device.linkQuality.value);\n            $('#signalLevelId').text(device.signalLevel.value);\n            if (device.imageData.value != null)\n            {\n                $('#manualTriggerButton').text('Take Image');\n                historyStripChart.add3TracePoints(device.pixelMax.value, device.pixelMin.value, device.ultraSoundDistance.value);\n                $('#snapshotTimeStamp').text(new Date(device.timeStamp).toLocaleString('en-SE', { timeZone: 'Europe/Stockholm' }));\n                $('#sensorName').text('Sensor ' + device.name + ' @ ' + device.pixelMax.value.toString() + ' C');\n                pgm = JSON.parse(JSON.stringify(device.imageData.value));\n                var processImage = 1;\n                try {processImage = device.processImage.value;} catch(err) {processImage = 1;}\n                switch (processImage)\n                {\n                    case 0:  \n                        imageArray = pgm.imageArray;\n                        break;\n                    case 1:  \n                        imageArray = blurImage(pgm.imageArray);\n                        break;\n                    default: \n                        imageArray = blurImage(pgm.imageArray);\n                        break;\n                }\n                plotImage();\n                var image1dArray = [];\n                var ipixel = 0;\n                var plow = (pgm.minval - 27315) / 100;\n                var phigh = (pgm.maxval - 27315) / 100;\n                if ((device.pixelMax.alarm.value == 2) || (device.pixelMax.alarm.value == 4))\n                {\n                    if (audioAlarmOn && (device.triggerMode.value != 2) )\n                    {\n                        var playPromise = audioAlarm.play();\n                        if (playPromise !== undefined) \n                        {\n                            playPromise.then(_ => \n                            {\n                            // Automatic playback started!\n                            // Show playing UI.\n                            }).catch(error => \n                            {\n                            // Auto-play was prevented\n                            // Show paused UI.\n                            });\n                         }\n                    }\n                }\n                for (var irow = 0; irow < pgm.nrows; ++irow)\n                {\n                    for (var icol = 0; icol < pgm.ncols; ++icol)\n                    {\n                        image1dArray[ipixel] = (imageArray[irow][icol] / 256.0) * (phigh - plow) + plow;\n                         ++ipixel;\n                    }\n                }\n\n                var layout = {title: \"Temperature (C)\", xaxis: {title: \"Temperature (C)\"}, yaxis: {title: \"Count\"}};\n\n                Plotly.newPlot('pixelHistogramChart', [{x: image1dArray, type:'histogram',  autobinx: true }]);\n//              Plotly.newPlot('pixelHistogramChart', [{x: image1dArray, type:'histogram',  xbins: {size: 0.5,start: 0} }],layout);\n            }\n            else\n            {\n                historyStripChart.add1TracePoints(device.ultraSoundDistance.value);\n             }\n            \n            var buttonColor = 'green';\n            var buttonTextColor = 'black';\n            var buttonText = \"Off\";\n            if (device.flipHorizontal.value > 0) \n            {\n                buttonColor = 'red';\n                buttonText = 'On';\n            }\n            $('#flipHorizontalId').css('color', buttonTextColor); \n            $('#flipHorizontalId').css('background-color', buttonColor); \n            $('#flipHorizontalId').text(buttonText); \n\n            buttonColor = 'green';\n            buttonTextColor = 'black';\n            buttonText = \"Off\";\n            if (device.flipVertical.value > 0) \n            {\n                buttonColor = 'red';\n                buttonText = 'On';\n            }\n            $('#flipVerticalId').css('color', buttonTextColor); \n            $('#flipVerticalId').css('background-color', buttonColor); \n            $('#flipVerticalId').text(buttonText); \n        }\n        function plotImage()\n        {\n            var rgb = [];\n            var plow = (pgm.minval - 27315) / 100;\n            var phigh = (pgm.maxval - 27315) / 100;\n            var pdelta = phigh - plow;\n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var intensity = ibox / 8.0;\n                var pbox = Math.round(((phigh - plow) * intensity + plow) * 10.0) / 10.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(pbox.toString());\n                if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                if (colorScale)\n                {\n                    rgb = getRGB(intensity);\n                }\n                else\n                {\n                    rgb[0] = Math.floor(255 * intensity);\n                    rgb[1] = Math.floor(255 * intensity);\n                    rgb[2] = Math.floor(255 * intensity);\n                }\n                var style='width:88px;height:50px;background-color:' + 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                $('#box' + (ibox + 1).toString()).attr('style',style);\n            }\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var tipPointer = document.getElementById(\"tipPointer\");\n            var tipPointerContext = tipPointer.getContext(\"2d\");\n            var tip = document.getElementById(\"tip\");\n            var tipContext = tip.getContext(\"2d\");\n            tipContext.font = \"30px Arial\";\n            tipContext.fillStyle = \"cyan\";\n            tipPointerContext.fillStyle = \"cyan\";\n            if (colorScale) tipContext.fillStyle = \"black\";\n            if (colorScale) tipPointerContext.fillStyle = \"black\";\n            tipContext.textAlign = \"left\";\n\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            var rectWidth  = canvasWidth  / pgm.ncols;\n            var rectHeight = canvasHeight / pgm.nrows;\n            canvas.onmousemove = function (e) \n            {\n                var icol = Math.floor(e.layerX / rectWidth);\n                if (icol < 0) icol = 0;\n                if (icol >= pgm.ncols) icol = pgm.ncols - 1;\n                var irow = Math.floor((canvasHeight - e.layerY) / rectHeight);\n                if (irow < 0) irow = 0;\n                if (irow >= pgm.nrows) irow = pgm.nrows - 1;\n                var temp = Math.floor(100.0 * (pdelta * imageArray[irow][icol] / 256.0 + plow)) / 100;\n\n                tipPointer.style.top = (e.layerY  - tipPointer.height / 2).toString()  + \"px\";\n                tipPointer.style.left = (e.layerX - tipPointer.width / 2).toString() + \"px\";\n                tipPointerContext.clearRect(0, 0, tipPointer.width, tipPointer.height);\n                tipPointerContext.fillRect( 0, 0, tipPointer.width, tipPointer.height);\n\n                tip.style.top = (e.layerY - tip.height - tipPointer.height).toString()  + \"px\";\n                tip.style.left = (e.layerX).toString() + \"px\";\n                tipContext.clearRect(0, 0, tip.width, tip.height);\n                tipContext.fillText(temp.toString() + ' C', 0, 30);\n            };\n\n            for (var irow = 0; irow < pgm.nrows; ++irow)\n            {\n                for (var icol = 0; icol < pgm.ncols; ++icol)\n                {\n                    var intensity = imageArray[irow][icol] / 256.0;\n                    if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                    if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                    if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                    if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                    if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                    if (colorScale)\n                    {\n                        rgb = getRGB(intensity);\n                        rgb[0] = Math.floor(rgb[0]);\n                        rgb[1] = Math.floor(rgb[1]);\n                        rgb[2] = Math.floor(rgb[2]);\n                    }\n                    else\n                    {\n                        rgb[0] = Math.floor(255 * intensity);\n                        rgb[1] = Math.floor(255 * intensity);\n                        rgb[2] = Math.floor(255 * intensity);\n                    }\n                    canvasContext.fillStyle = 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                    if (intensity > 0.98) \n                    {\n                        canvasContext.fillStyle='magenta';\n                        if (colorScale) canvasContext.fillStyle='white';\n                    }\n\n                    canvasContext.fillRect(icol * rectWidth, canvasHeight - rectHeight - irow * rectHeight, rectWidth, rectHeight);\n                }    \n            }\n        }\n        function blurImage(inputImage)\n        {\n            var kernal = [[1,2,1], [2,4,2], [1,2,1]];\n            var blurImage = [];\n            var nrows = inputImage.length;\n            var ncols = inputImage[0].length;\n            for (var irow = 0; irow < nrows; ++irow)\n            {\n                blurImage[irow] = [];\n                for (var icol = 0; icol < ncols; ++icol)\n                {\n                    if ((irow == 0) || (irow == (nrows - 1)))\n                    {\n                        blurImage[irow][icol] =  inputImage[irow][icol];\n                    }\n                    else\n                    {\n                        if ((icol == 0) || (icol == (ncols - 1)))\n                        {\n                            blurImage[irow][icol] =  inputImage[irow][icol];\n                        }\n                        else\n                        {\n                            blurImage[irow][icol] = 0;\n                            for (var ikrow = 0; ikrow < 3; ++ikrow)\n                            {\n                                for (var ikcol = 0; ikcol < 3; ++ikcol)\n                                {\n                                    blurImage[irow][icol] = blurImage[irow][icol] + inputImage[irow + ikrow - 1][icol + ikcol - 1] * kernal[ikrow][ikcol];\n                                }\n                            }\n                            blurImage[irow][icol] = Math.round(blurImage[irow][icol] / 16.0);\n                        }\n                    }\n                }\n            }\n            return blurImage;\n        }\n        function mouseLeftCanvas()\n        {\n            var tip = document.getElementById(\"tip\");\n            var tipContext = tip.getContext(\"2d\");\n            tipContext.clearRect(0, 0, tip.width, tip.height);\n            var tipPointer = document.getElementById(\"tipPointer\");\n            var tipPointerContext = tipPointer.getContext(\"2d\");\n            tipPointerContext.clearRect(0, 0, tipPointer.width, tipPointer.height);\n        }\n        function getRGB(intensity)\n        {\n          var rgb = [0,0,0];\n          if ( (0 <= intensity) && (intensity <= 0.25) )\n          {\n            rgb[0] = 0;\n            rgb[1] = Math.floor(255 * intensity * 4);    \n            rgb[2] = 255;\n          }\n          if ( (0.25 < intensity) && (intensity <= 0.50) )\n          {\n            rgb[0] = 0;\n            rgb[1] = 255;    \n            rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n          }\n          if ( (0.50 < intensity) && (intensity <= 0.75) )\n          {\n            rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n            rgb[1] = 255;    \n            rgb[2] = 0;\n          }\n          if ( (0.75 < intensity) && (intensity <= 1.0) )\n          {\n            rgb[0] = 255;\n            rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n            rgb[2] = 0;\n          }\n          return rgb;\n        }\n        function toggleColorScale()\n        {\n            colorScale = !colorScale;\n            if (colorScale)\n            {\n                $('#colorScaleButton').text('Color');\n            }\n            else\n            {\n                $('#colorScaleButton').text('Gray');\n            }\n            plotImage();\n        }\n        function toggleEnhancedScale(deltaEnhanced)\n        {\n            enhancementLevel = enhancementLevel + deltaEnhanced;\n            if (enhancementLevel >  2) enhancementLevel = 2;\n            if (enhancementLevel < -2) enhancementLevel = -2;\n            $('#enhancementLevel').text(enhancementLevel.toString());\n            plotImage();\n        }\n        function clearImage()\n        {\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);        \n            $('#snapshotTimeStamp').text('-');\n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var intensity = ibox / 8.0;\n                var pbox = 0.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(pbox.toString());\n            } \n            $('#pixelMaxBarPlot').hide();\n        }\n        function toggleSound()\n        {\n            audioAlarmOn = !audioAlarmOn;\n            if(audioAlarmOn)\n            {\n                $('#soundButtonId').css('color', 'black'); \n                $('#soundButtonId').css('background-color', 'green'); \n                $('#soundButtonId').text('On'); \n            }\n            else\n            {\n                $('#soundButtonId').css('color', 'black'); \n                $('#soundButtonId').css('background-color', 'grey'); \n                $('#soundButtonId').text('Off'); \n            }\n\n        }\n        function flipHorizontal()\n        {\n            if (device.flipHorizontal.value > 0)\n            {\n                device.flipHorizontal.value = 0;\n            }\n            else\n            {\n                device.flipHorizontal.value = 1;\n                \n            }\n            $('#flipHorizontalId').css('color', 'black'); \n            $('#flipHorizontalId').css('background-color', 'grey'); \n            $('#flipHorizontalId').text('?'); \n            var mqttMessage = \n            {\n                topic   : mqttDevice.project + '/' +  mqttDevice.deviceType + '/' +  mqttDevice.name + '/setting',\n                payload :  device\n            };\n            sendSettingToMqtt(mqttMessage);\n        }\n        function flipVertical()\n        {\n            if (device.flipVertical.value > 0)\n            {\n                device.flipVertical.value = 0;\n            }\n            else\n            {\n                device.flipVertical.value = 1;\n                \n            }\n            $('#flipVerticalId').css('color', 'black'); \n            $('#flipVerticalId').css('background-color', 'grey'); \n            $('#flipVerticalId').text('?'); \n            var mqttMessage = \n            {\n                topic   : mqttDevice.project + '/' +  mqttDevice.deviceType + '/' +  mqttDevice.name + '/setting',\n                payload :  device\n            };\n            sendSettingToMqtt(mqttMessage);\n        }\n        function setScalarValue(settingValue, attrName)\n        {\n            var settingAttr = device[attrName];\n            if ( (settingAttr.alarm.limits.lolo <= settingValue) && (settingValue <= settingAttr.alarm.limits.hihi) )\n            {\n                settingAttr.value = settingValue;\n                var mqttMessage = \n                {\n                    topic   : mqttDevice.project + '/' +  mqttDevice.deviceType + '/' +  mqttDevice.name + '/setting',\n                    payload :  device\n                };\n                sendSettingToMqtt(mqttMessage);\n            } \n            else\n            {\n                acknowledgeDialog('Acknowledge', 'Error', 'Entry outside range! (' + settingAttr.alarm.limits.lolo.toString() + '-' + settingAttr.alarm.limits.hihi.toString() + ' ' + settingAttr.unit);\n            }\n        }\n        function imageDelayChange()\n        {\n            imageDelayChanged = true;\n            $('#imageDelayButtonId').show();\n        }\n        function ultraSoundRangeChange()\n        {\n            ultraSoundRangeChanged = true;\n            $('#ultraSoundRangeButtonId').show();\n        }\n        function archiveMinTempChange()\n        {\n            archiveMinTempChanged = true;\n            $('#archiveMinTempButtonId').show();\n        }\n        function offsetTempChange()\n        {\n            offsetTempChanged = true;\n            $('#offsetTempButtonId').show();\n        }\n        function archivePixelPercentChange()\n        {\n            archivePixelPercentChanged = true;\n            $('#archivePixelPercentButtonId').show();\n        }\n        function imageDelay()\n        {\n            $('#imageDelayButtonId').hide();\n            if (isNaN($('#imageDelayInputId').val()))\n            {\n                imageDelayChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#imageDelayInputId').val()), 'imageDelay');\n            imageDelayChanged = false;\n        }\n        function ultraSoundRange()\n        {\n            $('#ultraSoundRangeButtonId').hide();\n            if (isNaN($('#ultraSoundRangeInputId').val()))\n            {\n                ultraSoundRangeChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#ultraSoundRangeInputId').val()), 'ultraSoundRange');\n            ultraSoundRangeChanged = false;\n        }\n        function archiveMinTemp()\n        {\n            $('#archiveMinTempButtonId').hide();\n            if (isNaN($('#archiveMinTempInputId').val()))\n            {\n                archiveMinTempChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#archiveMinTempInputId').val()), 'archiveMinTemp');\n            archiveMinTempChanged = false;\n        }\n        function offsetTemp()\n        {\n            $('#offsetTempButtonId').hide();\n            if (isNaN($('#offsetTempInputId').val()))\n            {\n                offsetTempChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#offsetTempInputId').val()), 'offsetTemp');\n            offsetTempChanged = false;\n        }\n        function archivePixelPercent()\n        {\n            $('#archivePixelPercentButtonId').hide();\n            if (isNaN($('#archivePixelPercentInputId').val()))\n            {\n                archivePixelPercentChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#archivePixelPercentInputId').val()), 'archivePixelPercent');\n            archivePixelPercentChanged = false;\n        }\n        function processImage()\n        {\n            if (isNaN($('#processImageInputId').val()))\n            {\n                 return;\n            }\n            setScalarValue(Number($('#processImageInputId').val()), 'processImage');\n        }\n        function triggerMode()\n        {\n            if (isNaN($('#triggerModeInputId').val()))\n            {\n                 return;\n            }\n            setScalarValue(Number($('#triggerModeInputId').val()), 'triggerMode');\n        }\n        function manualTrigger()\n        {\n            if (device.manualTrigger.value == 0)\n            {\n                setScalarValue(1, 'manualTrigger');\n                $('#manualTriggerButton').text('ABORT');\n            }\n            else\n            {\n                setScalarValue(0, 'manualTrigger');\n                $('#manualTriggerButton').text('Take Image');\n            }\n       }\n",
+        "template": "// Global Javascript\n        var plotConfig = \n        {\n            trace1Title : 'Temp (C)',\n            trace1Color : '#557a95',\n            trace1GridColor : '#beceda',\n            trace2Title : 'Distance (cm)',\n            trace2Color : '#f2a31f',\n            plotLength  : 600000,\n            width   : '',\n            height  :   '500',\n            htmlId  :   'historyStripChart'\n        };\n        let historyStripChart = new StripChart(plotConfig);\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var colorScale = true;\n        var enhancementLevel = 0;\n        var pgm = null;\n        var imageArray = null;\n        var programStarted = false;\n        var audioAlarm = new Audio('/audio/hold-your-horses.ogg');\n        var audioAlarmOn = true;\n        var imageDelayChanged = false;\n        var ultraSoundRangeChanged = false;\n        var offsetTempChanged = false;\n        var archiveMinTempChanged = false;\n        var archivePixelPercentChanged = false;\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n            $('#imageDelayButtonId').hide();\n            $('#ultraSoundRangeButtonId').hide();\n            $('#offsetTempButtonId').hide();\n            $('#archiveMinTempButtonId').hide();\n            $('#archivePixelPercentButtonId').hide();\n        }\n        function onWebSocketOpen()\n        {\n            if (!programStarted)\n            {\n                programStarted = true;\n                sendWebSocketMessageObject({topic : 'getLastImage', userID : userID, 'restfulDevice': restfulDevice});\n            }\n        }\n        function onWebSocketClose()\n        {\n//            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        \n                    }\n                    break;\n                case 'lastImage':\n                    if (msg.userID == userID)\n                    {\n                        device = msg.payload;\n                        if (device.imageData.value != null)\n                        {\n                            $('#snapshotTimeStamp').text(new Date(device.timeStamp).toLocaleString('en-SE', { timeZone: 'Europe/Stockholm' }));\n                            pgm = JSON.parse(JSON.stringify(device.imageData.value));\n                            var processImage = 1;\n                            try {processImage = device.processImage.value;} catch(err) {processImage = 1;}\n                            switch (processImage)\n                            {\n                                case 0:  \n                                    imageArray = pgm.imageArray;\n                                    break;\n                                case 1:  \n                                    imageArray = blurImage(pgm.imageArray);\n                                    break;\n                                default: \n                                    imageArray = blurImage(pgm.imageArray);\n                                    break;\n                            }\n                            $('#sensorName').text('Sensor ' + device.name + ' @ ' + device.pixelMax.value.toString() + ' C');\n                            plotImage();\n                        }\n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            if (!imageDelayChanged)$('#imageDelayInputId').val(device.imageDelay.value);\n            if (!ultraSoundRangeChanged)$('#ultraSoundRangeInputId').val(device.ultraSoundRange.value);\n            if (!archiveMinTempChanged)$('#archiveMinTempInputId').val(device.archiveMinTemp.value);\n            if (!offsetTempChanged)$('#offsetTempInputId').val(device.offsetTemp.value);\n            if (!archivePixelPercentChanged)$('#archivePixelPercentInputId').val(device.archivePixelPercent.value);\n            $('#processImageInputId').val(device.processImage.value);\n            $('#triggerModeInputId').val(device.triggerMode.value);\n            if (device.triggerMode.value == 2)\n            {\n                $('#manualTrigger').show();\n            }\n            else\n            {\n                $('#manualTrigger').hide();\n            }\n            $('#gateModeInputId').val(device.gateMode.value);\n            $('#languageModeInputId').val(device.language.value);\n            $('#linkQualityId').text(device.linkQuality.value);\n            $('#signalLevelId').text(device.signalLevel.value);\n            if (device.imageData.value != null)\n            {\n                $('#manualTriggerButton').text('Take Image');\n                historyStripChart.add3TracePoints(device.pixelMax.value, device.pixelMin.value, device.ultraSoundDistance.value);\n                $('#snapshotTimeStamp').text(new Date(device.timeStamp).toLocaleString('en-SE', { timeZone: 'Europe/Stockholm' }));\n                $('#sensorName').text('Sensor ' + device.name + ' @ ' + device.pixelMax.value.toString() + ' C');\n                pgm = JSON.parse(JSON.stringify(device.imageData.value));\n                var processImage = 1;\n                try {processImage = device.processImage.value;} catch(err) {processImage = 1;}\n                switch (processImage)\n                {\n                    case 0:  \n                        imageArray = pgm.imageArray;\n                        break;\n                    case 1:  \n                        imageArray = blurImage(pgm.imageArray);\n                        break;\n                    default: \n                        imageArray = blurImage(pgm.imageArray);\n                        break;\n                }\n                plotImage();\n                var image1dArray = [];\n                var ipixel = 0;\n                var plow = (pgm.minval - 27315) / 100;\n                var phigh = (pgm.maxval - 27315) / 100;\n                if ((device.pixelMax.alarm.value == 2) || (device.pixelMax.alarm.value == 4))\n                {\n                    if (audioAlarmOn && (device.triggerMode.value != 2) )\n                    {\n                        var playPromise = audioAlarm.play();\n                        if (playPromise !== undefined) \n                        {\n                            playPromise.then(_ => \n                            {\n                            // Automatic playback started!\n                            // Show playing UI.\n                            }).catch(error => \n                            {\n                            // Auto-play was prevented\n                            // Show paused UI.\n                            });\n                         }\n                    }\n                }\n            }\n            else\n            {\n                historyStripChart.add1TracePoints(device.ultraSoundDistance.value);\n             }\n            \n            var buttonColor = 'green';\n            var buttonTextColor = 'black';\n            var buttonText = \"Off\";\n            if (device.flipHorizontal.value > 0) \n            {\n                buttonColor = 'red';\n                buttonText = 'On';\n            }\n            $('#flipHorizontalId').css('color', buttonTextColor); \n            $('#flipHorizontalId').css('background-color', buttonColor); \n            $('#flipHorizontalId').text(buttonText); \n\n            buttonColor = 'green';\n            buttonTextColor = 'black';\n            buttonText = \"Off\";\n            if (device.flipVertical.value > 0) \n            {\n                buttonColor = 'red';\n                buttonText = 'On';\n            }\n            $('#flipVerticalId').css('color', buttonTextColor); \n            $('#flipVerticalId').css('background-color', buttonColor); \n            $('#flipVerticalId').text(buttonText); \n        }\n        function plotImage()\n        {\n            var rgb = [];\n            var plow = (pgm.minval - 27315) / 100;\n            var phigh = (pgm.maxval - 27315) / 100;\n            var pdelta = phigh - plow;\n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var intensity = ibox / 8.0;\n                var pbox = Math.round(((phigh - plow) * intensity + plow) * 10.0) / 10.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(pbox.toString());\n                if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                if (colorScale)\n                {\n                    rgb = getRGB(intensity);\n                }\n                else\n                {\n                    rgb[0] = Math.floor(255 * intensity);\n                    rgb[1] = Math.floor(255 * intensity);\n                    rgb[2] = Math.floor(255 * intensity);\n                }\n                var style='width:88px;height:50px;background-color:' + 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                $('#box' + (ibox + 1).toString()).attr('style',style);\n            }\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var tipPointer = document.getElementById(\"tipPointer\");\n            var tipPointerContext = tipPointer.getContext(\"2d\");\n            var tip = document.getElementById(\"tip\");\n            var tipContext = tip.getContext(\"2d\");\n            tipContext.font = \"30px Arial\";\n            tipContext.fillStyle = \"cyan\";\n            tipPointerContext.fillStyle = \"cyan\";\n            if (colorScale) tipContext.fillStyle = \"black\";\n            if (colorScale) tipPointerContext.fillStyle = \"black\";\n            tipContext.textAlign = \"left\";\n\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            var rectWidth  = canvasWidth  / pgm.ncols;\n            var rectHeight = canvasHeight / pgm.nrows;\n            canvas.onmousemove = function (e) \n            {\n                var icol = Math.floor(e.layerX / rectWidth);\n                if (icol < 0) icol = 0;\n                if (icol >= pgm.ncols) icol = pgm.ncols - 1;\n                var irow = Math.floor((canvasHeight - e.layerY) / rectHeight);\n                if (irow < 0) irow = 0;\n                if (irow >= pgm.nrows) irow = pgm.nrows - 1;\n                var temp = Math.floor(100.0 * (pdelta * imageArray[irow][icol] / 256.0 + plow)) / 100;\n\n                tipPointer.style.top = (e.layerY  - tipPointer.height / 2).toString()  + \"px\";\n                tipPointer.style.left = (e.layerX - tipPointer.width / 2).toString() + \"px\";\n                tipPointerContext.clearRect(0, 0, tipPointer.width, tipPointer.height);\n                tipPointerContext.fillRect( 0, 0, tipPointer.width, tipPointer.height);\n\n                tip.style.top = (e.layerY - tip.height - tipPointer.height).toString()  + \"px\";\n                tip.style.left = (e.layerX).toString() + \"px\";\n                tipContext.clearRect(0, 0, tip.width, tip.height);\n                tipContext.fillText(temp.toString() + ' C', 0, 30);\n            };\n\n            for (var irow = 0; irow < pgm.nrows; ++irow)\n            {\n                for (var icol = 0; icol < pgm.ncols; ++icol)\n                {\n                    var intensity = imageArray[irow][icol] / 256.0;\n                    if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                    if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                    if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                    if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                    if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                    if (colorScale)\n                    {\n                        rgb = getRGB(intensity);\n                        rgb[0] = Math.floor(rgb[0]);\n                        rgb[1] = Math.floor(rgb[1]);\n                        rgb[2] = Math.floor(rgb[2]);\n                    }\n                    else\n                    {\n                        rgb[0] = Math.floor(255 * intensity);\n                        rgb[1] = Math.floor(255 * intensity);\n                        rgb[2] = Math.floor(255 * intensity);\n                    }\n                    canvasContext.fillStyle = 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                    if (intensity > 0.98) \n                    {\n                        canvasContext.fillStyle='magenta';\n                        if (colorScale) canvasContext.fillStyle='white';\n                    }\n\n                    canvasContext.fillRect(icol * rectWidth, canvasHeight - rectHeight - irow * rectHeight, rectWidth, rectHeight);\n                }    \n            }\n        }\n        function blurImage(inputImage)\n        {\n            var kernal = [[1,2,1], [2,4,2], [1,2,1]];\n            var blurImage = [];\n            var nrows = inputImage.length;\n            var ncols = inputImage[0].length;\n            for (var irow = 0; irow < nrows; ++irow)\n            {\n                blurImage[irow] = [];\n                for (var icol = 0; icol < ncols; ++icol)\n                {\n                    if ((irow == 0) || (irow == (nrows - 1)))\n                    {\n                        blurImage[irow][icol] =  inputImage[irow][icol];\n                    }\n                    else\n                    {\n                        if ((icol == 0) || (icol == (ncols - 1)))\n                        {\n                            blurImage[irow][icol] =  inputImage[irow][icol];\n                        }\n                        else\n                        {\n                            blurImage[irow][icol] = 0;\n                            for (var ikrow = 0; ikrow < 3; ++ikrow)\n                            {\n                                for (var ikcol = 0; ikcol < 3; ++ikcol)\n                                {\n                                    blurImage[irow][icol] = blurImage[irow][icol] + inputImage[irow + ikrow - 1][icol + ikcol - 1] * kernal[ikrow][ikcol];\n                                }\n                            }\n                            blurImage[irow][icol] = Math.round(blurImage[irow][icol] / 16.0);\n                        }\n                    }\n                }\n            }\n            return blurImage;\n        }\n        function mouseLeftCanvas()\n        {\n            var tip = document.getElementById(\"tip\");\n            var tipContext = tip.getContext(\"2d\");\n            tipContext.clearRect(0, 0, tip.width, tip.height);\n            var tipPointer = document.getElementById(\"tipPointer\");\n            var tipPointerContext = tipPointer.getContext(\"2d\");\n            tipPointerContext.clearRect(0, 0, tipPointer.width, tipPointer.height);\n        }\n        function getRGB(intensity)\n        {\n          var rgb = [0,0,0];\n          if ( (0 <= intensity) && (intensity <= 0.25) )\n          {\n            rgb[0] = 0;\n            rgb[1] = Math.floor(255 * intensity * 4);    \n            rgb[2] = 255;\n          }\n          if ( (0.25 < intensity) && (intensity <= 0.50) )\n          {\n            rgb[0] = 0;\n            rgb[1] = 255;    \n            rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n          }\n          if ( (0.50 < intensity) && (intensity <= 0.75) )\n          {\n            rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n            rgb[1] = 255;    \n            rgb[2] = 0;\n          }\n          if ( (0.75 < intensity) && (intensity <= 1.0) )\n          {\n            rgb[0] = 255;\n            rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n            rgb[2] = 0;\n          }\n          return rgb;\n        }\n        function toggleColorScale()\n        {\n            colorScale = !colorScale;\n            if (colorScale)\n            {\n                $('#colorScaleButton').text('Color');\n            }\n            else\n            {\n                $('#colorScaleButton').text('Gray');\n            }\n            plotImage();\n        }\n        function toggleEnhancedScale(deltaEnhanced)\n        {\n            enhancementLevel = enhancementLevel + deltaEnhanced;\n            if (enhancementLevel >  2) enhancementLevel = 2;\n            if (enhancementLevel < -2) enhancementLevel = -2;\n            $('#enhancementLevel').text(enhancementLevel.toString());\n            plotImage();\n        }\n        function clearImage()\n        {\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);        \n            $('#snapshotTimeStamp').text('-');\n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var intensity = ibox / 8.0;\n                var pbox = 0.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(pbox.toString());\n            } \n            $('#pixelMaxBarPlot').hide();\n        }\n        function toggleSound()\n        {\n            audioAlarmOn = !audioAlarmOn;\n            if(audioAlarmOn)\n            {\n                $('#soundButtonId').css('color', 'black'); \n                $('#soundButtonId').css('background-color', 'green'); \n                $('#soundButtonId').text('On'); \n            }\n            else\n            {\n                $('#soundButtonId').css('color', 'black'); \n                $('#soundButtonId').css('background-color', 'grey'); \n                $('#soundButtonId').text('Off'); \n            }\n\n        }\n        function flipHorizontal()\n        {\n            if (device.flipHorizontal.value > 0)\n            {\n                device.flipHorizontal.value = 0;\n            }\n            else\n            {\n                device.flipHorizontal.value = 1;\n                \n            }\n            $('#flipHorizontalId').css('color', 'black'); \n            $('#flipHorizontalId').css('background-color', 'grey'); \n            $('#flipHorizontalId').text('?'); \n            var mqttMessage = \n            {\n                topic   : mqttDevice.project + '/' +  mqttDevice.deviceType + '/' +  mqttDevice.name + '/setting',\n                payload :  device\n            };\n            sendSettingToMqtt(mqttMessage);\n        }\n        function flipVertical()\n        {\n            if (device.flipVertical.value > 0)\n            {\n                device.flipVertical.value = 0;\n            }\n            else\n            {\n                device.flipVertical.value = 1;\n                \n            }\n            $('#flipVerticalId').css('color', 'black'); \n            $('#flipVerticalId').css('background-color', 'grey'); \n            $('#flipVerticalId').text('?'); \n            var mqttMessage = \n            {\n                topic   : mqttDevice.project + '/' +  mqttDevice.deviceType + '/' +  mqttDevice.name + '/setting',\n                payload :  device\n            };\n            sendSettingToMqtt(mqttMessage);\n        }\n        function setScalarValue(settingValue, attrName)\n        {\n            var settingAttr = device[attrName];\n            if ( (settingAttr.alarm.limits.lolo <= settingValue) && (settingValue <= settingAttr.alarm.limits.hihi) )\n            {\n                settingAttr.value = settingValue;\n                var mqttMessage = \n                {\n                    topic   : mqttDevice.project + '/' +  mqttDevice.deviceType + '/' +  mqttDevice.name + '/setting',\n                    payload :  device\n                };\n                sendSettingToMqtt(mqttMessage);\n            } \n            else\n            {\n                acknowledgeDialog('Acknowledge', 'Error', 'Entry outside range! (' + settingAttr.alarm.limits.lolo.toString() + '-' + settingAttr.alarm.limits.hihi.toString() + ' ' + settingAttr.unit);\n            }\n        }\n        function imageDelayChange()\n        {\n            imageDelayChanged = true;\n            $('#imageDelayButtonId').show();\n        }\n        function ultraSoundRangeChange()\n        {\n            ultraSoundRangeChanged = true;\n            $('#ultraSoundRangeButtonId').show();\n        }\n        function archiveMinTempChange()\n        {\n            archiveMinTempChanged = true;\n            $('#archiveMinTempButtonId').show();\n        }\n        function offsetTempChange()\n        {\n            offsetTempChanged = true;\n            $('#offsetTempButtonId').show();\n        }\n        function archivePixelPercentChange()\n        {\n            archivePixelPercentChanged = true;\n            $('#archivePixelPercentButtonId').show();\n        }\n        function imageDelay()\n        {\n            $('#imageDelayButtonId').hide();\n            if (isNaN($('#imageDelayInputId').val()))\n            {\n                imageDelayChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#imageDelayInputId').val()), 'imageDelay');\n            imageDelayChanged = false;\n        }\n        function ultraSoundRange()\n        {\n            $('#ultraSoundRangeButtonId').hide();\n            if (isNaN($('#ultraSoundRangeInputId').val()))\n            {\n                ultraSoundRangeChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#ultraSoundRangeInputId').val()), 'ultraSoundRange');\n            ultraSoundRangeChanged = false;\n        }\n        function archiveMinTemp()\n        {\n            $('#archiveMinTempButtonId').hide();\n            if (isNaN($('#archiveMinTempInputId').val()))\n            {\n                archiveMinTempChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#archiveMinTempInputId').val()), 'archiveMinTemp');\n            archiveMinTempChanged = false;\n        }\n        function offsetTemp()\n        {\n            $('#offsetTempButtonId').hide();\n            if (isNaN($('#offsetTempInputId').val()))\n            {\n                offsetTempChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#offsetTempInputId').val()), 'offsetTemp');\n            offsetTempChanged = false;\n        }\n        function archivePixelPercent()\n        {\n            $('#archivePixelPercentButtonId').hide();\n            if (isNaN($('#archivePixelPercentInputId').val()))\n            {\n                archivePixelPercentChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#archivePixelPercentInputId').val()), 'archivePixelPercent');\n            archivePixelPercentChanged = false;\n        }\n        function processImage()\n        {\n            if (isNaN($('#processImageInputId').val()))\n            {\n                 return;\n            }\n            setScalarValue(Number($('#processImageInputId').val()), 'processImage');\n        }\n        function triggerMode()\n        {\n            if (isNaN($('#triggerModeInputId').val()))\n            {\n                 return;\n            }\n            setScalarValue(Number($('#triggerModeInputId').val()), 'triggerMode');\n        }\n        function manualTrigger()\n        {\n            if (device.manualTrigger.value == 0)\n            {\n                setScalarValue(1, 'manualTrigger');\n                $('#manualTriggerButton').text('ABORT');\n            }\n            else\n            {\n                setScalarValue(0, 'manualTrigger');\n                $('#manualTriggerButton').text('Take Image');\n            }\n        }\n        function gateMode()\n        {\n            if (isNaN($('#gateModeInputId').val()))\n            {\n                 return;\n            }\n            setScalarValue(Number($('#gateModeInputId').val()), 'gateMode');\n        }\n        function languageMode()\n        {\n            if (isNaN($('#languageModeInputId').val()))\n            {\n                 return;\n            }\n            setScalarValue(Number($('#languageModeInputId').val()), 'language');\n        }\n",
         "output": "str",
         "x": 650,
         "y": 80,
@@ -2489,7 +2484,7 @@
         "template": "                <div class='danger-card'>\n                    <div class='row'>\n                        <div class='col-md-2'>\n                        </div>\n                        <div class='col-md-8'>\n                            <p class='danger-card-title'>Danger Zone</p>\n                         </div>\n                        <div class='col-md-2'>\n                        </div>\n                    </div>\n                    <div class='danger-card-body' align=\"center\">\n                        <div class='row'>\n                            <table width='100%'>\n                                <tr>\n                                    <td width='100%' align=\"center\">\n                                        <button class='btn danger-card-button big-text' id=\"restartTrayButton\" onclick=\"restartTray()\" >Restart Tray</button>\n                                    </td>\n                                </tr>\n                            </table>\n                        </div>\n                    </div>\n                </div>\n",
         "output": "str",
         "x": 990,
-        "y": 280,
+        "y": 240,
         "wires": [
             [
                 "450b0136.7ccbd"
@@ -2508,7 +2503,7 @@
         "template": "<!-- Dashboard HTML -->\n                <div class='card'>\n                    <p class='card-title'>WiFi Connection</p>\n                    <div class='card-body' align=\"center\">\n                        <div class='row'  style='padding-top: 0px;'>\n                            <table width='100%'>\n                                <tr>\n                                    <td width='60%' >\n                                        <span class='card-text' >Device Update</span>\n                                    </td>\n                                    <td width='20%' align='center'></td>\n                                    <td width='20%' align='center'>\n                                        <img src='/img/heartRed.png' id='heartBeatID' width='100px' height='100px'/>\n                                    </td>\n                                </tr>\n                                <tr>\n                                    <td width='60%' >\n                                        <span class='card-text' >Signal Level (dBm)</span>\n                                    </td>\n                                    <td width='20%' align='center'></td>\n                                    <td width='20%' align='center'>\n                                        <span class='card-text' id='signalLevelId' >-100</span>\n                                    </td>\n                                </tr>\n                                <tr>\n                                    <td width='60%' >\n                                        <span class='card-text' >Link Quality (/70)</span>\n                                    </td>\n                                    <td width='20%' align='center'></td>\n                                    <td width='20%' align='center'>\n                                        <span class='card-text' id='linkQualityId' >-1</span>\n                                    </td>\n                                </tr>\n                            </table>\n                        </div>\n                    </div>\n                </div>\n",
         "output": "str",
         "x": 970,
-        "y": 240,
+        "y": 200,
         "wires": [
             [
                 "b37ca0a6.4938b"
@@ -2535,25 +2530,6 @@
         ]
     },
     {
-        "id": "f1d7ffbf.85d7e",
-        "type": "template",
-        "z": "c4285970.3276d8",
-        "name": "html.histogram",
-        "field": "payload.html.histogram",
-        "fieldType": "msg",
-        "format": "html",
-        "syntax": "mustache",
-        "template": "<!-- History HTML -->\n                <div class='card'>\n                    <p class='card-title'>Pixel Histogram</p>\n                    <div class='card-body' align=\"center\">\n                        <div id=\"pixelHistogramChart\" width=\"100%\" ></div>\n                    </div>\n                </div>\n",
-        "output": "str",
-        "x": 980,
-        "y": 160,
-        "wires": [
-            [
-                "ac502b1d.d51818"
-            ]
-        ]
-    },
-    {
         "id": "ac502b1d.d51818",
         "type": "template",
         "z": "c4285970.3276d8",
@@ -2562,10 +2538,10 @@
         "fieldType": "msg",
         "format": "html",
         "syntax": "mustache",
-        "template": "<!-- Dashboard HTML -->\n                <div class='card'>\n                    <p class='card-title'>Controls</p>\n                    <div class='card-body' align=\"center\">\n                        <div class='row' style='padding-bottom: 25px;'>\n                            <div class=\"container-fluid \" align=\"center\" style='padding-top: 0px;'>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%' >\n                                                    <span class='card-text' >Alarm Sound</span>\n                                                </td>\n                                                <td width='40%' align='center'>\n                                                    <button class='btn btn-block big-text' style='background-color:green;color:black' id='soundButtonId' onclick=\"toggleSound()\" >On</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%' >\n                                                    <span class='card-text' >Flip Horizontal</span>\n                                                </td>\n                                                <td width='40%' align='center'>\n                                                    <button class='btn btn-block big-text' style='background-color:grey;color:black' id='flipHorizontalId' onclick=\"flipHorizontal()\" >?</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%' >\n                                                    <span class='card-text' >Flip Vertical</span>\n                                                </td>\n                                                <td width='40%' align='center'>\n                                                    <button class='btn btn-block big-text' style='background-color:grey;color:black' id='flipVerticalId' onclick=\"flipVertical()\" >?</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Image Delay (mS)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"imageDelayInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"imageDelayChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"imageDelayButtonId\" onclick=\"imageDelay()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >UltraSound Range (cm)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"ultraSoundRangeInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"ultraSoundRangeChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"ultraSoundRangeButtonId\" onclick=\"ultraSoundRange()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Offset Temp (C)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"offsetTempInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"offsetTempChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"offsetTempButtonId\" onclick=\"offsetTemp()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Archive Temp (C)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"archiveMinTempInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"archiveMinTempChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"archiveMinTempButtonId\" onclick=\"archiveMinTemp()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Archive Pixel (%)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"archivePixelPercentInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"archivePixelPercentChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"archivePixelPercentButtonId\" onclick=\"archivePixelPercent()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Process Image</span>\n                                                </td>\n                                                <td width='40%'>\n                                                    <select class=\"custom-select big-text\"  id=\"processImageInputId\" onchange=\"processImage()\">\n                                                        <option value=\"0\">Sharp</option>\n                                                        <option value=\"1\">Blur</option>\n                                                    </select>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Trigger Mode</span>\n                                                </td>\n                                                <td width='40%'>\n                                                    <select class=\"custom-select big-text\"  id=\"triggerModeInputId\" onchange=\"triggerMode()\" >\n                                                        <option value=\"0\">Automatic</option>\n                                                        <option value=\"1\">Periodic</option>\n                                                        <option value=\"2\">Manual</option>\n                                                    </select>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                   </div>\n                </div>\n",
+        "template": "<!-- Dashboard HTML -->\n                <div class='card'>\n                    <p class='card-title'>Controls</p>\n                    <div class='card-body' align=\"center\">\n                        <div class='row' style='padding-bottom: 25px;'>\n                            <div class=\"container-fluid \" align=\"center\" style='padding-top: 0px;'>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%' >\n                                                    <span class='card-text' >Alarm Sound</span>\n                                                </td>\n                                                <td width='40%' align='center'>\n                                                    <button class='btn btn-block big-text' style='background-color:green;color:black' id='soundButtonId' onclick=\"toggleSound()\" >On</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%' >\n                                                    <span class='card-text' >Flip Horizontal</span>\n                                                </td>\n                                                <td width='40%' align='center'>\n                                                    <button class='btn btn-block big-text' style='background-color:grey;color:black' id='flipHorizontalId' onclick=\"flipHorizontal()\" >?</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%' >\n                                                    <span class='card-text' >Flip Vertical</span>\n                                                </td>\n                                                <td width='40%' align='center'>\n                                                    <button class='btn btn-block big-text' style='background-color:grey;color:black' id='flipVerticalId' onclick=\"flipVertical()\" >?</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Image Delay (mS)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"imageDelayInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"imageDelayChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"imageDelayButtonId\" onclick=\"imageDelay()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >UltraSound Range (cm)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"ultraSoundRangeInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"ultraSoundRangeChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"ultraSoundRangeButtonId\" onclick=\"ultraSoundRange()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Offset Temp (C)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"offsetTempInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"offsetTempChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"offsetTempButtonId\" onclick=\"offsetTemp()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Archive Temp (C)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"archiveMinTempInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"archiveMinTempChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"archiveMinTempButtonId\" onclick=\"archiveMinTemp()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Archive Pixel (%)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"archivePixelPercentInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"archivePixelPercentChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"archivePixelPercentButtonId\" onclick=\"archivePixelPercent()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Process Image</span>\n                                                </td>\n                                                <td width='40%'>\n                                                    <select class=\"custom-select big-text\"  id=\"processImageInputId\" onchange=\"processImage()\">\n                                                        <option value=\"0\">Sharp</option>\n                                                        <option value=\"1\">Blur</option>\n                                                    </select>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Trigger Mode</span>\n                                                </td>\n                                                <td width='40%'>\n                                                    <select class=\"custom-select big-text\"  id=\"triggerModeInputId\" onchange=\"triggerMode()\" >\n                                                        <option value=\"0\">Automatic</option>\n                                                        <option value=\"1\">Periodic</option>\n                                                        <option value=\"2\">Manual</option>\n                                                    </select>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Gate Mode</span>\n                                                </td>\n                                                <td width='40%'>\n                                                    <select class=\"custom-select big-text\"  id=\"gateModeInputId\" onchange=\"gateMode()\" >\n                                                        <option value=\"0\">Off</option>\n                                                        <option value=\"1\">On</option>\n                                                    </select>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Language</span>\n                                                </td>\n                                                <td width='40%'>\n                                                    <select class=\"custom-select big-text\"  id=\"languageModeInputId\" onchange=\"languageMode()\" >\n                                                        <option value=\"0\">English</option>\n                                                        <option value=\"1\">Swedish</option>\n                                                        <option value=\"2\">Greek</option>\n                                                        <option value=\"3\">Spanish</option>\n                                                        <option value=\"4\">Italian</option>\n                                                        <option value=\"5\">German</option>\n                                                        <option value=\"6\">French</option>\n                                                    </select>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                   </div>\n                </div>\n",
         "output": "str",
         "x": 970,
-        "y": 200,
+        "y": 160,
         "wires": [
             [
                 "74981fb8.4f6d9"
@@ -2587,7 +2563,7 @@
         "y": 120,
         "wires": [
             [
-                "f1d7ffbf.85d7e"
+                "ac502b1d.d51818"
             ]
         ]
     },
@@ -2747,173 +2723,6 @@
         ]
     },
     {
-        "id": "12395d15.a8d3a3",
-        "type": "template",
-        "z": "c4285970.3276d8",
-        "name": "script.global",
-        "field": "payload.script.global",
-        "fieldType": "msg",
-        "format": "javascript",
-        "syntax": "mustache",
-        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var pgm = null;\n        var audioAlarm = new Audio('/audio/hold-your-horses.ogg');\n        var audioAlarmOn = true;\n        var lastUpdate = new Date().getTime();\n        var maxDisplayTime = 5000;\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n            setInterval(function()\n            {\n                if ((new Date().getTime() - lastUpdate) > maxDisplayTime)\n                {\n                    $('#thumb').attr(\"src\", \"/img/blackThumb.png\");\n                    $('#maxTemp').text(\" \");\n                }\n            }, 1000);\n        }\n        function onWebSocketOpen()\n        {\n        }\n        function onWebSocketClose()\n        {\n            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        \n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            if (device.imageData.value != null)\n            {\n                var style = 'font-size:900%; font-weight:900; color:cyan';\n                var thumbAttr = \"/img/cyanThumb.png\";\n                if (device.bodyTemp.value >= device.bodyTemp.alarm.limits.high)\n                {\n                    style = 'font-size:900%; font-weight:900; color:pink';\n                    thumbAttr = \"/img/pinkThumb.png\";\n                }\n                $('#maxTemp').attr(\"style\", style);\n                $('#thumb').attr(\"src\", thumbAttr);\n                $('#maxTemp').text(device.bodyTemp.value.toString() + \" C\");\n                lastUpdate = new Date().getTime();\n            }\n        }\n",
-        "output": "str",
-        "x": 650,
-        "y": 580,
-        "wires": [
-            [
-                "256a4ad4.cca0e6"
-            ]
-        ]
-    },
-    {
-        "id": "256a4ad4.cca0e6",
-        "type": "template",
-        "z": "c4285970.3276d8",
-        "name": "javascript",
-        "field": "payload.javascript",
-        "fieldType": "msg",
-        "format": "javascript",
-        "syntax": "mustache",
-        "template": "{{{payload.script.stripChartWidget}}}\n{{{payload.script.global}}}\n{{{payload.script.horzbarWidget}}}\n{{{payload.script.editDevice}}}\n{{{payload.script.dangerZone}}}\n",
-        "output": "str",
-        "x": 640,
-        "y": 620,
-        "wires": [
-            [
-                "d1cdee43.a8b8c"
-            ]
-        ]
-    },
-    {
-        "id": "d51a9fc4.be0ca",
-        "type": "template",
-        "z": "c4285970.3276d8",
-        "name": "body",
-        "field": "payload.body",
-        "fieldType": "msg",
-        "format": "html",
-        "syntax": "mustache",
-        "template": "    <div width=\"100%\">\n        <div class='row' style='padding-bottom: 10px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.display}}}\n            </div>\n        </div>\n    </div>\n",
-        "output": "str",
-        "x": 850,
-        "y": 620,
-        "wires": [
-            [
-                "759128e3.172548"
-            ]
-        ]
-    },
-    {
-        "id": "d1cdee43.a8b8c",
-        "type": "template",
-        "z": "c4285970.3276d8",
-        "name": "html.display",
-        "field": "payload.html.display",
-        "fieldType": "msg",
-        "format": "html",
-        "syntax": "mustache",
-        "template": "<!-- Dashboard HTML -->\n                <div class=\"container-fluid \" align=\"center\" style='padding-top: 0px;'>\n                    <table width='100%'>\n                        <tr>\n                           <td width=\"100%\" align='center'> <img id='thumb' src=\"/img/blackThumb.png\" height=\"150px\"/></td>\n                        </tr>\n                        <tr>\n                            <td width='100%' align='center'>\n                                <span  style='' id='maxTemp'></span>\n                            </td>\n                        </tr>\n                    </table>\n                </div>\n",
-        "output": "str",
-        "x": 870,
-        "y": 580,
-        "wires": [
-            [
-                "d51a9fc4.be0ca"
-            ]
-        ]
-    },
-    {
-        "id": "759128e3.172548",
-        "type": "template",
-        "z": "c4285970.3276d8",
-        "name": "CSS",
-        "field": "payload.css",
-        "fieldType": "msg",
-        "format": "css",
-        "syntax": "mustache",
-        "template": "        :root \n        {\n          --color1: #415c71;\n          --color2: #547792;\n          --color3: #9eb5c7;\n          --color4: #c6c2bb;\n          --color5: #fdc300;\n          --big-text-size :300%;\n          --bold-text :900;\n          --vert-pad : 25px;\n          --horz-pad : 25px;\n        }\n        body \n        {\n          background-color: black !important;\n          padding-left:25px;\n          padding-right:25px;\n        }\n        \n        img \n        {\n          object-fit: contain;\n        }\n        a\n        {\n            color: white;\n        }\n        a:visited \n        { \n            color: var(--white);\n        }\n        a:hover \n        { \n            color: var(--color5);\n        }\n\n        .jumbotron \n        {\n          background-color: var(--color2) !important;\n          color: white;\n          padding-top:25px;\n          padding-bottom:25px;\n        }\n        .jumbotron-title\n        {\n          color:var(--color5);\n        }\n        .jumbotron-button\n        {\n          color: white;\n          background-color: var(--color1);\n       }\n        .card\n        {\n          background-color: var(--color2) !important;\n          text-align: center;\n        }\n        .card-body\n        {\n          background-color: var(--color3);;\n        }\n        .card-button\n        {\n          color: var(--color5) !important;\n          background-color: var(--color1) !important;\n          font-weight: bold;\n        }\n        .card-title\n        {\n          color: var(--color5);\n          font-weight: var(--bold-text);\n          font-size: var(--big-text-size);\n         }\n        .card-text\n        {\n          color: white;\n          text-align: left;\n          font-size: var(--big-text-size);\n        }\n        .danger-card\n        {\n          background-color: yellow !important;\n          text-align: center;\n        }\n        .danger-card-body\n        {\n          background-color: yellow;\n        }\n        .danger-card-button\n        {\n          color: yellow !important;\n          background-color: red !important;\n          font-weight: bold;\n        }\n        .danger-card-title\n        {\n          color: red;\n          font-weight: var(--bold-text);\n          font-size: var(--big-text-size);\n         }\n        .danger-card-text\n        {\n          color: white;\n          text-align: left;\n          font-size: var(--big-text-size);\n        }\n        .tableHeading\n        {\n          color:var(--container-title-color);\n        }\n        .tableText\n        {\n          color:var(--container-text-color);\n          font-size: var(--big-text-size);\n        }\n       .vert-pad\n        {\n            padding-top:var(--vert-pad);;\n            padding-bottom:var(--vert-pad);;\n        }\n        .horz-pad\n        {\n            padding-left:var(--horz-pad);;\n            padding-right:var(--horz-pad);;\n        }\n        .big-text\n        {\n            font-size: var(--big-text-size);\n        }\n        .bold-text\n        {\n            font-weight: var(--bold-text);\n        }\n        .ui-slider\n        {\n            height: 90px;\n            background-color: var(--color1) !important;\n        }\n        .ui-slider .ui-slider-handle \n        {\n            height: 100px;\n            width: 100px;\n            background-color: var(--color5) !important;\n        }\n        .ui-dialog-titlebar-close \n        {\n            visibility: hidden;\n        }\n",
-        "output": "str",
-        "x": 1030,
-        "y": 620,
-        "wires": [
-            [
-                "9cc0d5c.1767828"
-            ]
-        ]
-    },
-    {
-        "id": "9cc0d5c.1767828",
-        "type": "template",
-        "z": "c4285970.3276d8",
-        "name": "navBar",
-        "field": "payload.navBar",
-        "fieldType": "msg",
-        "format": "html",
-        "syntax": "mustache",
-        "template": "<!-- navBar -->\n",
-        "output": "str",
-        "x": 1180,
-        "y": 620,
-        "wires": [
-            [
-                "f3958e95.c7b02"
-            ]
-        ]
-    },
-    {
-        "id": "f3958e95.c7b02",
-        "type": "subflow:188d93e1.8dcc1c",
-        "z": "c4285970.3276d8",
-        "name": "",
-        "x": 1320,
-        "y": 620,
-        "wires": []
-    },
-    {
-        "id": "984e015d.afd92",
-        "type": "http in",
-        "z": "c4285970.3276d8",
-        "name": "/simple",
-        "url": "/simple",
-        "method": "get",
-        "upload": false,
-        "swaggerDoc": "",
-        "x": 90,
-        "y": 580,
-        "wires": [
-            [
-                "63477c90.525704"
-            ]
-        ]
-    },
-    {
-        "id": "63477c90.525704",
-        "type": "function",
-        "z": "c4285970.3276d8",
-        "name": "Set Name And Device Type",
-        "func": "msg.payload['script'] = {};\nmsg.payload['script']['name'] = global.get('deviceNameA')\nmsg.payload['script']['deviceType'] = global.get('deviceTypeA');\nmsg.payload['script']['project'] = global.get('project');\nreturn msg;\n",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 380,
-        "y": 580,
-        "wires": [
-            [
-                "12395d15.a8d3a3"
-            ]
-        ]
-    },
-    {
-        "id": "6324594e.203638",
-        "type": "websocket out",
-        "z": "5f562f66.a301e",
-        "name": "/simple/websocket",
-        "server": "f18b1c2a.67b3a",
-        "client": "",
-        "x": 1450,
-        "y": 500,
-        "wires": []
-    },
-    {
         "id": "b4dd92bb.129c7",
         "type": "function",
         "z": "5f562f66.a301e",
@@ -2925,7 +2734,6 @@
         "y": 500,
         "wires": [
             [
-                "6324594e.203638",
                 "cf5e2ba4.3a2458",
                 "3cee692a.639e86"
             ]
@@ -2937,7 +2745,7 @@
         "z": "5f562f66.a301e",
         "name": "",
         "pauseType": "delay",
-        "timeout": "500",
+        "timeout": "100",
         "timeoutUnits": "milliseconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -2980,7 +2788,7 @@
         "fieldType": "msg",
         "format": "html",
         "syntax": "mustache",
-        "template": "<!-- Body HTML -->\n    <div class='container' width=\"100%\">\n        <div class='row vert-pad' >\n            <div class='col-md-12'>\n                <a class=\"btn jumbotron-button btn-block big-text bold-text\" width='80%' href=\"/simple\" >\n                    <table width=\"100%\" alight=\"left\">\n                        <tr>\n                            <td width=\"30%\" align='center'> <img src=\"/img/discoYellow.png\" height=\"70px\"/></td>\n                            <td width=\"70%\" align=\"left\">Simple</td>\n                        </tr>\n                    </table>\n                </a>\n            </div>\n        </div>\n        <div class='row vert-pad' >\n            <div class='col-md-12'>\n                <a class=\"btn jumbotron-button btn-block big-text bold-text\" width='80%' href=\"/setup\" >\n                    <table width=\"100%\" alight=\"left\">\n                        <tr>\n                            <td width=\"30%\" align='center'> <img src=\"/img/discoYellow.png\" height=\"70px\"/></td>\n                            <td width=\"70%\" align=\"left\">Setup</td>\n                        </tr>\n                    </table>\n                </a>\n            </div>\n        </div>\n        <div class='row vert-pad' >\n            <div class='col-md-12'>\n                <a class=\"btn jumbotron-button btn-block big-text bold-text\" width='80%' href=\"/profile\" >\n                    <table width=\"100%\" alight=\"left\">\n                        <tr>\n                            <td width=\"30%\" align='center'> <img src=\"/img/discoYellow.png\" height=\"70px\"/></td>\n                            <td width=\"70%\" align=\"left\">Profile</td>\n                        </tr>\n                    </table>\n                </a>\n            </div>\n        </div>\n        <div class='row vert-pad' >\n            <div class='col-md-12'>\n                <a class=\"btn jumbotron-button btn-block big-text bold-text\" width='80%' href=\"/expert\" >\n                    <table width=\"100%\" alight=\"left\">\n                        <tr>\n                            <td width=\"30%\" align='center'> <img src=\"/img/discoYellow.png\" height=\"70px\"/></td>\n                            <td width=\"70%\" align=\"left\">Expert</td>\n                        </tr>\n                    </table>\n                </a>\n            </div>\n        </div>\n    </div>",
+        "template": "<!-- Body HTML -->\n    <div class='container' width=\"100%\">\n        <div class='row vert-pad' >\n            <div class='col-md-12'>\n                <a class=\"btn jumbotron-button btn-block big-text bold-text\" width='80%' href=\"/monitor\" >\n                    <table width=\"100%\" alight=\"left\">\n                        <tr>\n                            <td width=\"30%\" align='center'> <img src=\"/img/discoYellow.png\" height=\"70px\"/></td>\n                            <td width=\"70%\" align=\"left\">Monitor</td>\n                        </tr>\n                    </table>\n                </a>\n            </div>\n        </div>\n        <div class='row vert-pad' >\n            <div class='col-md-12'>\n                <a class=\"btn jumbotron-button btn-block big-text bold-text\" width='80%' href=\"/setup\" >\n                    <table width=\"100%\" alight=\"left\">\n                        <tr>\n                            <td width=\"30%\" align='center'> <img src=\"/img/discoYellow.png\" height=\"70px\"/></td>\n                            <td width=\"70%\" align=\"left\">Setup</td>\n                        </tr>\n                    </table>\n                </a>\n            </div>\n        </div>\n        <div class='row vert-pad' >\n            <div class='col-md-12'>\n                <a class=\"btn jumbotron-button btn-block big-text bold-text\" width='80%' href=\"/expert\" >\n                    <table width=\"100%\" alight=\"left\">\n                        <tr>\n                            <td width=\"30%\" align='center'> <img src=\"/img/discoYellow.png\" height=\"70px\"/></td>\n                            <td width=\"70%\" align=\"left\">Expert</td>\n                        </tr>\n                    </table>\n                </a>\n            </div>\n        </div>\n    </div>",
         "output": "str",
         "x": 1050,
         "y": 740,
@@ -3065,7 +2873,7 @@
         "fieldType": "msg",
         "format": "javascript",
         "syntax": "mustache",
-        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var colorScale = true;\n        var enhancementLevel = 0;\n        var pgm = null;\n        var lastUpdate = new Date().getTime();\n        var maxDisplayTime = 5000;\n        var imageArray =  null;\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n            $('#tempLegend').hide();\n            $('#pixelMaxBarPlot').hide();\n            setInterval(function()\n            {\n                if ((new Date().getTime() - lastUpdate) > maxDisplayTime)\n                {\n                    $('#tempComment').text(\" \");\n                    $('#maxTemp').text(\" \");\n                    clearImage();\n                    $('#tempLegend').hide();\n                    $('#pixelMaxBarPlot').hide();\n                    \n                }\n            }, 1000);\n        }\n        function onWebSocketOpen()\n        {\n        }\n        function onWebSocketClose()\n        {\n            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        \n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            if (device.imageData.value != null)\n            {\n                var style = 'font-size:300%; font-weight:300; color:yellow';\n                if (device.triggerMode.value == 0)\n                {\n                    if (device.autoModeAction.value == 0)\n                    {\n                        $('#tempComment').attr(\"style\", style);\n                        $('#tempComment').text(\"Person utanför räckhåll\");\n                        $('#maxTemp').attr(\"style\", style);\n                        $('#maxTemp').text(\"\");\n                    }\n                    if (device.autoModeAction.value == 1)\n                    {\n                        style = 'font-size:300%; font-weight:300; color:cyan';\n                        $('#tempComment').attr(\"style\", style);\n                        $('#tempComment').text(\"Normal temperatur\");\n                        $('#maxTemp').attr(\"style\", style);\n                        $('#maxTemp').text(device.bodyTemp.value.toString() + \" C\");\n                    }\n                    if (device.autoModeAction.value == 2)\n                    {\n                        style = 'font-size:300%; font-weight:300; color:red';\n                        $('#tempComment').attr(\"style\", style);\n                        $('#tempComment').text(\"Hög temperatur\");\n                        $('#maxTemp').attr(\"style\", style);\n                        $('#maxTemp').text(device.bodyTemp.value.toString() + \" C\");\n                    }\n                    if (device.autoModeAction.value == 3)\n                    {\n                        style = 'font-size:300%; font-weight:300; color:yellow';\n                        $('#tempComment').attr(\"style\", style);\n                        $('#tempComment').text(\"Temp utanför räckhåll\");\n                        $('#maxTemp').attr(\"style\", style);\n                        $('#maxTemp').text(device.bodyTemp.value.toString() + \" C\");\n                    }\n                }\n                else\n                {\n                    $('#tempComment').attr(\"style\", style);\n                    $('#tempComment').text(\"Surface Temperature\");\n                    $('#maxTemp').attr(\"style\", style);\n                    $('#maxTemp').text(device.pixelMax.value.toString() + \" C\");\n                }\n                lastUpdate = new Date().getTime();\n            }\n            if (device.imageData.value != null)\n            {\n                pgm = JSON.parse(JSON.stringify(device.imageData.value));\n                var processImage = 1;\n                try {processImage = device.processImage.value;} catch(err) {processImage = 1;}\n                switch (processImage)\n                {\n                    case 0:  \n                        imageArray = pgm.imageArray;\n                        break;\n                    case 1:  \n                        imageArray = blurImage(pgm.imageArray);\n                        break;\n                    default: \n                        imageArray = blurImage(pgm.imageArray);\n                        break;\n                }\n                plotImage();\n                $('#pixelMaxBarPlot').show();\n                var devTempSource = device.pixelMax;\n                if (device.triggerMode.value == 0) devTempSource = device.bodyTemp;\n                var pixelMaxBarConfig = \n                    {\n                        lolo            : devTempSource.alarm.limits.lolo, \n                        low             : devTempSource.alarm.limits.low, \n                        high            : devTempSource.alarm.limits.high, \n                        hihi            : devTempSource.alarm.limits.hihi, \n                        value           : devTempSource.value, \n                        unit            : devTempSource.unit, \n                        textsize        : 20,\n                        label           : 'temp', \n                        lowColor        : '#0000ff', \n                        mediumColor     : '#00ff00',\n                        highColor       : '#ff0000', \n                        backgroundColor : '#000000', \n                        labelColor      : '#ffffff', \n                        gridColor       : '#000000',\n                        height          : 50, \n                        htmlId          : 'pixelMaxBarPlot'\n                    };\n                setHorzBarWidget(pixelMaxBarConfig);\n             }\n        }\n        function plotImage()\n        {\n            $('#tempLegend').show();\n            var rgb = [];\n            var plow = (pgm.minval - 27315) / 100;\n            var phigh = (pgm.maxval - 27315) / 100;\n            var pdelta = phigh - plow;\n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var intensity = ibox / 8.0;\n                var pbox = Math.round(((phigh - plow) * intensity + plow) * 10.0) / 10.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(pbox.toString());\n                if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                if (colorScale)\n                {\n                    rgb = getRGB(intensity);\n                }\n                else\n                {\n                    rgb[0] = Math.floor(255 * intensity);\n                    rgb[1] = Math.floor(255 * intensity);\n                    rgb[2] = Math.floor(255 * intensity);\n                }\n                var style='width:44px;height:25px;background-color:' + 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                $('#box' + (ibox + 1).toString()).attr('style',style);\n            }\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var tipPointer = document.getElementById(\"tipPointer\");\n            var tipPointerContext = tipPointer.getContext(\"2d\");\n            var tip = document.getElementById(\"tip\");\n            var tipContext = tip.getContext(\"2d\");\n            tipContext.font = \"15px Arial\";\n            tipContext.fillStyle = \"cyan\";\n            tipPointerContext.fillStyle = \"cyan\";\n            if (colorScale) tipContext.fillStyle = \"black\";\n            if (colorScale) tipPointerContext.fillStyle = \"black\";\n            tipContext.textAlign = \"left\";\n\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            var rectWidth  = canvasWidth  / pgm.ncols;\n            var rectHeight = canvasHeight / pgm.nrows;\n            canvas.onmousemove = function (e) \n            {\n                var icol = Math.floor(e.layerX / rectWidth);\n                if (icol < 0) icol = 0;\n                if (icol >= pgm.ncols) icol = pgm.ncols - 1;\n                var irow = Math.floor((canvasHeight - e.layerY) / rectHeight);\n                if (irow < 0) irow = 0;\n                if (irow >= pgm.nrows) irow = pgm.nrows - 1;\n                var temp = Math.floor(100.0 * (pdelta * imageArray[irow][icol] / 256.0 + plow)) / 100;\n\n                tipPointer.style.top = (e.layerY  - tipPointer.height / 2).toString()  + \"px\";\n                tipPointer.style.left = (e.layerX - tipPointer.width / 2).toString() + \"px\";\n                tipPointerContext.clearRect(0, 0, tipPointer.width, tipPointer.height);\n                tipPointerContext.fillRect( 0, 0, tipPointer.width, tipPointer.height);\n\n                tip.style.top = (e.layerY - tip.height - tipPointer.height).toString()  + \"px\";\n                tip.style.left = (e.layerX).toString() + \"px\";\n                tipContext.clearRect(0, 0, tip.width, tip.height);\n                tipContext.fillText(temp.toString() + ' C', 0, 30);\n            };\n\n            for (var irow = 0; irow < pgm.nrows; ++irow)\n            {\n                for (var icol = 0; icol < pgm.ncols; ++icol)\n                {\n                    var intensity = imageArray[irow][icol] / 256.0;\n                    if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                    if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                    if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                    if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                    if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                    if (colorScale)\n                    {\n                        rgb = getRGB(intensity);\n                        rgb[0] = Math.floor(rgb[0]);\n                        rgb[1] = Math.floor(rgb[1]);\n                        rgb[2] = Math.floor(rgb[2]);\n                    }\n                    else\n                    {\n                        rgb[0] = Math.floor(255 * intensity);\n                        rgb[1] = Math.floor(255 * intensity);\n                        rgb[2] = Math.floor(255 * intensity);\n                    }\n                    canvasContext.fillStyle = 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                    if (intensity > 0.98) \n                    {\n                        canvasContext.fillStyle='magenta';\n                        if (colorScale) canvasContext.fillStyle='white';\n                    }\n\n                    canvasContext.fillRect(icol * rectWidth, canvasHeight - rectHeight - irow * rectHeight, rectWidth, rectHeight);\n                }    \n            }\n            var ellipseWidth = 100;\n            var ellipseHeight = 150;\n            canvasContext.fillStyle='black';\n            if (device.triggerMode.value == 0) \n            {\n                drawEllipse(canvasContext, (canvasWidth - ellipseWidth) / 2, (canvasHeight -  ellipseHeight)/ 2, ellipseWidth, ellipseHeight);\n            }\n        }\n        function blurImage(inputImage)\n        {\n            var kernal = [[1,2,1], [2,4,2], [1,2,1]];\n            var blurImage = [];\n            var nrows = inputImage.length;\n            var ncols = inputImage[0].length;\n            for (var irow = 0; irow < nrows; ++irow)\n            {\n                blurImage[irow] = [];\n                for (var icol = 0; icol < ncols; ++icol)\n                {\n                    if ((irow == 0) || (irow == (nrows - 1)))\n                    {\n                        blurImage[irow][icol] =  inputImage[irow][icol];\n                    }\n                    else\n                    {\n                        if ((icol == 0) || (icol == (ncols - 1)))\n                        {\n                            blurImage[irow][icol] =  inputImage[irow][icol];\n                        }\n                        else\n                        {\n                            blurImage[irow][icol] = 0;\n                            for (var ikrow = 0; ikrow < 3; ++ikrow)\n                            {\n                                for (var ikcol = 0; ikcol < 3; ++ikcol)\n                                {\n                                    blurImage[irow][icol] = blurImage[irow][icol] + inputImage[irow + ikrow - 1][icol + ikcol - 1] * kernal[ikrow][ikcol];\n                                }\n                            }\n                            blurImage[irow][icol] = Math.round(blurImage[irow][icol] / 16.0);\n                        }\n                    }\n                }\n            }\n            return blurImage;\n        }\n        function mouseLeftCanvas()\n        {\n            var tip = document.getElementById(\"tip\");\n            var tipContext = tip.getContext(\"2d\");\n            tipContext.clearRect(0, 0, tip.width, tip.height);\n            var tipPointer = document.getElementById(\"tipPointer\");\n            var tipPointerContext = tipPointer.getContext(\"2d\");\n            tipPointerContext.clearRect(0, 0, tipPointer.width, tipPointer.height);\n        }\n        function getRGB(intensity)\n        {\n          var rgb = [0,0,0];\n          if ( (0 <= intensity) && (intensity <= 0.25) )\n          {\n            rgb[0] = 0;\n            rgb[1] = Math.floor(255 * intensity * 4);    \n            rgb[2] = 255;\n          }\n          if ( (0.25 < intensity) && (intensity <= 0.50) )\n          {\n            rgb[0] = 0;\n            rgb[1] = 255;    \n            rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n          }\n          if ( (0.50 < intensity) && (intensity <= 0.75) )\n          {\n            rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n            rgb[1] = 255;    \n            rgb[2] = 0;\n          }\n          if ( (0.75 < intensity) && (intensity <= 1.0) )\n          {\n            rgb[0] = 255;\n            rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n            rgb[2] = 0;\n          }\n          return rgb;\n        }\n       function clearImage()\n        {\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);        \n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var pbox = 0.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(' ');\n            } \n        }\n        function drawEllipse(ctx, x, y, w, h) \n        {\n            var kappa = .5522848,\n              ox = (w / 2) * kappa, // control point offset horizontal\n              oy = (h / 2) * kappa, // control point offset vertical\n              xe = x + w,           // x-end\n              ye = y + h,           // y-end\n              xm = x + w / 2,       // x-middle\n              ym = y + h / 2;       // y-middle\n            \n            ctx.beginPath();\n            ctx.moveTo(x, ym);\n            ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);\n            ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);\n            ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);\n            ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);\n            //ctx.closePath(); // not used correctly, see comments (use to close off open path)\n            ctx.stroke();\n        }\n",
+        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var colorScale = true;\n        var enhancementLevel = 0;\n        var pgm = null;\n        var lastUpdate = new Date().getTime();\n        var maxDisplayTime = 5000;\n        var imageArray =  null;\n        var language = 0;\n        var warnings = [\n            [\"Person outside range\"     ,\"Person utanför räckhåll\"    ,\"Άτομο εκτός εμβέλειας\"   ,\"Persona fuera del alcance\"  ,\"Persona fuori portata\"  ,\"Person außerhalb der Reichweite\"  ,\"Personne hors de portée\"],\n            [\"Normal Temperature\"       ,\"Normal temperatur\"          ,\"Κανονική θερμοκρασία\"    ,\"Temperatura normal\"         ,\"Temperatura normale\"    ,\"Normale Temperatur\"               ,\"Température normale\"],\n            [\"High Temperature\"         ,\"Hög temperatur\"             ,\"Υψηλή θερμοκρασία\"       ,\"Alta temperatura\"           ,\"Alta temperatura\"       ,\"Hohe Temperatur\"                  ,\"Haute température\"],\n            [\"Temperature outside range\",\"Temperatur utanför räckhåll\",\"Θερμοκρασία εκτός εύρους\",\"Temperatura fuera del rango\",\"Temperatura fuori range\",\"Temperatur außerhalb des Bereichs\",\"Température hors plage\"] ];\n        \n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n            $('#tempLegend').hide();\n            $('#pixelMaxBarPlot').hide();\n            setInterval(function()\n            {\n                if ((new Date().getTime() - lastUpdate) > maxDisplayTime)\n                {\n                    $('#tempComment').text(\" \");\n                    $('#maxTemp').text(\" \");\n                    clearImage();\n                    $('#tempLegend').hide();\n                    $('#pixelMaxBarPlot').hide();\n                    \n                }\n            }, 1000);\n        }\n        function onWebSocketOpen()\n        {\n        }\n        function onWebSocketClose()\n        {\n            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        \n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            if (device.imageData.value != null)\n            {\n                var style = 'font-size:300%; font-weight:300; color:yellow';\n                if (device.triggerMode.value == 0)\n                {\n                    if (device.autoModeAction.value == 0)\n                    {\n                        $('#tempComment').attr(\"style\", style);\n                        $('#tempComment').text(warnings[device.autoModeAction.value][device.language.value]);\n                        $('#maxTemp').attr(\"style\", style);\n                        $('#maxTemp').text(\"\");\n                    }\n                    if (device.autoModeAction.value == 1)\n                    {\n                        style = 'font-size:300%; font-weight:300; color:cyan';\n                        $('#tempComment').attr(\"style\", style);\n                        $('#tempComment').text(warnings[device.autoModeAction.value][device.language.value]);\n                        $('#maxTemp').attr(\"style\", style);\n                        $('#maxTemp').text(device.bodyTemp.value.toString() + \" C\");\n                    }\n                    if (device.autoModeAction.value == 2)\n                    {\n                        style = 'font-size:300%; font-weight:300; color:red';\n                        $('#tempComment').attr(\"style\", style);\n                        $('#tempComment').text(warnings[device.autoModeAction.value][device.language.value]);\n                        $('#maxTemp').attr(\"style\", style);\n                        $('#maxTemp').text(device.bodyTemp.value.toString() + \" C\");\n                    }\n                    if (device.autoModeAction.value == 3)\n                    {\n                        style = 'font-size:300%; font-weight:300; color:yellow';\n                        $('#tempComment').attr(\"style\", style);\n                        $('#tempComment').text(warnings[device.autoModeAction.value][device.language.value]);\n                        $('#maxTemp').attr(\"style\", style);\n                        $('#maxTemp').text(device.bodyTemp.value.toString() + \" C\");\n                    }\n                }\n                else\n                {\n                    $('#tempComment').attr(\"style\", style);\n                    $('#tempComment').text(\"Surface Temperature\");\n                    $('#maxTemp').attr(\"style\", style);\n                    $('#maxTemp').text(device.pixelMax.value.toString() + \" C\");\n                }\n                lastUpdate = new Date().getTime();\n            }\n            if (device.imageData.value != null)\n            {\n                pgm = JSON.parse(JSON.stringify(device.imageData.value));\n                var processImage = 1;\n                try {processImage = device.processImage.value;} catch(err) {processImage = 1;}\n                switch (processImage)\n                {\n                    case 0:  \n                        imageArray = pgm.imageArray;\n                        break;\n                    case 1:  \n                        imageArray = blurImage(pgm.imageArray);\n                        break;\n                    default: \n                        imageArray = blurImage(pgm.imageArray);\n                        break;\n                }\n                plotImage();\n                $('#pixelMaxBarPlot').show();\n                var devTempSource = device.pixelMax;\n                if (device.triggerMode.value == 0) devTempSource = device.bodyTemp;\n                var pixelMaxBarConfig = \n                    {\n                        lolo            : devTempSource.alarm.limits.lolo, \n                        low             : devTempSource.alarm.limits.low, \n                        high            : devTempSource.alarm.limits.high, \n                        hihi            : devTempSource.alarm.limits.hihi, \n                        value           : devTempSource.value, \n                        unit            : devTempSource.unit, \n                        textsize        : 20,\n                        label           : 'temp', \n                        lowColor        : '#0000ff', \n                        mediumColor     : '#00ff00',\n                        highColor       : '#ff0000', \n                        backgroundColor : '#000000', \n                        labelColor      : '#ffffff', \n                        gridColor       : '#000000',\n                        height          : 50, \n                        htmlId          : 'pixelMaxBarPlot'\n                    };\n                setHorzBarWidget(pixelMaxBarConfig);\n             }\n        }\n        function plotImage()\n        {\n            $('#tempLegend').show();\n            var rgb = [];\n            var plow = (pgm.minval - 27315) / 100;\n            var phigh = (pgm.maxval - 27315) / 100;\n            var pdelta = phigh - plow;\n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var intensity = ibox / 8.0;\n                var pbox = Math.round(((phigh - plow) * intensity + plow) * 10.0) / 10.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(pbox.toString());\n                if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                if (colorScale)\n                {\n                    rgb = getRGB(intensity);\n                }\n                else\n                {\n                    rgb[0] = Math.floor(255 * intensity);\n                    rgb[1] = Math.floor(255 * intensity);\n                    rgb[2] = Math.floor(255 * intensity);\n                }\n                var style='width:44px;height:25px;background-color:' + 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                $('#box' + (ibox + 1).toString()).attr('style',style);\n            }\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var tipPointer = document.getElementById(\"tipPointer\");\n            var tipPointerContext = tipPointer.getContext(\"2d\");\n            var tip = document.getElementById(\"tip\");\n            var tipContext = tip.getContext(\"2d\");\n            tipContext.font = \"15px Arial\";\n            tipContext.fillStyle = \"cyan\";\n            tipPointerContext.fillStyle = \"cyan\";\n            if (colorScale) tipContext.fillStyle = \"black\";\n            if (colorScale) tipPointerContext.fillStyle = \"black\";\n            tipContext.textAlign = \"left\";\n\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            var rectWidth  = canvasWidth  / pgm.ncols;\n            var rectHeight = canvasHeight / pgm.nrows;\n            canvas.onmousemove = function (e) \n            {\n                var icol = Math.floor(e.layerX / rectWidth);\n                if (icol < 0) icol = 0;\n                if (icol >= pgm.ncols) icol = pgm.ncols - 1;\n                var irow = Math.floor((canvasHeight - e.layerY) / rectHeight);\n                if (irow < 0) irow = 0;\n                if (irow >= pgm.nrows) irow = pgm.nrows - 1;\n                var temp = Math.floor(100.0 * (pdelta * imageArray[irow][icol] / 256.0 + plow)) / 100;\n\n                tipPointer.style.top = (e.layerY  - tipPointer.height / 2).toString()  + \"px\";\n                tipPointer.style.left = (e.layerX - tipPointer.width / 2).toString() + \"px\";\n                tipPointerContext.clearRect(0, 0, tipPointer.width, tipPointer.height);\n                tipPointerContext.fillRect( 0, 0, tipPointer.width, tipPointer.height);\n\n                tip.style.top = (e.layerY - tip.height - tipPointer.height).toString()  + \"px\";\n                tip.style.left = (e.layerX).toString() + \"px\";\n                tipContext.clearRect(0, 0, tip.width, tip.height);\n                tipContext.fillText(temp.toString() + ' C', 0, 30);\n            };\n\n            for (var irow = 0; irow < pgm.nrows; ++irow)\n            {\n                for (var icol = 0; icol < pgm.ncols; ++icol)\n                {\n                    var intensity = imageArray[irow][icol] / 256.0;\n                    if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                    if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                    if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                    if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                    if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                    if (colorScale)\n                    {\n                        rgb = getRGB(intensity);\n                        rgb[0] = Math.floor(rgb[0]);\n                        rgb[1] = Math.floor(rgb[1]);\n                        rgb[2] = Math.floor(rgb[2]);\n                    }\n                    else\n                    {\n                        rgb[0] = Math.floor(255 * intensity);\n                        rgb[1] = Math.floor(255 * intensity);\n                        rgb[2] = Math.floor(255 * intensity);\n                    }\n                    canvasContext.fillStyle = 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                    if (intensity > 0.98) \n                    {\n                        canvasContext.fillStyle='magenta';\n                        if (colorScale) canvasContext.fillStyle='white';\n                    }\n\n                    canvasContext.fillRect(icol * rectWidth, canvasHeight - rectHeight - irow * rectHeight, rectWidth, rectHeight);\n                }    \n            }\n            var ellipseWidth = 100;\n            var ellipseHeight = 150;\n            canvasContext.fillStyle='black';\n            if (device.triggerMode.value == 0) \n            {\n                drawEllipse(canvasContext, (canvasWidth - ellipseWidth) / 2, (canvasHeight -  ellipseHeight)/ 2, ellipseWidth, ellipseHeight);\n            }\n        }\n        function blurImage(inputImage)\n        {\n            var kernal = [[1,2,1], [2,4,2], [1,2,1]];\n            var blurImage = [];\n            var nrows = inputImage.length;\n            var ncols = inputImage[0].length;\n            for (var irow = 0; irow < nrows; ++irow)\n            {\n                blurImage[irow] = [];\n                for (var icol = 0; icol < ncols; ++icol)\n                {\n                    if ((irow == 0) || (irow == (nrows - 1)))\n                    {\n                        blurImage[irow][icol] =  inputImage[irow][icol];\n                    }\n                    else\n                    {\n                        if ((icol == 0) || (icol == (ncols - 1)))\n                        {\n                            blurImage[irow][icol] =  inputImage[irow][icol];\n                        }\n                        else\n                        {\n                            blurImage[irow][icol] = 0;\n                            for (var ikrow = 0; ikrow < 3; ++ikrow)\n                            {\n                                for (var ikcol = 0; ikcol < 3; ++ikcol)\n                                {\n                                    blurImage[irow][icol] = blurImage[irow][icol] + inputImage[irow + ikrow - 1][icol + ikcol - 1] * kernal[ikrow][ikcol];\n                                }\n                            }\n                            blurImage[irow][icol] = Math.round(blurImage[irow][icol] / 16.0);\n                        }\n                    }\n                }\n            }\n            return blurImage;\n        }\n        function mouseLeftCanvas()\n        {\n            var tip = document.getElementById(\"tip\");\n            var tipContext = tip.getContext(\"2d\");\n            tipContext.clearRect(0, 0, tip.width, tip.height);\n            var tipPointer = document.getElementById(\"tipPointer\");\n            var tipPointerContext = tipPointer.getContext(\"2d\");\n            tipPointerContext.clearRect(0, 0, tipPointer.width, tipPointer.height);\n        }\n        function getRGB(intensity)\n        {\n          var rgb = [0,0,0];\n          if ( (0 <= intensity) && (intensity <= 0.25) )\n          {\n            rgb[0] = 0;\n            rgb[1] = Math.floor(255 * intensity * 4);    \n            rgb[2] = 255;\n          }\n          if ( (0.25 < intensity) && (intensity <= 0.50) )\n          {\n            rgb[0] = 0;\n            rgb[1] = 255;    \n            rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n          }\n          if ( (0.50 < intensity) && (intensity <= 0.75) )\n          {\n            rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n            rgb[1] = 255;    \n            rgb[2] = 0;\n          }\n          if ( (0.75 < intensity) && (intensity <= 1.0) )\n          {\n            rgb[0] = 255;\n            rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n            rgb[2] = 0;\n          }\n          return rgb;\n        }\n       function clearImage()\n        {\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);        \n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var pbox = 0.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(' ');\n            } \n        }\n        function drawEllipse(ctx, x, y, w, h) \n        {\n            var kappa = .5522848,\n              ox = (w / 2) * kappa, // control point offset horizontal\n              oy = (h / 2) * kappa, // control point offset vertical\n              xe = x + w,           // x-end\n              ye = y + h,           // y-end\n              xm = x + w / 2,       // x-middle\n              ym = y + h / 2;       // y-middle\n            \n            ctx.beginPath();\n            ctx.moveTo(x, ym);\n            ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);\n            ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);\n            ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);\n            ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);\n            //ctx.closePath(); // not used correctly, see comments (use to close off open path)\n            ctx.stroke();\n        }\n",
         "output": "str",
         "x": 630,
         "y": 880,
@@ -3183,12 +2991,12 @@
         "id": "19e694ba.df69bb",
         "type": "http in",
         "z": "c4285970.3276d8",
-        "name": "/profile",
-        "url": "/profile",
+        "name": "/monitor",
+        "url": "/monitor",
         "method": "get",
         "upload": false,
         "swaggerDoc": "",
-        "x": 90,
+        "x": 100,
         "y": 880,
         "wires": [
             [
@@ -3216,7 +3024,7 @@
         "id": "cf5e2ba4.3a2458",
         "type": "websocket out",
         "z": "5f562f66.a301e",
-        "name": "/profile/websocket",
+        "name": "/monitor/websocket",
         "server": "e8ef1dd0.f4c9a",
         "client": "",
         "x": 1450,
@@ -3376,7 +3184,8 @@
             "30a567e5.1d7ed8",
             "81c528f.cc489d8",
             "e880ae95.bdd76",
-            "a325a9ec.7e9188"
+            "a325a9ec.7e9188",
+            "6ea0bbeb.ca3b54"
         ],
         "x": 700,
         "y": 1400,
@@ -3658,7 +3467,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Gate State Open",
-        "func": "if (flow.get('gateInUse')) return null;\nflow.set('gateInUse',true);\nmsg.payload = 1;\nreturn msg;",
+        "func": "if (flow.get('device').gateMode.value == 0) return null;\nif (flow.get('gateInUse')) return null;\nflow.set('gateInUse',true);\nmsg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "x": 450,
@@ -3909,17 +3718,19 @@
         "id": "33874547.4db68a",
         "type": "exec",
         "z": "5f562f66.a301e",
-        "command": "espeak -v sv \"Välkommen\" --stdout | aplay",
-        "addpay": false,
+        "command": "espeak ",
+        "addpay": true,
         "append": "",
         "useSpawn": "false",
         "timer": "",
         "oldrc": false,
         "name": "espeak Please Enter",
-        "x": 880,
-        "y": 2040,
+        "x": 1140,
+        "y": 2000,
         "wires": [
-            [],
+            [
+                "afb10d64.6b48d"
+            ],
             [],
             []
         ]
@@ -3929,11 +3740,11 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Body Temp Speak",
-        "func": "msg.payload = ' \"' + flow.get('device').bodyTemp.value.toString() + '\" --stdout | aplay'\nreturn msg;",
+        "func": "if (flow.get('device').gateMode.value == 0) \n{\n    if (flow.get('gateInUse')) return null;\n    flow.set('gateInUse',true);\n}\nvar languageFlag = flow.get('languageFlags')[flow.get('device').language.value];\nmsg.payload = languageFlag + ' \"' + flow.get('device').bodyTemp.value.toString() + '\" --stdout | aplay'\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 450,
-        "y": 2040,
+        "x": 470,
+        "y": 2000,
         "wires": [
             [
                 "50c51b36.f4cde4"
@@ -3944,18 +3755,18 @@
         "id": "50c51b36.f4cde4",
         "type": "exec",
         "z": "5f562f66.a301e",
-        "command": "espeak -v sv ",
+        "command": "espeak",
         "addpay": true,
         "append": "",
         "useSpawn": "false",
         "timer": "",
         "oldrc": false,
         "name": "espeak Body Temp",
-        "x": 650,
-        "y": 2040,
+        "x": 670,
+        "y": 2000,
         "wires": [
             [
-                "33874547.4db68a"
+                "d30c7b04.5bf7d8"
             ],
             [],
             []
@@ -4000,7 +3811,7 @@
         "freq": "",
         "out": "out",
         "x": 1420,
-        "y": 2420,
+        "y": 2540,
         "wires": []
     },
     {
@@ -4012,7 +3823,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 440,
-        "y": 2420,
+        "y": 2540,
         "wires": [
             [
                 "5649f4af.4a03bc",
@@ -4029,7 +3840,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 800,
-        "y": 2420,
+        "y": 2540,
         "wires": [
             [
                 "f4c1fc1.3b91"
@@ -4052,7 +3863,7 @@
         "randomUnits": "seconds",
         "drop": false,
         "x": 630,
-        "y": 2460,
+        "y": 2580,
         "wires": [
             [
                 "94bf1fac.8b3e3"
@@ -4068,7 +3879,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 800,
-        "y": 2460,
+        "y": 2580,
         "wires": [
             [
                 "15e0e620.bb96fa",
@@ -4092,7 +3903,7 @@
         "randomUnits": "seconds",
         "drop": false,
         "x": 630,
-        "y": 2420,
+        "y": 2540,
         "wires": [
             [
                 "14f934e6.ded55b"
@@ -4122,7 +3933,7 @@
             "7af84ca8.ba5584"
         ],
         "x": 955,
-        "y": 2420,
+        "y": 2540,
         "wires": []
     },
     {
@@ -4133,10 +3944,11 @@
         "links": [
             "f4c1fc1.3b91",
             "81c528f.cc489d8",
-            "d242b085.fde9e"
+            "d242b085.fde9e",
+            "6ea0bbeb.ca3b54"
         ],
         "x": 1315,
-        "y": 2420,
+        "y": 2540,
         "wires": [
             [
                 "73e006b1.cf7528"
@@ -4152,7 +3964,8 @@
             "81c528f.cc489d8",
             "852a59a8.761b68",
             "d0988296.efa1",
-            "d242b085.fde9e"
+            "d242b085.fde9e",
+            "6ea0bbeb.ca3b54"
         ],
         "x": 1315,
         "y": 2100,
@@ -4225,8 +4038,8 @@
         "timer": "",
         "oldrc": false,
         "name": "espeak Too high",
-        "x": 860,
-        "y": 2360,
+        "x": 1100,
+        "y": 2480,
         "wires": [
             [
                 "4462442a.61e38c"
@@ -4240,11 +4053,11 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Body Temp Speak",
-        "func": "flow.set('gateInUse',true);\nmsg.payload = ' \"' + flow.get('device').bodyTemp.value.toString() + '\" --stdout | aplay'\nreturn msg;",
+        "func": "if (flow.get('gateInUse')) return null;\nflow.set('gateInUse',true);\nvar languageFlag = flow.get('languageFlags')[flow.get('device').language.value];\nmsg.payload = languageFlag + ' \"' + flow.get('device').bodyTemp.value.toString() + '\" --stdout | aplay'\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "x": 450,
-        "y": 2360,
+        "y": 2480,
         "wires": [
             [
                 "9300e65b.1644d8"
@@ -4263,68 +4076,10 @@
         "oldrc": false,
         "name": "espeak Body Temp",
         "x": 650,
-        "y": 2360,
+        "y": 2480,
         "wires": [
             [
-                "fc88ddcf.296c3"
-            ],
-            [],
-            []
-        ]
-    },
-    {
-        "id": "d57d0e2c.f7662",
-        "type": "exec",
-        "z": "5f562f66.a301e",
-        "command": "espeak \"Not in range\" --stdout | aplay",
-        "addpay": false,
-        "append": "",
-        "useSpawn": "false",
-        "timer": "",
-        "oldrc": false,
-        "name": "espeak Not in range",
-        "x": 880,
-        "y": 2560,
-        "wires": [
-            [
-                "aa9618a8.f43bb8"
-            ],
-            [],
-            []
-        ]
-    },
-    {
-        "id": "88272f97.f219f",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Body Temp Speak",
-        "func": "flow.set('gateInUse',true);\nmsg.payload = ' \"' + flow.get('device').bodyTemp.value.toString() + '\" --stdout | aplay'\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 450,
-        "y": 2560,
-        "wires": [
-            [
-                "2cf776e4.2dfc2a"
-            ]
-        ]
-    },
-    {
-        "id": "2cf776e4.2dfc2a",
-        "type": "exec",
-        "z": "5f562f66.a301e",
-        "command": "espeak ",
-        "addpay": true,
-        "append": "",
-        "useSpawn": "false",
-        "timer": "",
-        "oldrc": false,
-        "name": "espeak Body Temp",
-        "x": 650,
-        "y": 2560,
-        "wires": [
-            [
-                "d57d0e2c.f7662"
+                "d560e222.c91c8"
             ],
             [],
             []
@@ -4407,20 +4162,102 @@
         "func": "flow.set('gateInUse',false);\n",
         "outputs": 0,
         "noerr": 0,
-        "x": 1230,
-        "y": 2340,
+        "x": 1330,
+        "y": 2460,
         "wires": []
     },
     {
-        "id": "aa9618a8.f43bb8",
+        "id": "d30c7b04.5bf7d8",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Body Temp Speak Message",
+        "func": "var languageFlag = flow.get('languageFlags')[flow.get('device').language.value];\nmsg.payload = languageFlag + ' \"' + flow.get('voiceWarnings')[flow.get('device').autoModeAction.value][flow.get('device').language.value] + '\" --stdout | aplay'\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 900,
+        "y": 2000,
+        "wires": [
+            [
+                "33874547.4db68a"
+            ]
+        ]
+    },
+    {
+        "id": "d560e222.c91c8",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Body Temp Speak Message",
+        "func": "var languageFlag = flow.get('languageFlags')[flow.get('device').language.value];\nmsg.payload = languageFlag + ' \"' + flow.get('voiceWarnings')[flow.get('device').autoModeAction.value][flow.get('device').language.value] + '\" --stdout | aplay'\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 880,
+        "y": 2480,
+        "wires": [
+            [
+                "fc88ddcf.296c3"
+            ]
+        ]
+    },
+    {
+        "id": "afb10d64.6b48d",
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Set Gate State not in use",
-        "func": "flow.set('gateInUse',false);\n",
-        "outputs": 0,
+        "func": "if (flow.get('device').gateMode.value == 1) return null;\nflow.set('gateInUse',false);\nmsg.payload = 0;\nreturn msg;",
+        "outputs": 1,
         "noerr": 0,
-        "x": 1230,
-        "y": 2540,
+        "x": 1390,
+        "y": 1980,
+        "wires": [
+            [
+                "19963a75.2b0f46"
+            ]
+        ]
+    },
+    {
+        "id": "cb2332f8.29c65",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 1",
+        "func": "msg.payload = 1;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 800,
+        "y": 880,
+        "wires": [
+            [
+                "6ea0bbeb.ca3b54"
+            ]
+        ]
+    },
+    {
+        "id": "c7d887e1.faf408",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 0",
+        "func": "msg.payload = 0;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1920,
+        "y": 880,
+        "wires": [
+            [
+                "6ea0bbeb.ca3b54"
+            ]
+        ]
+    },
+    {
+        "id": "6ea0bbeb.ca3b54",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "Reset Out",
+        "links": [
+            "316e94c2.271bec",
+            "7af84ca8.ba5584",
+            "cb51837e.00842"
+        ],
+        "x": 1360,
+        "y": 840,
         "wires": []
     }
 ]
