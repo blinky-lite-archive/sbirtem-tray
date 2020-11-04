@@ -4254,13 +4254,13 @@
         "timeout": "5",
         "timeoutUnits": "seconds",
         "rate": "1",
-        "nbRateUnits": "2",
+        "nbRateUnits": "1",
         "rateUnits": "second",
         "randomFirst": "1",
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": true,
-        "x": 540,
+        "x": 530,
         "y": 580,
         "wires": [
             [
