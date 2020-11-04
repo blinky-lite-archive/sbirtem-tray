@@ -1,13 +1,13 @@
 {
   "deviceType": "vad-kul",
-  "name": "11",
+  "name": "09",
   "arcPeriod": 60000,
-  "timeStamp": 1604141701258,
-  "lastArchive": 1604126580605,
+  "timeStamp": 1604488838345,
+  "lastArchive": 1604472145283,
   "linkQuality": {
     "action": "reading",
     "type": "scalar",
-    "value": 70,
+    "value": 62,
     "unit": "/70",
     "alarm": {
       "value": 0,
@@ -27,7 +27,7 @@
   "signalLevel": {
     "action": "reading",
     "type": "scalar",
-    "value": -31,
+    "value": -48,
     "unit": "dBm",
     "alarm": {
       "value": 0,
@@ -47,7 +47,7 @@
   "pixelMin": {
     "action": "reading",
     "type": "scalar",
-    "value": 19.3,
+    "value": 22.5,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -67,7 +67,7 @@
   "pixelMax": {
     "action": "reading",
     "type": "scalar",
-    "value": 27.3,
+    "value": 33.2,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -87,7 +87,7 @@
   "ultraSoundDistance": {
     "action": "reading",
     "type": "scalar",
-    "value": 400,
+    "value": 91,
     "unit": "cm",
     "alarm": {
       "value": 0,
@@ -107,7 +107,7 @@
   "ultraSoundRange": {
     "action": "setting",
     "type": "scalar",
-    "value": 150,
+    "value": 110,
     "unit": "cm",
     "alarm": {
       "value": 0,
@@ -127,7 +127,7 @@
   "imageDelay": {
     "action": "setting",
     "type": "scalar",
-    "value": 2000,
+    "value": 500,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -147,7 +147,7 @@
   "autoModeAction": {
     "action": "reading",
     "type": "scalar",
-    "value": 0,
+    "value": 1,
     "unit": "unit",
     "alarm": {
       "value": 0,
@@ -167,13 +167,13 @@
   "bodyTemp": {
     "action": "reading",
     "type": "scalar",
-    "value": 0,
+    "value": 36.6,
     "unit": "C",
     "alarm": {
-      "value": 3,
+      "value": 0,
       "limits": {
-        "lolo": 32,
-        "low": 34.5,
+        "lolo": 33,
+        "low": 35.5,
         "high": 38.5,
         "hihi": 41
       },
@@ -307,7 +307,7 @@
   "triggerMode": {
     "action": "setting",
     "type": "scalar",
-    "value": 1,
+    "value": 0,
     "unit": "unit",
     "alarm": {
       "value": 0,
@@ -367,7 +367,7 @@
   "language": {
     "action": "setting",
     "type": "scalar",
-    "value": 1,
+    "value": 0,
     "unit": "unit",
     "alarm": {
       "value": 0,
@@ -396,6 +396,46 @@
         "low": -1,
         "high": 2,
         "hihi": 3
+      },
+      "notify": {
+        "name": "",
+        "number": "",
+        "time": 0
+      }
+    }
+  },
+  "faceRegionWidth": {
+    "action": "setting",
+    "type": "scalar",
+    "value": 25,
+    "unit": "unit",
+    "alarm": {
+      "value": 0,
+      "limits": {
+        "lolo": 1,
+        "low": 2,
+        "high": 75,
+        "hihi": 76
+      },
+      "notify": {
+        "name": "",
+        "number": "",
+        "time": 0
+      }
+    }
+  },
+  "faceRegionHeight": {
+    "action": "setting",
+    "type": "scalar",
+    "value": 35,
+    "unit": "unit",
+    "alarm": {
+      "value": 0,
+      "limits": {
+        "lolo": 1,
+        "low": 2,
+        "high": 55,
+        "hihi": 56
       },
       "notify": {
         "name": "",
