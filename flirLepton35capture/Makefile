@@ -1,5 +1,5 @@
 
-TARGET = flirLepton25capture.exe
+TARGET = flirLepton35capture.exe
 LIBS = -lm
 CC = gcc
 CFLAGS = -g -Wall
