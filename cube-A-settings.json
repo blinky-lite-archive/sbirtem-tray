@@ -2,12 +2,12 @@
   "deviceType": "vad-kul",
   "name": "09",
   "arcPeriod": 60000,
-  "timeStamp": 1604911333149,
+  "timeStamp": 1604939538846,
   "lastArchive": 1604472145283,
   "linkQuality": {
     "action": "reading",
     "type": "scalar",
-    "value": 59,
+    "value": 67,
     "unit": "/70",
     "alarm": {
       "value": 0,
@@ -27,7 +27,7 @@
   "signalLevel": {
     "action": "reading",
     "type": "scalar",
-    "value": -51,
+    "value": -43,
     "unit": "dBm",
     "alarm": {
       "value": 0,
@@ -47,7 +47,7 @@
   "pixelMin": {
     "action": "reading",
     "type": "scalar",
-    "value": 17.6,
+    "value": 20.8,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -67,7 +67,7 @@
   "pixelMax": {
     "action": "reading",
     "type": "scalar",
-    "value": 32.7,
+    "value": 32.6,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -307,7 +307,7 @@
   "triggerMode": {
     "action": "setting",
     "type": "scalar",
-    "value": 1,
+    "value": 0,
     "unit": "unit",
     "alarm": {
       "value": 0,
