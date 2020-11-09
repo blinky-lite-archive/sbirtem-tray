@@ -2,7 +2,7 @@
   "deviceType": "vad-kul",
   "name": "09",
   "arcPeriod": 60000,
-  "timeStamp": 1604502697092,
+  "timeStamp": 1604911333149,
   "lastArchive": 1604472145283,
   "linkQuality": {
     "action": "reading",
@@ -47,7 +47,7 @@
   "pixelMin": {
     "action": "reading",
     "type": "scalar",
-    "value": 22.2,
+    "value": 17.6,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -67,7 +67,7 @@
   "pixelMax": {
     "action": "reading",
     "type": "scalar",
-    "value": 33.4,
+    "value": 32.7,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -127,13 +127,13 @@
   "imageDelay": {
     "action": "setting",
     "type": "scalar",
-    "value": 1000,
+    "value": 2000,
     "unit": "mS",
     "alarm": {
       "value": 0,
       "limits": {
-        "lolo": 100,
-        "low": 200,
+        "lolo": 2000,
+        "low": 2000,
         "high": 20000,
         "hihi": 21000
       },
@@ -167,7 +167,7 @@
   "bodyTemp": {
     "action": "reading",
     "type": "scalar",
-    "value": 36.8,
+    "value": 36,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -287,7 +287,7 @@
   "processImage": {
     "action": "setting",
     "type": "scalar",
-    "value": 1,
+    "value": 0,
     "unit": "unit",
     "alarm": {
       "value": 0,
@@ -307,7 +307,7 @@
   "triggerMode": {
     "action": "setting",
     "type": "scalar",
-    "value": 0,
+    "value": 1,
     "unit": "unit",
     "alarm": {
       "value": 0,
@@ -407,7 +407,7 @@
   "faceRegionWidth": {
     "action": "setting",
     "type": "scalar",
-    "value": 25,
+    "value": 50,
     "unit": "unit",
     "alarm": {
       "value": 0,
@@ -427,15 +427,35 @@
   "faceRegionHeight": {
     "action": "setting",
     "type": "scalar",
-    "value": 35,
+    "value": 70,
     "unit": "unit",
     "alarm": {
       "value": 0,
       "limits": {
         "lolo": 1,
         "low": 2,
-        "high": 55,
-        "hihi": 56
+        "high": 119,
+        "hihi": 120
+      },
+      "notify": {
+        "name": "",
+        "number": "",
+        "time": 0
+      }
+    }
+  },
+  "resMode": {
+    "action": "setting",
+    "type": "scalar",
+    "value": 2,
+    "unit": "unit",
+    "alarm": {
+      "value": 0,
+      "limits": {
+        "lolo": -1,
+        "low": 0,
+        "high": 3,
+        "hihi": 4
       },
       "notify": {
         "name": "",

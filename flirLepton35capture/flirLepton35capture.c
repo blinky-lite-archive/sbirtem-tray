@@ -35,18 +35,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <linux/spi/spidev.h>
 #include <limits.h>
 
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
-
-static void pabort(const char *s)
-{
-	perror(s);
-	abort();
-}
-
 static const char *device = "/dev/spidev0.1";
 static uint8_t mode;
 static uint8_t bits = 8;
-static uint32_t speed = 20000000;
+static uint32_t speed = 24000000;
 static uint16_t delay = 0;
 
 #define VOSPI_FRAME_SIZE (164)
@@ -103,46 +95,18 @@ int main(int argc, char *argv[])
 
 
 	fd = open(device, O_RDWR);
-	if (fd < 0)
-	{
-		pabort("can't open device");
-	}
 
 	ret = ioctl(fd, SPI_IOC_WR_MODE, &mode);
-	if (ret == -1)
-	{
-		pabort("can't set spi mode");
-	}
 
-	ret = ioctl(fd, SPI_IOC_RD_MODE, &mode);
-	if (ret == -1)
-	{
-		pabort("can't get spi mode");
-	}
+//	ret = ioctl(fd, SPI_IOC_RD_MODE, &mode);
 
 	ret = ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &bits);
-	if (ret == -1)
-	{
-		pabort("can't set bits per word");
-	}
 
-	ret = ioctl(fd, SPI_IOC_RD_BITS_PER_WORD, &bits);
-	if (ret == -1)
-	{
-		pabort("can't get bits per word");
-	}
+//	ret = ioctl(fd, SPI_IOC_RD_BITS_PER_WORD, &bits);
 
 	ret = ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
-	if (ret == -1)
-	{
-		pabort("can't set max speed hz");
-	}
 
-	ret = ioctl(fd, SPI_IOC_RD_MAX_SPEED_HZ, &speed);
-	if (ret == -1)
-	{
-		pabort("can't get max speed hz");
-	}
+//	ret = ioctl(fd, SPI_IOC_RD_MAX_SPEED_HZ, &speed);
 
     transfer(fd);
 

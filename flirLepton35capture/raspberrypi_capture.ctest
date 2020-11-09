@@ -35,27 +35,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <linux/spi/spidev.h>
 #include <limits.h>
 
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
-#define BYTE_TO_BINARY(byte)  \
-  (byte & 0x80 ? '1' : '0'), \
-  (byte & 0x40 ? '1' : '0'), \
-  (byte & 0x20 ? '1' : '0'), \
-  (byte & 0x10 ? '1' : '0'), \
-  (byte & 0x08 ? '1' : '0'), \
-  (byte & 0x04 ? '1' : '0'), \
-  (byte & 0x02 ? '1' : '0'), \
-  (byte & 0x01 ? '1' : '0') 
-
-static void pabort(const char *s)
-{
-	perror(s);
-	abort();
-}
-
 static const char *device = "/dev/spidev0.1";
 static uint8_t mode;
 static uint8_t bits = 8;
-static uint32_t speed = 20000000;
+static uint32_t speed = 24000000;
 static uint16_t delay = 0;
 
 #define VOSPI_FRAME_SIZE (164)
@@ -141,23 +124,19 @@ int transfer(int fd)
         while (irow != 59)
         {
             ioctl(fd, SPI_IOC_MESSAGE(1), &tr);
-//            if (ret < 1) pabort("can't send spi message");
-
-	        if(((lepton_frame_packet[0]&0xf) != 0x0f))
-	        {
-	            irow = lepton_frame_packet[1];
+            if(((lepton_frame_packet[0]&0xf) != 0x0f))
+            {
+                irow = lepton_frame_packet[1];
                 if (irow == 20) segRead = lepton_frame_packet[0] >> 4; 
-    //                printf("boog %c%c%c%c %c%c%c%c %c%c%c%c %c%c%c%c\n", BYTE_TO_BINARY(lepton_frame_packet[0]), BYTE_TO_BINARY(lepton_frame_packet[1]));
                 if (irow < 60)
                 {
-	                for(icol = 0; icol < 80; icol++)
-	                {
+                    for(icol = 0; icol < 80; icol++)
+                    {
                         lepton_image[iseg][irow][icol] = (lepton_frame_packet[2 * icol + 4] << 8 | lepton_frame_packet[2 * icol + 5]);
-	                }
+                    }
                 }
-	        }
+            }
         }
-//        printf("%d\n",segRead);
         if (segRead == (iseg + 1)) ++iseg;
     }
 	return 0;
@@ -169,55 +148,25 @@ int main(int argc, char *argv[])
 	int fd;
 
 	fd = open(device, O_RDWR);
-	if (fd < 0)
-	{
-		pabort("can't open device");
-	}
 
 	ret = ioctl(fd, SPI_IOC_WR_MODE, &mode);
-	if (ret == -1)
-	{
-		pabort("can't set spi mode");
-	}
 
-	ret = ioctl(fd, SPI_IOC_RD_MODE, &mode);
-	if (ret == -1)
-	{
-		pabort("can't get spi mode");
-	}
+//	ret = ioctl(fd, SPI_IOC_RD_MODE, &mode);
 
 	ret = ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &bits);
-	if (ret == -1)
-	{
-		pabort("can't set bits per word");
-	}
 
-	ret = ioctl(fd, SPI_IOC_RD_BITS_PER_WORD, &bits);
-	if (ret == -1)
-	{
-		pabort("can't get bits per word");
-	}
+//	ret = ioctl(fd, SPI_IOC_RD_BITS_PER_WORD, &bits);
 
 	ret = ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
-	if (ret == -1)
-	{
-		pabort("can't set max speed hz");
-	}
 
-	ret = ioctl(fd, SPI_IOC_RD_MAX_SPEED_HZ, &speed);
-	if (ret == -1)
-	{
-		pabort("can't get max speed hz");
-	}
+//	ret = ioctl(fd, SPI_IOC_RD_MAX_SPEED_HZ, &speed);
 
 	printf("spi mode: %d\n", mode);
 	printf("bits per word: %d\n", bits);
 	printf("max speed: %d Hz (%d KHz)\n", speed, speed/1000);
     transfer(fd);
-
 	close(fd);
-
-	save_pgm_file("pic0.pgm");
+    save_pgm_file("pic0.pgm");
 
 	return ret;
 }
