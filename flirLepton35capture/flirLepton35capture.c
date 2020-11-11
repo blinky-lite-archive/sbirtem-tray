@@ -93,20 +93,20 @@ int main(int argc, char *argv[])
 	int ret = 0;
 	int fd;
 
-
+    mode = 3;
 	fd = open(device, O_RDWR);
 
 	ret = ioctl(fd, SPI_IOC_WR_MODE, &mode);
 
-//	ret = ioctl(fd, SPI_IOC_RD_MODE, &mode);
+	ret = ioctl(fd, SPI_IOC_RD_MODE, &mode);
 
 	ret = ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &bits);
 
-//	ret = ioctl(fd, SPI_IOC_RD_BITS_PER_WORD, &bits);
+	ret = ioctl(fd, SPI_IOC_RD_BITS_PER_WORD, &bits);
 
 	ret = ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
 
-//	ret = ioctl(fd, SPI_IOC_RD_MAX_SPEED_HZ, &speed);
+	ret = ioctl(fd, SPI_IOC_RD_MAX_SPEED_HZ, &speed);
 
     transfer(fd);
 

@@ -306,7 +306,7 @@
         "overwriteFile": "true",
         "encoding": "none",
         "x": 1310,
-        "y": 140,
+        "y": 80,
         "wires": [
             []
         ]
@@ -316,15 +316,15 @@
         "type": "inject",
         "z": "5f562f66.a301e",
         "name": "init 1 sec",
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
+        "topic": "init",
+        "payload": "1",
+        "payloadType": "num",
         "repeat": "",
         "crontab": "",
         "once": true,
         "onceDelay": "1",
         "x": 100,
-        "y": 340,
+        "y": 300,
         "wires": [
             [
                 "2635280b.22f548",
@@ -342,8 +342,8 @@
         "chunk": false,
         "sendError": false,
         "encoding": "none",
-        "x": 430,
-        "y": 340,
+        "x": 550,
+        "y": 280,
         "wires": [
             [
                 "53c95857.5f3d68"
@@ -358,8 +358,8 @@
         "property": "payload",
         "action": "",
         "pretty": false,
-        "x": 630,
-        "y": 340,
+        "x": 750,
+        "y": 280,
         "wires": [
             [
                 "30f384ea.cf21fc"
@@ -374,8 +374,8 @@
         "func": "flow.set('device', msg.payload);\nflow.set('newSetting', 1);\nflow.set('pgm',null);\nreturn null;",
         "outputs": 0,
         "noerr": 0,
-        "x": 860,
-        "y": 340,
+        "x": 980,
+        "y": 280,
         "wires": []
     },
     {
@@ -387,7 +387,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 1150,
-        "y": 140,
+        "y": 80,
         "wires": [
             [
                 "5902d0c0.241a6"
@@ -403,7 +403,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 700,
-        "y": 140,
+        "y": 80,
         "wires": [
             [
                 "81621fcc.16d71"
@@ -415,11 +415,11 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Readings Alarm Scan",
-        "func": "device = flow.get('device');\ndevice.imageData.value = null;\nvar pgm = flow.get('pgm');\nvar actionMsg = null;\nif (pgm != null)\n{\n    device.archiveData.value = 1;\n    flow.set('lastImageTime',new Date().getTime());\n    var imageAnal = imageAnalysis(JSON.parse(JSON.stringify(pgm)), device.processImage.value, device.faceRegionHeight.value, device.faceRegionWidth.value, device.archiveMinTemp.value);\n//    var imageAnal = imageAnalysis(pgm, device.processImage.value, device.faceRegionHeight.value, device.faceRegionWidth.value, device.archiveMinTemp.value);\n\n    device.pixelMin.value = Math.round(10 *imageAnal.minPix ) / 10;\n    device.pixelMax.value  = Math.round(10 *imageAnal.maxPix ) / 10;\n    device.imageData.value = pgm;\n    device.timeStamp = pgm.timeStamp;\n    device.autoModeAction.value = 0;\n    device.bodyTemp.value = 0;\n    if ((device.triggerMode.value == 0) || (device.triggerMode.value == 1))\n    {\n        device.bodyTemp.value = Math.round(10 * (imageAnal.maxBoxTempC + device.offsetTemp.value)) / 10;\n        if(imageAnal.boxPercent > device.archivePixelPercent.value) device.autoModeAction.value = 1;\n        \n        if (device.autoModeAction.value == 0)\n        {\n            actionMsg = {topic:'actionMsg', payload:0};\n            device.bodyTemp.value = 0;\n            device.archiveData.value = 0;\n        }\n        else\n        {\n            if ((device.bodyTemp.alarm.limits.low < device.bodyTemp.value) && (device.bodyTemp.value < device.bodyTemp.alarm.limits.high))\n            {\n                actionMsg = {topic:'actionMsg', payload:1};\n                device.autoModeAction.value = 1;\n            }\n            if ((device.bodyTemp.alarm.limits.high < device.bodyTemp.value) && (device.bodyTemp.value < device.bodyTemp.alarm.limits.hihi))\n            {\n                actionMsg = {topic:'actionMsg', payload:2};\n                device.autoModeAction.value = 2;\n            }\n            if ((device.bodyTemp.alarm.limits.low > device.bodyTemp.value) || (device.bodyTemp.value > device.bodyTemp.alarm.limits.hihi))\n            {\n                actionMsg = {topic:'actionMsg', payload:3};\n                device.autoModeAction.value = 3;\n            }\n        }\n    }\n}\nelse\n{\n//    if (device.ultraSoundDistance.value != 400) return null;\n}\n\ndevice.linkQuality.value     = global.get('linkQuality');\ndevice.signalLevel.value     = global.get('signalLevel');\nscalarAlarmScan(device, 'reading');\nvar toppy = global.get('project') + '/' + global.get('deviceTypeA') + '/' + global.get('deviceNameA') + '/reading';\nreturn [{topic:toppy, payload:device},actionMsg];\n\nfunction getActionArray(device, type, actionType)\n{\n    var actionArray = [];\n    var keys = Object.keys(device);\n    for (var ii = 0; ii < keys.length; ++ii)\n    {\n        if (device[keys[ii]].hasOwnProperty('type'))\n        {\n            if (device[keys[ii]].type == type)\n            {\n                if (device[keys[ii]].action == actionType)\n                {\n                    actionArray.push(device[keys[ii]]);\n                }\n            }\n        }\n    }\n    return actionArray;\n}\nfunction scalarAlarmScan(device, actionType)\n{\n    var actionArray = getActionArray(device, 'scalar', actionType);\n    if (actionArray.length > 0)\n    {\n        for (var ii = 0; ii < actionArray.length; ++ii)\n        {\n            actionArray[ii].alarm.value = 0;\n            if (!isNaN(actionArray[ii].value))\n            {\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.low)  actionArray[ii].alarm.value = 1;\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.lolo) actionArray[ii].alarm.value = 3;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.high) actionArray[ii].alarm.value = 2;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.hihi) actionArray[ii].alarm.value = 4;\n            }\n        }\n    }\n}\nfunction blurImage(inputImage)\n{\n    var kernal = [[1,2,1], [2,4,2], [1,2,1]];\n    var blurImage = [];\n    var nrows = inputImage.length;\n    var ncols = inputImage[0].length;\n    for (var irow = 0; irow < nrows; ++irow)\n    {\n        blurImage[irow] = [];\n        for (var icol = 0; icol < ncols; ++icol)\n        {\n            if ((irow == 0) || (irow == (nrows - 1)))\n            {\n                blurImage[irow][icol] =  inputImage[irow][icol];\n            }\n            else\n            {\n                if ((icol == 0) || (icol == (ncols - 1)))\n                {\n                    blurImage[irow][icol] =  inputImage[irow][icol];\n                }\n                else\n                {\n                    blurImage[irow][icol] = 0;\n                    for (var ikrow = 0; ikrow < 3; ++ikrow)\n                    {\n                        for (var ikcol = 0; ikcol < 3; ++ikcol)\n                        {\n                            blurImage[irow][icol] = blurImage[irow][icol] + inputImage[irow + ikrow - 1][icol + ikcol - 1] * kernal[ikrow][ikcol];\n                        }\n                    }\n                    blurImage[irow][icol] = Math.round(blurImage[irow][icol] / 16.0);\n                }\n            }\n        }\n    }\n    return blurImage;\n}\nfunction imageAnalysis(imagePgm,blurImageFlag, ellipseHeight,ellipseWidth, boxThresholdC)\n{\n    var imageArray = imagePgm.imageArray;\n    if (blurImage == 1) imageArray = blurImage(imagePgm.imageArray);\n    var nrows = imageArray.length;\n    var ncols = imageArray[0].length;\n    var minPix = 500.0;\n    var maxPix = -273.0;\n    var nrows = imageArray.length;\n    var ncols = imageArray[0].length;\n    var boxPercent = 0;\n    var maxBoxTempC = -273.0;\n    var boxCnt = 0;\n    var rad2 = ellipseHeight * ellipseWidth / 2.0;\n    rad2 = rad2 * rad2;\n    var xc = (ncols - 1.0) / 2.0;\n    var yc = (nrows - 1.0) / 2.0;\n    for (var irow = 0; irow < nrows; ++irow)\n    {\n        var testH = ellipseWidth * (irow - yc);\n        testH = testH * testH;\n        for (var icol = 0; icol < ncols; ++icol)\n        {\n            var tempC = (((pgm.maxval - pgm.minval) * imageArray[irow][icol] / 255.0) + pgm.minval  - 27315) / 100;\n            if (minPix > tempC) minPix = tempC;\n            if (maxPix < tempC) maxPix = tempC;\n            var testW = ellipseHeight * (icol - xc);\n            testW = testW * testW;\n            if ((testH +  testW) <= rad2)\n            {\n                    if (tempC > boxThresholdC) ++boxPercent;\n                    if (tempC > maxBoxTempC) maxBoxTempC = tempC;\n                    ++boxCnt\n//                    imageArray[irow][icol] = 255;\n            }\n        }\n    }\n    if (boxCnt > 0)\n    {\n        boxPercent = Math.round(1000 * boxPercent / boxCnt) / 10;\n    }\n    return {'minPix': minPix, 'maxPix' : maxPix, 'boxPercent' : boxPercent, 'maxBoxTempC': maxBoxTempC};\n}\n",
+        "func": "device = flow.get('device');\ndevice.imageData.value = null;\nvar pgm = flow.get('pgm');\nvar actionMsg = null;\nif (pgm != null)\n{\n    device.archiveData.value = 1;\n    var imageAnal = imageAnalysis(JSON.parse(JSON.stringify(pgm)), device.processImage.value, device.faceRegionHeight.value, device.faceRegionWidth.value, device.archiveMinTemp.value);\n//    var imageAnal = imageAnalysis(pgm, device.processImage.value, device.faceRegionHeight.value, device.faceRegionWidth.value, device.archiveMinTemp.value);\n\n    device.pixelMin.value = Math.round(10 *imageAnal.minPix ) / 10;\n    device.pixelMax.value  = Math.round(10 *imageAnal.maxPix ) / 10;\n    device.imageData.value = pgm;\n    device.timeStamp = pgm.timeStamp;\n    device.autoModeAction.value = 0;\n    device.bodyTemp.value = 0;\n    if ((device.triggerMode.value == 0) || (device.triggerMode.value == 1))\n    {\n        device.bodyTemp.value = Math.round(10 * (imageAnal.maxBoxTempC + device.offsetTemp.value)) / 10;\n        if(imageAnal.boxPercent > device.archivePixelPercent.value) device.autoModeAction.value = 1;\n        \n        if (device.autoModeAction.value == 0)\n        {\n            actionMsg = {topic:'actionMsg', payload:0};\n            device.bodyTemp.value = 0;\n            device.archiveData.value = 0;\n        }\n        else\n        {\n            if ((device.bodyTemp.alarm.limits.low < device.bodyTemp.value) && (device.bodyTemp.value < device.bodyTemp.alarm.limits.high))\n            {\n                actionMsg = {topic:'actionMsg', payload:1};\n                device.autoModeAction.value = 1;\n            }\n            if ((device.bodyTemp.alarm.limits.high < device.bodyTemp.value) && (device.bodyTemp.value < device.bodyTemp.alarm.limits.hihi))\n            {\n                actionMsg = {topic:'actionMsg', payload:2};\n                device.autoModeAction.value = 2;\n            }\n            if ((device.bodyTemp.alarm.limits.low > device.bodyTemp.value) || (device.bodyTemp.value > device.bodyTemp.alarm.limits.hihi))\n            {\n                actionMsg = {topic:'actionMsg', payload:3};\n                device.autoModeAction.value = 3;\n            }\n        }\n    }\n}\nelse\n{\n//    if (device.ultraSoundDistance.value != 400) return null;\n}\n\ndevice.linkQuality.value     = global.get('linkQuality');\ndevice.signalLevel.value     = global.get('signalLevel');\nscalarAlarmScan(device, 'reading');\nvar toppy = global.get('project') + '/' + global.get('deviceTypeA') + '/' + global.get('deviceNameA') + '/reading';\nflow.set('lastHeartbeatTime',new Date().getTime());\nreturn [{topic:toppy, payload:device},actionMsg];\n\nfunction getActionArray(device, type, actionType)\n{\n    var actionArray = [];\n    var keys = Object.keys(device);\n    for (var ii = 0; ii < keys.length; ++ii)\n    {\n        if (device[keys[ii]].hasOwnProperty('type'))\n        {\n            if (device[keys[ii]].type == type)\n            {\n                if (device[keys[ii]].action == actionType)\n                {\n                    actionArray.push(device[keys[ii]]);\n                }\n            }\n        }\n    }\n    return actionArray;\n}\nfunction scalarAlarmScan(device, actionType)\n{\n    var actionArray = getActionArray(device, 'scalar', actionType);\n    if (actionArray.length > 0)\n    {\n        for (var ii = 0; ii < actionArray.length; ++ii)\n        {\n            actionArray[ii].alarm.value = 0;\n            if (!isNaN(actionArray[ii].value))\n            {\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.low)  actionArray[ii].alarm.value = 1;\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.lolo) actionArray[ii].alarm.value = 3;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.high) actionArray[ii].alarm.value = 2;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.hihi) actionArray[ii].alarm.value = 4;\n            }\n        }\n    }\n}\nfunction blurImage(inputImage)\n{\n    var kernal = [[1,2,1], [2,4,2], [1,2,1]];\n    var blurImage = [];\n    var nrows = inputImage.length;\n    var ncols = inputImage[0].length;\n    for (var irow = 0; irow < nrows; ++irow)\n    {\n        blurImage[irow] = [];\n        for (var icol = 0; icol < ncols; ++icol)\n        {\n            if ((irow == 0) || (irow == (nrows - 1)))\n            {\n                blurImage[irow][icol] =  inputImage[irow][icol];\n            }\n            else\n            {\n                if ((icol == 0) || (icol == (ncols - 1)))\n                {\n                    blurImage[irow][icol] =  inputImage[irow][icol];\n                }\n                else\n                {\n                    blurImage[irow][icol] = 0;\n                    for (var ikrow = 0; ikrow < 3; ++ikrow)\n                    {\n                        for (var ikcol = 0; ikcol < 3; ++ikcol)\n                        {\n                            blurImage[irow][icol] = blurImage[irow][icol] + inputImage[irow + ikrow - 1][icol + ikcol - 1] * kernal[ikrow][ikcol];\n                        }\n                    }\n                    blurImage[irow][icol] = Math.round(blurImage[irow][icol] / 16.0);\n                }\n            }\n        }\n    }\n    return blurImage;\n}\nfunction imageAnalysis(imagePgm,blurImageFlag, ellipseHeight,ellipseWidth, boxThresholdC)\n{\n    var imageArray = imagePgm.imageArray;\n    if (blurImage == 1) imageArray = blurImage(imagePgm.imageArray);\n    var nrows = imageArray.length;\n    var ncols = imageArray[0].length;\n    var minPix = 500.0;\n    var maxPix = -273.0;\n    var nrows = imageArray.length;\n    var ncols = imageArray[0].length;\n    var boxPercent = 0;\n    var maxBoxTempC = -273.0;\n    var boxCnt = 0;\n    var rad2 = ellipseHeight * ellipseWidth / 2.0;\n    rad2 = rad2 * rad2;\n    var xc = (ncols - 1.0) / 2.0;\n    var yc = (nrows - 1.0) / 2.0;\n    for (var irow = 0; irow < nrows; ++irow)\n    {\n        var testH = ellipseWidth * (irow - yc);\n        testH = testH * testH;\n        for (var icol = 0; icol < ncols; ++icol)\n        {\n            var tempC = (((pgm.maxval - pgm.minval) * imageArray[irow][icol] / 255.0) + pgm.minval  - 27315) / 100;\n            if (minPix > tempC) minPix = tempC;\n            if (maxPix < tempC) maxPix = tempC;\n            var testW = ellipseHeight * (icol - xc);\n            testW = testW * testW;\n            if ((testH +  testW) <= rad2)\n            {\n                    if (tempC > boxThresholdC) ++boxPercent;\n                    if (tempC > maxBoxTempC) maxBoxTempC = tempC;\n                    ++boxCnt\n//                    imageArray[irow][icol] = 255;\n            }\n        }\n    }\n    if (boxCnt > 0)\n    {\n        boxPercent = Math.round(1000 * boxPercent / boxCnt) / 10;\n    }\n    return {'minPix': minPix, 'maxPix' : maxPix, 'boxPercent' : boxPercent, 'maxBoxTempC': maxBoxTempC};\n}\n",
         "outputs": 2,
         "noerr": 0,
-        "x": 960,
-        "y": 680,
+        "x": 1180,
+        "y": 580,
         "wires": [
             [
                 "a3ff8e5.b79de7",
@@ -439,7 +439,7 @@
             "58aa550c.06cb4c"
         ],
         "x": 35,
-        "y": 200,
+        "y": 140,
         "wires": [
             [
                 "8fd42733.128c98"
@@ -454,8 +454,8 @@
         "func": "var mqttArray = msg.topic.split('/');\nvar device = \n{\n    project     : mqttArray[0],\n    deviceType  : mqttArray[1],\n    name        : mqttArray[2],\n    prop        : mqttArray[3],\n};\nreturn {topic : msg.topic, payload:{topic:'readings', mqttDevice : device, payload:msg.payload}};",
         "outputs": 1,
         "noerr": 0,
-        "x": 970,
-        "y": 560,
+        "x": 1430,
+        "y": 640,
         "wires": [
             [
                 "107beeed.934ed1",
@@ -470,8 +470,8 @@
         "name": "/expert/websocket",
         "server": "44b51478.9c022c",
         "client": "",
-        "x": 1170,
-        "y": 560,
+        "x": 1630,
+        "y": 700,
         "wires": []
     },
     {
@@ -679,7 +679,7 @@
         "oldrc": false,
         "name": "",
         "x": 1000,
-        "y": 260,
+        "y": 200,
         "wires": [
             [],
             [],
@@ -695,7 +695,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 760,
-        "y": 260,
+        "y": 200,
         "wires": [
             [
                 "8f14813b.bcdfc"
@@ -711,7 +711,7 @@
         "outputs": 2,
         "noerr": 0,
         "x": 230,
-        "y": 200,
+        "y": 140,
         "wires": [
             [
                 "6c43015c.a827c"
@@ -729,8 +729,8 @@
         "func": "var filename = 'cube-A-settings.json';\nreturn {topic: 'readFile', 'filename':filename};",
         "outputs": 1,
         "noerr": 0,
-        "x": 270,
-        "y": 340,
+        "x": 390,
+        "y": 280,
         "wires": [
             [
                 "163af492.5e952b"
@@ -746,7 +746,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 510,
-        "y": 140,
+        "y": 80,
         "wires": [
             [
                 "7461da25.d86ac4"
@@ -762,7 +762,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 510,
-        "y": 260,
+        "y": 200,
         "wires": [
             [
                 "960991fa.0fafe"
@@ -985,15 +985,14 @@
         "func": "if (msg.payload.length < 1)\n{\n    var errCount = context.get('errCount');\n    if (errCount == undefined) errCount = 0;\n    ++errCount\n    if (errCount < 5)\n    {\n        context.set('errCount',errCount);\n        return [{topic:'takeImage',payload:true, delay:flow.get('device').imageDelay.value}, null];\n    }\n    else\n    {\n        context.set('errCount',0);\n        node.warn(\"Resetting Camera\");\n        flow.set('resettingCamera',true);\n        return [null, {topic:'resetCamera',payload:true}];\n    }\n}\nelse\n{\n    context.set('errCount',0);\n}\nvar imgArray = [];\nvar dataView     = new DataView(new ArrayBuffer(2));\nvar ndataPts = 4800 * flow.get('device').resMode.value * flow.get('device').resMode.value;\nvar nrows = 60 * flow.get('device').resMode.value;\nvar ncols = 80 * flow.get('device').resMode.value;\nfor (var irow = 0; irow < ndataPts; ++irow)\n{\n        dataView.setUint8(0, msg.payload[irow * 2]);\n        dataView.setUint8(1, msg.payload[irow * 2 + 1]);\n        imgArray[irow] = dataView.getUint16(0);\n}\nvar minval = imgArray[0];\nvar maxval = imgArray[0];\nfor (var irow = 0; irow < ndataPts; ++irow)\n{\n        if ( minval > imgArray[irow]) minval = imgArray[irow];\n        if ( maxval < imgArray[irow]) maxval = imgArray[irow];\n}\nif (minval == 0) return [{topic:'takeImage',payload:true, delay:flow.get('device').imageDelay.value}, null];\nvar deltatTcal = (new Date().getTime() - flow.get('calTime')) / 1000.0;\nvar tCorr = 0.0;\nvar trise = 4.0;\nvar tdecay = 12.0;\nif ((0.0 < deltatTcal) &&(deltatTcal < 60.0))\n{\n    tCorr = Math.round(-100.0 * (deltatTcal / trise) * Math.exp(-deltatTcal / tdecay));\n    for (var irow = 0; irow < ndataPts; ++irow)\n    {\n        imgArray[irow] = imgArray[irow] + tCorr;\n    }\n    minval = minval + tCorr;\n    maxval = maxval + tCorr;\n}\n\nvar imgArray2D = [];\nvar deltaVal = maxval - minval;\nif (deltaVal == 0) deltaVal = 1;\nvar numPix = 0;\nvar tempThreshold = flow.get('device').archiveMinTemp.value * 100 + 27315;\nfor (var irow = 0; irow < nrows; ++irow)\n{\n    imgArray2D[irow] = [];\n    for (var icol = 0; icol < ncols; ++icol)\n    {\n        if (flow.get('device').flipVertical.value == 0)\n        {\n            if (flow.get('device').flipHorizontal.value == 0)\n            {\n                imgArray2D[irow][icol] = Math.floor(256.0 * (imgArray[irow * ncols + icol] - minval) / deltaVal);\n            }\n            else\n            {\n                imgArray2D[irow][icol] = Math.floor(256.0 * (imgArray[irow * ncols + ncols - icol - 1] - minval) / deltaVal);\n            }\n        }\n        else\n        {\n            if (flow.get('device').flipHorizontal.value == 0)\n            {\n                imgArray2D[irow][icol] = Math.floor(256.0 * (imgArray[(nrows - irow - 1) * ncols + icol] - minval) / deltaVal);\n            }\n            else\n            {\n                imgArray2D[irow][icol] = Math.floor(256.0 * (imgArray[(nrows - irow - 1) * ncols + ncols - icol - 1] - minval) / deltaVal);\n            }\n        }\n        if (imgArray[irow * ncols + icol] >= tempThreshold) ++numPix;\n    }    \n}\n\nvar pgm = \n{\n    'type'      : 'P2',\n    'timeStamp' : new Date().getTime(),\n    'nrows'     : nrows,\n    'ncols'     : ncols,\n    'minval'    : minval,\n    'maxval'    : maxval,\n    'imageArray': imgArray2D\n};\nif ((flow.get('device').triggerMode.value == 0) || (flow.get('device').triggerMode.value == 1))\n{\n    if (numPix < 10) pgm = null;\n}\nflow.get('device').manualTrigger.value = 0;\nflow.set('pgm',pgm);\nreturn [{topic:'takeImage',payload:true, delay:flow.get('device').imageDelay.value}, null];",
         "outputs": 2,
         "noerr": 0,
-        "x": 660,
-        "y": 660,
+        "x": 900,
+        "y": 580,
         "wires": [
             [
                 "9115ea87.0ca208"
             ],
             [
-                "bf3bbeb6.27c5f",
-                "cb2332f8.29c65"
+                "7079fa00.acfb14"
             ]
         ]
     },
@@ -1008,8 +1007,8 @@
         "timer": "",
         "oldrc": false,
         "name": "Capture Flir image",
-        "x": 310,
-        "y": 660,
+        "x": 650,
+        "y": 520,
         "wires": [
             [
                 "f062c2f5.4fb63",
@@ -1030,8 +1029,8 @@
         "qos": "0",
         "retain": "false",
         "broker": "516aef81.a2867",
-        "x": 970,
-        "y": 500,
+        "x": 1650,
+        "y": 580,
         "wires": []
     },
     {
@@ -1044,7 +1043,7 @@
         "datatype": "auto",
         "broker": "516aef81.a2867",
         "x": 110,
-        "y": 140,
+        "y": 80,
         "wires": [
             [
                 "a413542a.4b41a8"
@@ -1061,7 +1060,7 @@
         "datatype": "auto",
         "broker": "516aef81.a2867",
         "x": 90,
-        "y": 260,
+        "y": 200,
         "wires": [
             [
                 "a58d418f.0a53e"
@@ -1076,8 +1075,8 @@
         "scope": [
             "756aff3b.081cc"
         ],
-        "x": 120,
-        "y": 940,
+        "x": 100,
+        "y": 740,
         "wires": [
             [
                 "3e88e0d5.feeb1"
@@ -1092,8 +1091,8 @@
         "func": "var newMsg = {fill: msg.status.fill, pid:msg.status.text}\nflow.set('cameraProcess', newMsg);\nreturn null;",
         "outputs": 0,
         "noerr": 0,
-        "x": 300,
-        "y": 940,
+        "x": 280,
+        "y": 740,
         "wires": []
     },
     {
@@ -1102,7 +1101,7 @@
         "z": "5f562f66.a301e",
         "name": "",
         "pauseType": "delay",
-        "timeout": "1",
+        "timeout": "5",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -1111,8 +1110,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 280,
-        "y": 720,
+        "x": 700,
+        "y": 460,
         "wires": [
             [
                 "e68a810e.f7863"
@@ -1127,8 +1126,8 @@
         "func": "var process = flow.get('cameraProcess');\nvar newMsg = null;\nif (process.pid != undefined)\n{\n    var pid = Number(process.pid.substring(4)) + 1;\n    newMsg = {topic:'killProcess',payload:pid}\n//    node.warn('Camera Hang')\n}\nreturn newMsg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 300,
-        "y": 780,
+        "x": 900,
+        "y": 460,
         "wires": [
             [
                 "3132ba84.59a1f6",
@@ -1147,11 +1146,13 @@
         "timer": "",
         "oldrc": false,
         "name": "",
-        "x": 270,
-        "y": 840,
+        "x": 1090,
+        "y": 460,
         "wires": [
             [],
-            [],
+            [
+                "d10b4167.c71e7"
+            ],
             []
         ]
     },
@@ -1163,8 +1164,8 @@
         "links": [
             "6c15c07a.68169"
         ],
-        "x": 715,
-        "y": 1220,
+        "x": 575,
+        "y": 880,
         "wires": []
     },
     {
@@ -1175,44 +1176,11 @@
         "func": "return {\n    topic   : msg.payload.mqttMessage.topic, \n    payload : msg.payload.mqttMessage.payload, \n    userID  : msg.payload.userID };\n",
         "outputs": 1,
         "noerr": 0,
-        "x": 590,
-        "y": 1220,
+        "x": 450,
+        "y": 880,
         "wires": [
             [
                 "58aa550c.06cb4c"
-            ]
-        ]
-    },
-    {
-        "id": "f270bcda.23518",
-        "type": "switch",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "property": "payload.topic",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "eq",
-                "v": "sendSettingToMqtt",
-                "vt": "str"
-            },
-            {
-                "t": "eq",
-                "v": "pingServer",
-                "vt": "str"
-            }
-        ],
-        "checkall": "true",
-        "repair": false,
-        "outputs": 2,
-        "x": 430,
-        "y": 1220,
-        "wires": [
-            [
-                "3a1fb97e.c10786"
-            ],
-            [
-                "ade0ddee.d077b"
             ]
         ]
     },
@@ -1224,11 +1192,11 @@
         "property": "payload",
         "action": "",
         "pretty": false,
-        "x": 310,
-        "y": 1220,
+        "x": 290,
+        "y": 880,
         "wires": [
             [
-                "f270bcda.23518"
+                "3a1fb97e.c10786"
             ]
         ]
     },
@@ -1239,8 +1207,8 @@
         "name": "/expert/websocket",
         "server": "44b51478.9c022c",
         "client": "",
-        "x": 150,
-        "y": 1220,
+        "x": 130,
+        "y": 880,
         "wires": [
             [
                 "75bcac45.dd63c4"
@@ -1256,7 +1224,7 @@
         "action": "",
         "pretty": false,
         "x": 310,
-        "y": 140,
+        "y": 80,
         "wires": [
             [
                 "6c43015c.a827c"
@@ -1272,7 +1240,7 @@
         "action": "",
         "pretty": false,
         "x": 290,
-        "y": 260,
+        "y": 200,
         "wires": [
             [
                 "225946b1.9e8b3a"
@@ -1287,8 +1255,8 @@
         "func": "msg.payload = 0;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 500,
-        "y": 1640,
+        "x": 480,
+        "y": 1660,
         "wires": [
             [
                 "a325a9ec.7e9188"
@@ -1303,8 +1271,8 @@
         "func": "msg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 200,
-        "y": 1620,
+        "x": 180,
+        "y": 1640,
         "wires": [
             [
                 "78708c9a.23eac4",
@@ -1327,25 +1295,13 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 350,
-        "y": 1640,
+        "x": 330,
+        "y": 1660,
         "wires": [
             [
                 "56b21d74.f13534"
             ]
         ]
-    },
-    {
-        "id": "ade0ddee.d077b",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "websocketPing",
-        "func": "global.set('websocketPing',new Date().getTime());\n",
-        "outputs": 0,
-        "noerr": 0,
-        "x": 580,
-        "y": 1280,
-        "wires": []
     },
     {
         "id": "a59831a8.7ff9",
@@ -1357,8 +1313,8 @@
             "217bb4e6.bc7ffc",
             "81763557.747698"
         ],
-        "x": 135,
-        "y": 580,
+        "x": 55,
+        "y": 520,
         "wires": [
             [
                 "72aa34e4.5cf97c"
@@ -1380,8 +1336,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 800,
-        "y": 940,
+        "x": 160,
+        "y": 1100,
         "wires": [
             [
                 "5fe1f713.dae2a8"
@@ -1429,25 +1385,6 @@
         ]
     },
     {
-        "id": "e2249214.f4375",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Check  Target Distance",
-        "func": "if (flow.get('device') == undefined) return [null,null];\nif (flow.get('resettingCamera') == undefined) return [null,null];\nflow.get('device').archiveData.value = 0;\nflow.set('pgm',null);\nflow.get('device').ultraSoundDistance.value = msg.payload;\nvar minTime = flow.get('device').imageDelay.value;\nvar range = flow.get('device').ultraSoundRange.value;\n\nvar lastImageTime = flow.get('lastImageTime');\nif (lastImageTime == undefined) \n{\n    lastImageTime = new Date().getTime();\n    flow.set('lastImageTime',lastImageTime);\n}\nvar nowTime = new Date().getTime();\nif ((nowTime - lastImageTime) > minTime)\n{\n    if (msg.payload < range)\n    {\n        if (!flow.get('resettingCamera') && !flow.get('gateInUse')) return [msg, null];\n    }\n}\nreturn [null, msg];",
-        "outputs": 2,
-        "noerr": 0,
-        "x": 480,
-        "y": 1000,
-        "wires": [
-            [
-                "a851f6f5.3a80f8"
-            ],
-            [
-                "9115ea87.0ca208"
-            ]
-        ]
-    },
-    {
         "id": "a851f6f5.3a80f8",
         "type": "link out",
         "z": "5f562f66.a301e",
@@ -1455,8 +1392,8 @@
         "links": [
             "a59831a8.7ff9"
         ],
-        "x": 655,
-        "y": 1020,
+        "x": 355,
+        "y": 600,
         "wires": []
     },
     {
@@ -1467,8 +1404,8 @@
         "topic": "SRF",
         "pulse": "1",
         "pins": "29,31",
-        "x": 110,
-        "y": 1000,
+        "x": 90,
+        "y": 800,
         "wires": [
             [
                 "6840cfcb.cb382"
@@ -1480,16 +1417,12 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "HC04 Distance",
-        "func": "if (flow.get('device').triggerMode.value != 0) return null;\nvar distance = Number(msg.payload);\nvar lastDistance = context.get('lastDistance');\ncontext.set('lastDistance',distance);\nif (lastDistance == undefined)\n{\n    return null;\n}\nvar range = flow.get('device').ultraSoundRange.value;\n//if (lastDistance > range) return null;\nif (distance > range) return null;\nreturn {topic:'targetDistance',payload:distance};\n",
-        "outputs": 1,
+        "func": "flow.get('device').ultraSoundDistance.value = Number(msg.payload);\nreturn null",
+        "outputs": 0,
         "noerr": 0,
-        "x": 260,
-        "y": 1000,
-        "wires": [
-            [
-                "e2249214.f4375"
-            ]
-        ]
+        "x": 240,
+        "y": 800,
+        "wires": []
     },
     {
         "id": "ffd48d2b.d729e",
@@ -1503,8 +1436,8 @@
         "crontab": "",
         "once": false,
         "onceDelay": "60",
-        "x": 480,
-        "y": 1060,
+        "x": 160,
+        "y": 600,
         "wires": [
             [
                 "a851f6f5.3a80f8"
@@ -1516,11 +1449,11 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Initialize Stuff",
-        "func": "flow.set('resettingCamera',true);\nflow.set('cameraInUse',false);\nflow.set('lastImageTime',new Date().getTime());\nvar voiceWarnings = [\n    [\"\"        , \"\"        ,\"\"            ,\"\"          ,\"\"         ,\"\"                   ,\"\"],\n    [\"Welcome\" ,\"Välkommen\",\"καλως ΗΡΘΑΤΕ\",\"Bienvenido\",\"Benvenuto\",\"Herzlich willkommen\",\"Bienvenu\"],\n    [\"Good bye\",\"Hej då\"   ,\"Αντιο σας\"   ,\"Adiós\"     ,\"Addio\"    ,\"Auf Wiedersehen\"    ,\"Au revoir\"],\n    [\"\"        ,\"\"         ,\"\"            ,\"\"          ,\"\"         ,\"\"                   ,\"\"] ];\nflow.set('voiceWarnings',voiceWarnings);\nvar languageFlags = [' -v en',' -v sv',' -v el',' -v es',' -v it',' -v de',' -v fr'];\nflow.set('languageFlags',languageFlags);\nflow.set('calTime',0);\nreturn msg;",
+        "func": "flow.set('resettingCamera',true);\nflow.set('cameraInUse',false);\nflow.set('lastTriggerTime',new Date().getTime());\nflow.set('lastHeartbeatTime',new Date().getTime());\nvar voiceWarnings = [\n    [\"\"        , \"\"        ,\"\"            ,\"\"          ,\"\"         ,\"\"                   ,\"\"],\n    [\"Welcome\" ,\"Välkommen\",\"καλως ΗΡΘΑΤΕ\",\"Bienvenido\",\"Benvenuto\",\"Herzlich willkommen\",\"Bienvenu\"],\n    [\"Good bye\",\"Hej då\"   ,\"Αντιο σας\"   ,\"Adiós\"     ,\"Addio\"    ,\"Auf Wiedersehen\"    ,\"Au revoir\"],\n    [\"\"        ,\"\"         ,\"\"            ,\"\"          ,\"\"         ,\"\"                   ,\"\"] ];\nflow.set('voiceWarnings',voiceWarnings);\nvar languageFlags = [' -v en',' -v sv',' -v el',' -v es',' -v it',' -v de',' -v fr'];\nflow.set('languageFlags',languageFlags);\nflow.set('calTime',0);\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 270,
-        "y": 400,
+        "x": 390,
+        "y": 340,
         "wires": [
             [
                 "6abb16.fc9774ec"
@@ -1535,8 +1468,8 @@
         "func": "flow.set('resettingCamera',false);\nreturn msg;",
         "outputs": 0,
         "noerr": 0,
-        "x": 1950,
-        "y": 940,
+        "x": 1350,
+        "y": 1100,
         "wires": []
     },
     {
@@ -1998,8 +1931,8 @@
         "timer": "",
         "oldrc": false,
         "name": "setFfcStateToManual",
-        "x": 740,
-        "y": 400,
+        "x": 860,
+        "y": 340,
         "wires": [
             [
                 "1cc9fd62.227313"
@@ -2019,8 +1952,8 @@
         "timer": "",
         "oldrc": false,
         "name": "reboot",
-        "x": 410,
-        "y": 400,
+        "x": 530,
+        "y": 340,
         "wires": [
             [
                 "e1d61d76.3569b"
@@ -2044,8 +1977,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 560,
-        "y": 400,
+        "x": 680,
+        "y": 340,
         "wires": [
             [
                 "242fb7ee.ec2318"
@@ -2060,8 +1993,8 @@
         "func": "flow.set('resettingCamera',false);\nreturn msg;",
         "outputs": 0,
         "noerr": 0,
-        "x": 1430,
-        "y": 400,
+        "x": 1550,
+        "y": 340,
         "wires": []
     },
     {
@@ -2079,8 +2012,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 940,
-        "y": 400,
+        "x": 1060,
+        "y": 340,
         "wires": [
             [
                 "82484d70.a7df"
@@ -2098,8 +2031,8 @@
         "timer": "",
         "oldrc": false,
         "name": "performFfc",
-        "x": 1090,
-        "y": 400,
+        "x": 1210,
+        "y": 340,
         "wires": [
             [
                 "dc342449.ddba88"
@@ -2123,8 +2056,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 1260,
-        "y": 400,
+        "x": 1380,
+        "y": 340,
         "wires": [
             [
                 "4532c4da.1b43ac"
@@ -2142,8 +2075,8 @@
         "timer": "",
         "oldrc": false,
         "name": "setFfcStateToManual",
-        "x": 1260,
-        "y": 940,
+        "x": 660,
+        "y": 1100,
         "wires": [
             [
                 "34b6f055.70dd4"
@@ -2163,8 +2096,8 @@
         "timer": "",
         "oldrc": false,
         "name": "reboot",
-        "x": 930,
-        "y": 940,
+        "x": 330,
+        "y": 1100,
         "wires": [
             [
                 "4105c23f.1181bc"
@@ -2188,8 +2121,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 1080,
-        "y": 940,
+        "x": 480,
+        "y": 1100,
         "wires": [
             [
                 "1cd59f0.d6f2e61"
@@ -2211,8 +2144,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 1460,
-        "y": 940,
+        "x": 860,
+        "y": 1100,
         "wires": [
             [
                 "844f0fc.e7ab8f"
@@ -2230,8 +2163,8 @@
         "timer": "",
         "oldrc": false,
         "name": "performFfc",
-        "x": 1610,
-        "y": 940,
+        "x": 1010,
+        "y": 1100,
         "wires": [
             [
                 "fcf0c780.08c1d8"
@@ -2255,8 +2188,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 1780,
-        "y": 940,
+        "x": 1180,
+        "y": 1100,
         "wires": [
             [
                 "fd6e82bc.30235",
@@ -2277,8 +2210,8 @@
         "crontab": "",
         "once": true,
         "onceDelay": "60",
-        "x": 1000,
-        "y": 1040,
+        "x": 160,
+        "y": 1200,
         "wires": [
             [
                 "1ee58b30.404be5",
@@ -2294,8 +2227,8 @@
         "func": "flow.set('resettingCamera',true);\nflow.set('calTime',new Date().getTime());\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 1190,
-        "y": 1040,
+        "x": 350,
+        "y": 1200,
         "wires": [
             [
                 "808c8caf.d76fb"
@@ -2317,8 +2250,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 1540,
-        "y": 1020,
+        "x": 700,
+        "y": 1180,
         "wires": [
             [
                 "bef6edc2.3d633",
@@ -2338,8 +2271,8 @@
         "timer": "",
         "oldrc": false,
         "name": "performFfc",
-        "x": 1350,
-        "y": 1040,
+        "x": 510,
+        "y": 1200,
         "wires": [
             [
                 "2fcf61df.b03cce"
@@ -2356,8 +2289,8 @@
         "func": "flow.set('resettingCamera',false);\nreturn msg;",
         "outputs": 0,
         "noerr": 0,
-        "x": 1720,
-        "y": 1020,
+        "x": 1080,
+        "y": 1180,
         "wires": []
     },
     {
@@ -2371,38 +2304,6 @@
         "x": 595,
         "y": 320,
         "wires": []
-    },
-    {
-        "id": "6d0d620b.cc2c0c",
-        "type": "link in",
-        "z": "5f562f66.a301e",
-        "name": "Check Target distance in",
-        "links": [
-            "c40dd8f4.63a9d8"
-        ],
-        "x": 135,
-        "y": 1060,
-        "wires": [
-            [
-                "4476ac96.b88ec4"
-            ]
-        ]
-    },
-    {
-        "id": "4476ac96.b88ec4",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Distance 4 m",
-        "func": "if (flow.get('device').triggerMode.value != 0) return null;\nreturn {topic:'targetDistance',payload:400};\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 250,
-        "y": 1060,
-        "wires": [
-            [
-                "e2249214.f4375"
-            ]
-        ]
     },
     {
         "id": "7bb92ce8.d547e4",
@@ -2595,20 +2496,6 @@
         ]
     },
     {
-        "id": "c3a5e7cc.0c33b8",
-        "type": "debug",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "x": 1150,
-        "y": 180,
-        "wires": []
-    },
-    {
         "id": "f3ff0af9.c4fdb8",
         "type": "rpi-gpio out",
         "z": "5f562f66.a301e",
@@ -2618,7 +2505,7 @@
         "level": "0",
         "freq": "",
         "out": "out",
-        "x": 810,
+        "x": 1310,
         "y": 1400,
         "wires": []
     },
@@ -2630,7 +2517,7 @@
         "func": "msg.payload = 0;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 480,
+        "x": 400,
         "y": 1440,
         "wires": [
             [
@@ -2653,7 +2540,7 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 340,
+        "x": 260,
         "y": 1440,
         "wires": [
             [
@@ -2673,7 +2560,7 @@
         "crontab": "",
         "once": true,
         "onceDelay": "1",
-        "x": 210,
+        "x": 130,
         "y": 1400,
         "wires": [
             [
@@ -2690,7 +2577,7 @@
         "func": "msg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 400,
+        "x": 320,
         "y": 1400,
         "wires": [
             [
@@ -2706,8 +2593,8 @@
         "func": "msg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 1200,
-        "y": 1100,
+        "x": 360,
+        "y": 1260,
         "wires": [
             [
                 "e880ae95.bdd76"
@@ -2722,8 +2609,8 @@
         "func": "msg.payload = 0;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 1540,
-        "y": 1060,
+        "x": 700,
+        "y": 1220,
         "wires": [
             [
                 "e880ae95.bdd76"
@@ -2738,12 +2625,11 @@
         "func": "if(msg.payload.payload.imageData.value == null) return null;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 1200,
-        "y": 500,
+        "x": 1640,
+        "y": 640,
         "wires": [
             [
                 "cf5e2ba4.3a2458",
-                "3cee692a.639e86",
                 "79eeb26a.e4b69c"
             ]
         ]
@@ -2763,8 +2649,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 790,
-        "y": 500,
+        "x": 1450,
+        "y": 580,
         "wires": [
             [
                 "e3701624.e0da58"
@@ -3036,8 +2922,8 @@
         "name": "/monitor/websocket",
         "server": "e8ef1dd0.f4c9a",
         "client": "",
-        "x": 1450,
-        "y": 460,
+        "x": 1890,
+        "y": 600,
         "wires": []
     },
     {
@@ -3048,8 +2934,8 @@
         "links": [
             "9067a4c6.5d4488"
         ],
-        "x": 155,
-        "y": 1500,
+        "x": 75,
+        "y": 1520,
         "wires": [
             [
                 "aedeaccf.3f23d"
@@ -3064,8 +2950,8 @@
         "links": [
             "316e94c2.271bec"
         ],
-        "x": 795,
-        "y": 1500,
+        "x": 715,
+        "y": 1520,
         "wires": []
     },
     {
@@ -3077,8 +2963,8 @@
             "fd2fd36.4a5dc3",
             "98bf10f8.a2f3e"
         ],
-        "x": 495,
-        "y": 740,
+        "x": 1075,
+        "y": 400,
         "wires": []
     },
     {
@@ -3089,7 +2975,7 @@
         "links": [
             "316e94c2.271bec"
         ],
-        "x": 575,
+        "x": 495,
         "y": 1400,
         "wires": []
     },
@@ -3101,8 +2987,8 @@
         "links": [
             "316e94c2.271bec"
         ],
-        "x": 1375,
-        "y": 1100,
+        "x": 535,
+        "y": 1260,
         "wires": []
     },
     {
@@ -3117,7 +3003,7 @@
             "a325a9ec.7e9188",
             "6ea0bbeb.ca3b54"
         ],
-        "x": 700,
+        "x": 1195,
         "y": 1400,
         "wires": [
             [
@@ -3134,14 +3020,13 @@
         "outputs": 2,
         "noerr": 0,
         "x": 930,
-        "y": 140,
+        "y": 80,
         "wires": [
             [
                 "217bb4e6.bc7ffc"
             ],
             [
-                "9e954281.d9215",
-                "c3a5e7cc.0c33b8"
+                "9e954281.d9215"
             ]
         ]
     },
@@ -3153,8 +3038,8 @@
         "links": [
             "a59831a8.7ff9"
         ],
-        "x": 1115,
-        "y": 80,
+        "x": 1095,
+        "y": 40,
         "wires": []
     },
     {
@@ -3162,11 +3047,11 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Check for camera reset",
-        "func": "if (flow.get('device') == undefined) return null;\nif (flow.get('resettingCamera') == undefined) return null;\nif (flow.get('resettingCamera')) return null;\nif (flow.get('cameraInUse')) return null;\nflow.set('cameraInUse',true);\n\nflow.get('device').archiveData.value = 0;\nflow.set('pgm',null);\nmsg.payload = \"\"\nif (flow.get('device').resMode.value == 1) msg.payload = \"flirLepton25capture/flirLepton25capture.exe\"\nif (flow.get('device').resMode.value == 2) msg.payload = \"flirLepton35capture/flirLepton35capture.exe\"\nreturn msg;",
+        "func": "if (flow.get('resettingCamera')) return null;\nif (flow.get('cameraInUse')) return null;\nif (flow.get('device').ultraSoundDistance.value > flow.get('device').ultraSoundRange.value) return null;\nflow.set('lastTriggerTime',new Date().getTime());\nflow.set('cameraInUse',true);\n\nflow.get('device').archiveData.value = 0;\nflow.set('pgm',null);\nmsg.payload = \"\"\nif (flow.get('device').resMode.value == 1) msg.payload = \"flirLepton25capture/flirLepton25capture.exe\"\nif (flow.get('device').resMode.value == 2) msg.payload = \"flirLepton35capture/flirLepton35capture.exe\"\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 530,
-        "y": 580,
+        "x": 370,
+        "y": 520,
         "wires": [
             [
                 "de65ab7c.eced98",
@@ -3183,8 +3068,8 @@
         "func": "if (flow.get('device').manualTrigger.value == 1) return {topic:'manualTrigger',payload:true}\nreturn null;",
         "outputs": 1,
         "noerr": 0,
-        "x": 330,
-        "y": 520,
+        "x": 210,
+        "y": 460,
         "wires": [
             [
                 "8205de73.83b3d"
@@ -3206,8 +3091,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 540,
-        "y": 520,
+        "x": 400,
+        "y": 460,
         "wires": [
             [
                 "72aa34e4.5cf97c"
@@ -3223,8 +3108,8 @@
             "9067a4c6.5d4488",
             "9c6b0903.4ea858"
         ],
-        "x": 140,
-        "y": 520,
+        "x": 55,
+        "y": 460,
         "wires": [
             [
                 "c5e2b7cd.48ad58"
@@ -3239,24 +3124,24 @@
         "links": [
             "98bf10f8.a2f3e"
         ],
-        "x": 1875,
-        "y": 1000,
+        "x": 1275,
+        "y": 1240,
         "wires": []
     },
     {
         "id": "2cfdcaa.a8cd536",
         "type": "inject",
         "z": "5f562f66.a301e",
-        "name": "1 Hz",
+        "name": "5 Hz",
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "repeat": "1",
+        "repeat": "0.2",
         "crontab": "",
         "once": true,
         "onceDelay": "15",
-        "x": 130,
-        "y": 1100,
+        "x": 110,
+        "y": 660,
         "wires": [
             [
                 "33572f1c.c991f"
@@ -3268,14 +3153,17 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Programmable interval",
-        "func": "if (flow.get('device') == undefined) return null;\nif (flow.get('resettingCamera') == undefined) return null;\nif (flow.get('device').triggerMode.value != 1) return null;\nflow.get('device').archiveData.value = 0;\nflow.set('pgm',null);\nvar minTime = flow.get('device').imageDelay.value;\n\nvar lastImageTime = flow.get('lastImageTime');\nif (lastImageTime == undefined) \n{\n    lastImageTime = new Date().getTime();\n    flow.set('lastImageTime',lastImageTime);\n}\nvar nowTime = new Date().getTime();\nif ((nowTime - lastImageTime) > minTime)\n{\n    if (!flow.get('resettingCamera') && !flow.get('gateInUse')) return msg;\n}\nreturn null;",
-        "outputs": 1,
+        "func": "var lastTriggerTime = flow.get('lastTriggerTime');\nvar now = new Date().getTime();\nif ((now - flow.get('lastHeartbeatTime')) > 5000) \n{\n    flow.get('device').archiveData.value = 0;\n    flow.set('pgm',null);\n    return [null,msg];\n}\nif ((now - flow.get('lastTriggerTime')) > flow.get('device').imageDelay.value) \n{\n    if(flow.get('device').triggerMode.value < 2) return [msg,null];\n}\n\nreturn [null,null];",
+        "outputs": 2,
         "noerr": 0,
-        "x": 480,
-        "y": 1100,
+        "x": 340,
+        "y": 660,
         "wires": [
             [
                 "a851f6f5.3a80f8"
+            ],
+            [
+                "9115ea87.0ca208"
             ]
         ]
     },
@@ -3359,7 +3247,7 @@
         "outputs": 0,
         "noerr": 0,
         "x": 1090,
-        "y": 2160,
+        "y": 2220,
         "wires": []
     },
     {
@@ -3403,7 +3291,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 450,
-        "y": 2140,
+        "y": 2200,
         "wires": [
             [
                 "5315590c.3b1118",
@@ -3420,7 +3308,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 820,
-        "y": 2220,
+        "y": 2280,
         "wires": [
             [
                 "5315590c.3b1118",
@@ -3437,7 +3325,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 830,
-        "y": 2160,
+        "y": 2220,
         "wires": [
             [
                 "5315590c.3b1118"
@@ -3460,7 +3348,7 @@
         "randomUnits": "seconds",
         "drop": false,
         "x": 640,
-        "y": 2220,
+        "y": 2280,
         "wires": [
             [
                 "b6cee558.861ca8"
@@ -3483,7 +3371,7 @@
         "randomUnits": "seconds",
         "drop": false,
         "x": 640,
-        "y": 2160,
+        "y": 2220,
         "wires": [
             [
                 "29ad2f9d.4ef79",
@@ -3504,7 +3392,7 @@
         "once": false,
         "onceDelay": 0.1,
         "x": 440,
-        "y": 2180,
+        "y": 2240,
         "wires": [
             [
                 "8d4900c5.10495"
@@ -3527,7 +3415,7 @@
         "randomUnits": "seconds",
         "drop": false,
         "x": 1020,
-        "y": 2220,
+        "y": 2280,
         "wires": [
             [
                 "7e0f54ac.ff713c",
@@ -3544,7 +3432,7 @@
         "outputs": 0,
         "noerr": 0,
         "x": 1230,
-        "y": 2220,
+        "y": 2280,
         "wires": []
     },
     {
@@ -3555,8 +3443,8 @@
         "links": [
             "316e94c2.271bec"
         ],
-        "x": 735,
-        "y": 1620,
+        "x": 715,
+        "y": 1640,
         "wires": []
     },
     {
@@ -3567,23 +3455,13 @@
         "links": [
             "de65ab7c.eced98"
         ],
-        "x": 95,
-        "y": 1620,
+        "x": 75,
+        "y": 1640,
         "wires": [
             [
                 "620ca605.e38238"
             ]
         ]
-    },
-    {
-        "id": "3cee692a.639e86",
-        "type": "link out",
-        "z": "5f562f66.a301e",
-        "name": "Image blink out",
-        "links": [],
-        "x": 1355,
-        "y": 620,
-        "wires": []
     },
     {
         "id": "90a53647.669d68",
@@ -3594,7 +3472,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 420,
-        "y": 2100,
+        "y": 2160,
         "wires": [
             [
                 "852a59a8.761b68"
@@ -3611,7 +3489,7 @@
             "cb51837e.00842"
         ],
         "x": 555,
-        "y": 2100,
+        "y": 2160,
         "wires": []
     },
     {
@@ -3623,7 +3501,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 1180,
-        "y": 2280,
+        "y": 2340,
         "wires": [
             [
                 "d0988296.efa1"
@@ -3640,7 +3518,7 @@
             "cb51837e.00842"
         ],
         "x": 1275,
-        "y": 2280,
+        "y": 2340,
         "wires": []
     },
     {
@@ -3710,7 +3588,7 @@
             "863d7a9.ab20888"
         ],
         "x": 75,
-        "y": 2120,
+        "y": 2180,
         "wires": [
             [
                 "514d03ca.0eae7c"
@@ -3725,8 +3603,8 @@
         "links": [
             "e904ee06.b15af"
         ],
-        "x": 1195,
-        "y": 640,
+        "x": 1355,
+        "y": 700,
         "wires": []
     },
     {
@@ -3739,8 +3617,8 @@
         "level": "0",
         "freq": "",
         "out": "out",
-        "x": 1420,
-        "y": 2540,
+        "x": 1300,
+        "y": 1460,
         "wires": []
     },
     {
@@ -3752,7 +3630,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 440,
-        "y": 2540,
+        "y": 2480,
         "wires": [
             [
                 "5649f4af.4a03bc",
@@ -3769,7 +3647,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 800,
-        "y": 2540,
+        "y": 2480,
         "wires": [
             [
                 "f4c1fc1.3b91"
@@ -3792,7 +3670,7 @@
         "randomUnits": "seconds",
         "drop": false,
         "x": 630,
-        "y": 2580,
+        "y": 2520,
         "wires": [
             [
                 "94bf1fac.8b3e3"
@@ -3808,7 +3686,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 800,
-        "y": 2580,
+        "y": 2520,
         "wires": [
             [
                 "15e0e620.bb96fa",
@@ -3832,7 +3710,7 @@
         "randomUnits": "seconds",
         "drop": false,
         "x": 630,
-        "y": 2540,
+        "y": 2480,
         "wires": [
             [
                 "14f934e6.ded55b"
@@ -3849,8 +3727,8 @@
         "level": "0",
         "freq": "",
         "out": "out",
-        "x": 1420,
-        "y": 2100,
+        "x": 1300,
+        "y": 1520,
         "wires": []
     },
     {
@@ -3862,7 +3740,7 @@
             "7af84ca8.ba5584"
         ],
         "x": 955,
-        "y": 2540,
+        "y": 2480,
         "wires": []
     },
     {
@@ -3875,8 +3753,8 @@
             "d242b085.fde9e",
             "6ea0bbeb.ca3b54"
         ],
-        "x": 1315,
-        "y": 2540,
+        "x": 1195,
+        "y": 1460,
         "wires": [
             [
                 "73e006b1.cf7528"
@@ -3891,10 +3769,11 @@
         "links": [
             "852a59a8.761b68",
             "d0988296.efa1",
-            "6ea0bbeb.ca3b54"
+            "6ea0bbeb.ca3b54",
+            "588676f8.07e648"
         ],
-        "x": 1315,
-        "y": 2100,
+        "x": 1195,
+        "y": 1520,
         "wires": [
             [
                 "19963a75.2b0f46"
@@ -3934,7 +3813,7 @@
         "repair": false,
         "outputs": 4,
         "x": 190,
-        "y": 2120,
+        "y": 2180,
         "wires": [
             [
                 "1f55c9e4.6259b6"
@@ -3964,7 +3843,7 @@
         "oldrc": false,
         "name": "espeak Too high",
         "x": 1100,
-        "y": 2480,
+        "y": 2420,
         "wires": [
             [
                 "4462442a.61e38c"
@@ -3982,7 +3861,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 450,
-        "y": 2480,
+        "y": 2420,
         "wires": [
             [
                 "9300e65b.1644d8"
@@ -4001,7 +3880,7 @@
         "oldrc": false,
         "name": "espeak Body Temp",
         "x": 650,
-        "y": 2480,
+        "y": 2420,
         "wires": [
             [
                 "d560e222.c91c8"
@@ -4019,7 +3898,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 720,
-        "y": 2660,
+        "y": 2600,
         "wires": [
             [
                 "d242b085.fde9e"
@@ -4035,7 +3914,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 420,
-        "y": 2640,
+        "y": 2580,
         "wires": [
             [
                 "165fcf02.2d29f1",
@@ -4059,7 +3938,7 @@
         "randomUnits": "seconds",
         "drop": false,
         "x": 570,
-        "y": 2660,
+        "y": 2600,
         "wires": [
             [
                 "89ab897e.bf7b28"
@@ -4075,7 +3954,7 @@
             "7af84ca8.ba5584"
         ],
         "x": 815,
-        "y": 2640,
+        "y": 2580,
         "wires": []
     },
     {
@@ -4087,7 +3966,7 @@
         "outputs": 0,
         "noerr": 0,
         "x": 1330,
-        "y": 2460,
+        "y": 2400,
         "wires": []
     },
     {
@@ -4115,7 +3994,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 880,
-        "y": 2480,
+        "y": 2420,
         "wires": [
             [
                 "fc88ddcf.296c3"
@@ -4134,7 +4013,7 @@
         "y": 1940,
         "wires": [
             [
-                "19963a75.2b0f46"
+                "588676f8.07e648"
             ]
         ]
     },
@@ -4146,8 +4025,8 @@
         "func": "msg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 800,
-        "y": 880,
+        "x": 1120,
+        "y": 1000,
         "wires": [
             [
                 "6ea0bbeb.ca3b54"
@@ -4162,8 +4041,8 @@
         "func": "msg.payload = 0;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 1920,
-        "y": 880,
+        "x": 1320,
+        "y": 1040,
         "wires": [
             [
                 "6ea0bbeb.ca3b54"
@@ -4180,8 +4059,8 @@
             "7af84ca8.ba5584",
             "cb51837e.00842"
         ],
-        "x": 1360,
-        "y": 840,
+        "x": 1415,
+        "y": 1000,
         "wires": []
     },
     {
@@ -4192,8 +4071,8 @@
         "links": [
             "a5fe01b6.38107"
         ],
-        "x": 675,
-        "y": 580,
+        "x": 555,
+        "y": 460,
         "wires": []
     },
     {
@@ -4212,7 +4091,7 @@
         "randomUnits": "seconds",
         "drop": false,
         "x": 430,
-        "y": 2060,
+        "y": 2120,
         "wires": [
             [
                 "a193f30.a33811"
@@ -4228,7 +4107,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 580,
-        "y": 2060,
+        "y": 2120,
         "wires": [
             [
                 "852a59a8.761b68"
@@ -4263,14 +4142,14 @@
         "timeout": "5",
         "timeoutUnits": "seconds",
         "rate": "1",
-        "nbRateUnits": "2",
+        "nbRateUnits": "1",
         "rateUnits": "second",
         "randomFirst": "1",
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": true,
-        "x": 300,
-        "y": 580,
+        "x": 170,
+        "y": 520,
         "wires": [
             [
                 "1d2d8a83.164cc5"
@@ -4281,13 +4160,20 @@
         "id": "2cfe9e64.64e0a2",
         "type": "function",
         "z": "5f562f66.a301e",
-        "name": "Set camera available",
-        "func": "flow.set('cameraInUse',false);\nreturn null;",
-        "outputs": 0,
+        "name": "Reset Delay",
+        "func": "return [{topic:\"reset\",reset:1},{topic:\"setCameraAvailable\",payload:1}];",
+        "outputs": 2,
         "noerr": 0,
-        "x": 680,
-        "y": 700,
-        "wires": []
+        "x": 890,
+        "y": 520,
+        "wires": [
+            [
+                "64edca1f.282284"
+            ],
+            [
+                "bc2a5ab6.dd10a8"
+            ]
+        ]
     },
     {
         "id": "aedeaccf.3f23d",
@@ -4297,8 +4183,8 @@
         "func": "var burstCount = context.get('burstCount');\nif (burstCount == undefined) burstCount = 0;\nif (msg.topic == 'killProcess') burstCount = 0;\n++burstCount;\ncontext.set('burstCount',burstCount)\nif (burstCount < 5) return msg;\nreturn null;",
         "outputs": 1,
         "noerr": 0,
-        "x": 300,
-        "y": 1500,
+        "x": 220,
+        "y": 1520,
         "wires": [
             [
                 "808ee76f.0ad4e8",
@@ -4314,8 +4200,8 @@
         "func": "msg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 660,
-        "y": 1500,
+        "x": 580,
+        "y": 1520,
         "wires": [
             [
                 "81c528f.cc489d8"
@@ -4337,8 +4223,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 490,
-        "y": 1540,
+        "x": 410,
+        "y": 1560,
         "wires": [
             [
                 "1575881a.c78e98"
@@ -4353,8 +4239,8 @@
         "func": "return {topic:'redLed',payload:0};",
         "outputs": 1,
         "noerr": 0,
-        "x": 660,
-        "y": 1540,
+        "x": 580,
+        "y": 1560,
         "wires": [
             [
                 "aedeaccf.3f23d",
@@ -4377,8 +4263,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 490,
-        "y": 1500,
+        "x": 410,
+        "y": 1520,
         "wires": [
             [
                 "9915e189.c1453"
@@ -4394,7 +4280,7 @@
         "fieldType": "msg",
         "format": "javascript",
         "syntax": "mustache",
-        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var colorScale = true;\n        var enhancementLevel = 0;\n        var pgm = null;\n        var lastUpdate = new Date().getTime();\n        var maxDisplayTime = 5000;\n        var imageArray =  null;\n        var language = 0;\n        var warnings = [\n            [\"Person outside range\"     ,\"Person utanför räckhåll\"    ,\"Άτομο εκτός εμβέλειας\"   ,\"Persona fuera del alcance\"  ,\"Persona fuori portata\"  ,\"Person außerhalb der Reichweite\"  ,\"Personne hors de portée\"],\n            [\"Normal Temperature\"       ,\"Normal temperatur\"          ,\"Κανονική θερμοκρασία\"    ,\"Temperatura normal\"         ,\"Temperatura normale\"    ,\"Normale Temperatur\"               ,\"Température normale\"],\n            [\"High Temperature\"         ,\"Hög temperatur\"             ,\"Υψηλή θερμοκρασία\"       ,\"Alta temperatura\"           ,\"Alta temperatura\"       ,\"Hohe Temperatur\"                  ,\"Haute température\"],\n            [\"Temperature outside range\",\"Temperatur utanför räckhåll\",\"Θερμοκρασία εκτός εύρους\",\"Temperatura fuera del rango\",\"Temperatura fuori range\",\"Temperatur außerhalb des Bereichs\",\"Température hors plage\"] ];\n        \n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n\n            $('#tempLegend').hide();\n            $('#tempBarPlot').hide();\n            setInterval(function()\n            {\n                if ((new Date().getTime() - lastUpdate) > maxDisplayTime)\n                {\n                    $('#tempComment').text(\" \");\n                    clearImage();\n                    $('#tempLegend').hide();\n                    $('#tempBarPlot').hide();\n\n                }\n            }, 1000);\n\n        }\n        function onWebSocketOpen()\n        {\n        }\n        function onWebSocketClose()\n        {\n            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        \n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            if (device.imageData.value != null)\n            {\n                var style = 'font-size:200%; font-weight:200; color:#ffff00';\n                if ((device.triggerMode.value == 0) || (device.triggerMode.value == 1))\n                {\n                    if (device.autoModeAction.value == 0)\n                    {\n                        $('#tempComment').attr(\"style\", style);\n                        $('#tempComment').text(warnings[device.autoModeAction.value][device.language.value]);\n                    }\n                    if (device.autoModeAction.value == 1)\n                    {\n                        style = 'font-size:200%; font-weight:200; color:#00ff00';\n                        $('#tempComment').attr(\"style\", style);\n                        $('#tempComment').text(warnings[device.autoModeAction.value][device.language.value]);\n                    }\n                    if (device.autoModeAction.value == 2)\n                    {\n                        style = 'font-size:200%; font-weight:200; color:#ff0000';\n                        $('#tempComment').attr(\"style\", style);\n                        $('#tempComment').text(warnings[device.autoModeAction.value][device.language.value]);\n                    }\n                    if (device.autoModeAction.value == 3)\n                    {\n                        style = 'font-size:200%; font-weight:200; color:#ffff00';\n                        $('#tempComment').attr(\"style\", style);\n                        $('#tempComment').text(warnings[device.autoModeAction.value][device.language.value]);\n                    }\n                }\n                else\n                {\n                    $('#tempComment').attr(\"style\", style);\n                    $('#tempComment').text(\"Surface Temperature\");\n                }\n                lastUpdate = new Date().getTime();\n            }\n            if (device.imageData.value != null)\n            {\n                pgm = JSON.parse(JSON.stringify(device.imageData.value));\n                var processImage = 0;\n                try {processImage = device.processImage.value;} catch(err) {processImage = 0;}\n//always blur for this display to preserve identity\n//                processImage = 1;\n                switch (processImage)\n                {\n                    case 0:  \n                        imageArray = pgm.imageArray;\n                        break;\n                    case 1:  \n                        imageArray = blurImage(pgm.imageArray);\n                        break;\n                    default: \n                        imageArray = blurImage(pgm.imageArray);\n                        break;\n                }\n                plotImage();\n                if (device.autoModeAction.value > 0) \n                {\n                    $('#tempBarPlot').show();\n                    var tempBarConfig = \n                        {\n                            lolo            : device.bodyTemp.alarm.limits.lolo, \n                            low             : device.bodyTemp.alarm.limits.low, \n                            high            : device.bodyTemp.alarm.limits.high, \n                            hihi            : device.bodyTemp.alarm.limits.hihi, \n                            value           : device.bodyTemp.value, \n                            unit            : device.bodyTemp.unit, \n                            textsize        : 20,\n                            label           : 'temp', \n                            lowColor        : '#0000ff', \n                            mediumColor     : '#00ff00',\n                            highColor       : '#ff0000', \n                            backgroundColor : '#000000', \n                            labelColor      : '#000000', \n                            gridColor       : '#000000',\n                            height          : 150, \n                            htmlId          : 'tempBarPlot'\n                        };\n                    setHorzBarWidget(tempBarConfig);\n                }\n                else\n                {\n                    $('#tempBarPlot').hide();\n                }\n             }\n        }\n        function plotImage()\n        {\n            $('#tempLegend').show();\n            var rgb = [];\n            var plow = (pgm.minval - 27315) / 100;\n            var phigh = (pgm.maxval - 27315) / 100;\n            var pdelta = phigh - plow;\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            var rectWidth  = Math.round(canvasWidth / pgm.ncols);\n            var rectHeight =  Math.round(canvasHeight / pgm.nrows);\n\n            for (var irow = 0; irow < pgm.nrows; ++irow)\n            {\n                for (var icol = 0; icol < pgm.ncols; ++icol)\n                {\n                    var intensity = imageArray[irow][icol] / 256.0;\n                    if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                    if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                    if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                    if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                    if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                    if (colorScale)\n                    {\n                        rgb = getRGB(intensity);\n                        rgb[0] = Math.floor(rgb[0]);\n                        rgb[1] = Math.floor(rgb[1]);\n                        rgb[2] = Math.floor(rgb[2]);\n                    }\n                    else\n                    {\n                        rgb[0] = Math.floor(255 * intensity);\n                        rgb[1] = Math.floor(255 * intensity);\n                        rgb[2] = Math.floor(255 * intensity);\n                    }\n                    canvasContext.fillStyle = 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                    if (intensity > 0.98) \n                    {\n                        canvasContext.fillStyle='magenta';\n                        if (colorScale) canvasContext.fillStyle='white';\n                    }\n\n                    canvasContext.fillRect(icol * rectWidth, canvasHeight - rectHeight - irow * rectHeight, rectWidth, rectHeight);\n                }    \n            }\n            var ellipseWidth = rectWidth *  device.faceRegionWidth.value;\n            var ellipseHeight = rectHeight *  device.faceRegionHeight.value;\n            canvasContext.fillStyle='black';\n            if ((device.triggerMode.value == 0) || (device.triggerMode.value == 1)) \n            {\n                drawEllipse(canvasContext, (canvasWidth - ellipseWidth) / 2, (canvasHeight -  ellipseHeight)/ 2, ellipseWidth, ellipseHeight);\n            }\n        }\n        function blurImage(inputImage)\n        {\n            var kernal = [[1,2,1], [2,4,2], [1,2,1]];\n            var blurImage = [];\n            var nrows = inputImage.length;\n            var ncols = inputImage[0].length;\n            for (var irow = 0; irow < nrows; ++irow)\n            {\n                blurImage[irow] = [];\n                for (var icol = 0; icol < ncols; ++icol)\n                {\n                    if ((irow == 0) || (irow == (nrows - 1)))\n                    {\n                        blurImage[irow][icol] =  inputImage[irow][icol];\n                    }\n                    else\n                    {\n                        if ((icol == 0) || (icol == (ncols - 1)))\n                        {\n                            blurImage[irow][icol] =  inputImage[irow][icol];\n                        }\n                        else\n                        {\n                            blurImage[irow][icol] = 0;\n                            for (var ikrow = 0; ikrow < 3; ++ikrow)\n                            {\n                                for (var ikcol = 0; ikcol < 3; ++ikcol)\n                                {\n                                    blurImage[irow][icol] = blurImage[irow][icol] + inputImage[irow + ikrow - 1][icol + ikcol - 1] * kernal[ikrow][ikcol];\n                                }\n                            }\n                            blurImage[irow][icol] = Math.round(blurImage[irow][icol] / 16.0);\n                        }\n                    }\n                }\n            }\n            return blurImage;\n        }\n        function getRGB(intensity)\n        {\n          var rgb = [0,0,0];\n          if ( (0 <= intensity) && (intensity <= 0.25) )\n          {\n            rgb[0] = 0;\n            rgb[1] = Math.floor(255 * intensity * 4);    \n            rgb[2] = 255;\n          }\n          if ( (0.25 < intensity) && (intensity <= 0.50) )\n          {\n            rgb[0] = 0;\n            rgb[1] = 255;    \n            rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n          }\n          if ( (0.50 < intensity) && (intensity <= 0.75) )\n          {\n            rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n            rgb[1] = 255;    \n            rgb[2] = 0;\n          }\n          if ( (0.75 < intensity) && (intensity <= 1.0) )\n          {\n            rgb[0] = 255;\n            rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n            rgb[2] = 0;\n          }\n          return rgb;\n        }\n       function clearImage()\n        {\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);        \n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var pbox = 0.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(' ');\n            } \n        }\n        function drawEllipse(ctx, x, y, w, h) \n        {\n            var kappa = .5522848,\n              ox = (w / 2) * kappa, // control point offset horizontal\n              oy = (h / 2) * kappa, // control point offset vertical\n              xe = x + w,           // x-end\n              ye = y + h,           // y-end\n              xm = x + w / 2,       // x-middle\n              ym = y + h / 2;       // y-middle\n            \n            ctx.beginPath();\n            ctx.moveTo(x, ym);\n            ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);\n            ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);\n            ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);\n            ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);\n            //ctx.closePath(); // not used correctly, see comments (use to close off open path)\n            ctx.stroke();\n        }\n",
+        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var colorScale = true;\n        var enhancementLevel = 0;\n        var pgm = null;\n        var lastUpdate = new Date().getTime();\n        var maxDisplayTime = 5000;\n        var imageArray =  null;\n        var language = 0;\n        var warnings = [\n            [\"Person outside range\"     ,\"Person utanför räckhåll\"    ,\"Άτομο εκτός εμβέλειας\"   ,\"Persona fuera del alcance\"  ,\"Persona fuori portata\"  ,\"Person außerhalb der Reichweite\"  ,\"Personne hors de portée\"],\n            [\"Normal Temperature\"       ,\"Normal temperatur\"          ,\"Κανονική θερμοκρασία\"    ,\"Temperatura normal\"         ,\"Temperatura normale\"    ,\"Normale Temperatur\"               ,\"Température normale\"],\n            [\"High Temperature\"         ,\"Hög temperatur\"             ,\"Υψηλή θερμοκρασία\"       ,\"Alta temperatura\"           ,\"Alta temperatura\"       ,\"Hohe Temperatur\"                  ,\"Haute température\"],\n            [\"Temperature outside range\",\"Temperatur utanför räckhåll\",\"Θερμοκρασία εκτός εύρους\",\"Temperatura fuera del rango\",\"Temperatura fuori range\",\"Temperatur außerhalb des Bereichs\",\"Température hors plage\"] ];\n        \n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n\n            $('#tempLegend').hide();\n            $('#tempBarPlot').hide();\n            setInterval(function()\n            {\n                if ((new Date().getTime() - lastUpdate) > maxDisplayTime)\n                {\n                    $('#tempComment').text(\" \");\n                    clearImage();\n                    $('#tempLegend').hide();\n                    $('#tempBarPlot').hide();\n\n                }\n            }, 1000);\n\n        }\n        function onWebSocketOpen()\n        {\n        }\n        function onWebSocketClose()\n        {\n            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        \n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            if (device.imageData.value != null)\n            {\n                var style = 'font-size:200%; font-weight:200; color:#ffff00';\n                if ((device.triggerMode.value == 0) || (device.triggerMode.value == 1))\n                {\n                    if (device.autoModeAction.value == 0)\n                    {\n                        $('#tempComment').attr(\"style\", style);\n                        $('#tempComment').text(warnings[device.autoModeAction.value][device.language.value]);\n                    }\n                    if (device.autoModeAction.value == 1)\n                    {\n                        style = 'font-size:200%; font-weight:200; color:#00ff00';\n                        $('#tempComment').attr(\"style\", style);\n                        $('#tempComment').text(warnings[device.autoModeAction.value][device.language.value]);\n                    }\n                    if (device.autoModeAction.value == 2)\n                    {\n                        style = 'font-size:200%; font-weight:200; color:#ff0000';\n                        $('#tempComment').attr(\"style\", style);\n                        $('#tempComment').text(warnings[device.autoModeAction.value][device.language.value]);\n                    }\n                    if (device.autoModeAction.value == 3)\n                    {\n                        style = 'font-size:200%; font-weight:200; color:#ffff00';\n                        $('#tempComment').attr(\"style\", style);\n                        $('#tempComment').text(warnings[device.autoModeAction.value][device.language.value]);\n                    }\n                }\n                else\n                {\n                    $('#tempComment').attr(\"style\", style);\n                    $('#tempComment').text(\"Surface Temperature\");\n                }\n                lastUpdate = new Date().getTime();\n            }\n            if (device.imageData.value != null)\n            {\n                pgm = JSON.parse(JSON.stringify(device.imageData.value));\n                var processImage = 0;\n                try {processImage = device.processImage.value;} catch(err) {processImage = 0;}\n//always blur for this display to preserve identity\n//                processImage = 1;\n                switch (processImage)\n                {\n                    case 0:  \n                        imageArray = pgm.imageArray;\n                        break;\n                    case 1:  \n                        imageArray = blurImage(pgm.imageArray);\n                        break;\n                    default: \n                        imageArray = blurImage(pgm.imageArray);\n                        break;\n                }\n                plotImage();\n                if (device.autoModeAction.value > 0) \n                {\n                    $('#tempBarPlot').show();\n                    var tempBarConfig = \n                        {\n                            lolo            : device.bodyTemp.alarm.limits.lolo, \n                            low             : device.bodyTemp.alarm.limits.low, \n                            high            : device.bodyTemp.alarm.limits.high, \n                            hihi            : device.bodyTemp.alarm.limits.hihi, \n                            value           : device.bodyTemp.value, \n                            unit            : device.bodyTemp.unit, \n                            textsize        : 20,\n                            label           : 'temp', \n                            lowColor        : '#0000ff', \n                            mediumColor     : '#00ff00',\n                            highColor       : '#ff0000', \n                            backgroundColor : '#000000', \n                            labelColor      : '#ffffff', \n                            gridColor       : '#000000',\n                            height          : 150, \n                            htmlId          : 'tempBarPlot'\n                        };\n                    setHorzBarWidget(tempBarConfig);\n                }\n                else\n                {\n                    $('#tempBarPlot').hide();\n                }\n             }\n        }\n        function plotImage()\n        {\n            $('#tempLegend').show();\n            var rgb = [];\n            var plow = (pgm.minval - 27315) / 100;\n            var phigh = (pgm.maxval - 27315) / 100;\n            var pdelta = phigh - plow;\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            var rectWidth  = Math.round(canvasWidth / pgm.ncols);\n            var rectHeight =  Math.round(canvasHeight / pgm.nrows);\n\n            for (var irow = 0; irow < pgm.nrows; ++irow)\n            {\n                for (var icol = 0; icol < pgm.ncols; ++icol)\n                {\n                    var intensity = imageArray[irow][icol] / 256.0;\n                    if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                    if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                    if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                    if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                    if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                    if (colorScale)\n                    {\n                        rgb = getRGB(intensity);\n                        rgb[0] = Math.floor(rgb[0]);\n                        rgb[1] = Math.floor(rgb[1]);\n                        rgb[2] = Math.floor(rgb[2]);\n                    }\n                    else\n                    {\n                        rgb[0] = Math.floor(255 * intensity);\n                        rgb[1] = Math.floor(255 * intensity);\n                        rgb[2] = Math.floor(255 * intensity);\n                    }\n                    canvasContext.fillStyle = 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                    if (intensity > 0.98) \n                    {\n                        canvasContext.fillStyle='magenta';\n                        if (colorScale) canvasContext.fillStyle='white';\n                    }\n\n                    canvasContext.fillRect(icol * rectWidth, canvasHeight - rectHeight - irow * rectHeight, rectWidth, rectHeight);\n                }    \n            }\n            var ellipseWidth = rectWidth *  device.faceRegionWidth.value;\n            var ellipseHeight = rectHeight *  device.faceRegionHeight.value;\n            canvasContext.fillStyle='black';\n            if ((device.triggerMode.value == 0) || (device.triggerMode.value == 1)) \n            {\n                drawEllipse(canvasContext, (canvasWidth - ellipseWidth) / 2, (canvasHeight -  ellipseHeight)/ 2, ellipseWidth, ellipseHeight);\n            }\n        }\n        function blurImage(inputImage)\n        {\n            var kernal = [[1,2,1], [2,4,2], [1,2,1]];\n            var blurImage = [];\n            var nrows = inputImage.length;\n            var ncols = inputImage[0].length;\n            for (var irow = 0; irow < nrows; ++irow)\n            {\n                blurImage[irow] = [];\n                for (var icol = 0; icol < ncols; ++icol)\n                {\n                    if ((irow == 0) || (irow == (nrows - 1)))\n                    {\n                        blurImage[irow][icol] =  inputImage[irow][icol];\n                    }\n                    else\n                    {\n                        if ((icol == 0) || (icol == (ncols - 1)))\n                        {\n                            blurImage[irow][icol] =  inputImage[irow][icol];\n                        }\n                        else\n                        {\n                            blurImage[irow][icol] = 0;\n                            for (var ikrow = 0; ikrow < 3; ++ikrow)\n                            {\n                                for (var ikcol = 0; ikcol < 3; ++ikcol)\n                                {\n                                    blurImage[irow][icol] = blurImage[irow][icol] + inputImage[irow + ikrow - 1][icol + ikcol - 1] * kernal[ikrow][ikcol];\n                                }\n                            }\n                            blurImage[irow][icol] = Math.round(blurImage[irow][icol] / 16.0);\n                        }\n                    }\n                }\n            }\n            return blurImage;\n        }\n        function getRGB(intensity)\n        {\n          var rgb = [0,0,0];\n          if ( (0 <= intensity) && (intensity <= 0.25) )\n          {\n            rgb[0] = 0;\n            rgb[1] = Math.floor(255 * intensity * 4);    \n            rgb[2] = 255;\n          }\n          if ( (0.25 < intensity) && (intensity <= 0.50) )\n          {\n            rgb[0] = 0;\n            rgb[1] = 255;    \n            rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n          }\n          if ( (0.50 < intensity) && (intensity <= 0.75) )\n          {\n            rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n            rgb[1] = 255;    \n            rgb[2] = 0;\n          }\n          if ( (0.75 < intensity) && (intensity <= 1.0) )\n          {\n            rgb[0] = 255;\n            rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n            rgb[2] = 0;\n          }\n          return rgb;\n        }\n       function clearImage()\n        {\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);        \n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var pbox = 0.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(' ');\n            } \n        }\n        function drawEllipse(ctx, x, y, w, h) \n        {\n            var kappa = .5522848,\n              ox = (w / 2) * kappa, // control point offset horizontal\n              oy = (h / 2) * kappa, // control point offset vertical\n              xe = x + w,           // x-end\n              ye = y + h,           // y-end\n              xm = x + w / 2,       // x-middle\n              ym = y + h / 2;       // y-middle\n            \n            ctx.beginPath();\n            ctx.moveTo(x, ym);\n            ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);\n            ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);\n            ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);\n            ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);\n            //ctx.closePath(); // not used correctly, see comments (use to close off open path)\n            ctx.stroke();\n        }\n",
         "output": "str",
         "x": 630,
         "y": 440,
@@ -4567,8 +4453,129 @@
         "name": "/simple/websocket",
         "server": "630fe450.88c6dc",
         "client": "",
-        "x": 1450,
-        "y": 540,
+        "x": 1890,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "2a510112.c97c8e",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Set Camera Available",
+        "func": "flow.set('cameraInUse',false);\nreturn null;",
+        "outputs": 0,
+        "noerr": 0,
+        "x": 1300,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "bc2a5ab6.dd10a8",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "200",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 1090,
+        "y": 520,
+        "wires": [
+            [
+                "2a510112.c97c8e"
+            ]
+        ]
+    },
+    {
+        "id": "ffc2fa3d.3054d8",
+        "type": "link in",
+        "z": "5f562f66.a301e",
+        "name": "Reset In",
+        "links": [
+            "7079fa00.acfb14"
+        ],
+        "x": 55,
+        "y": 1000,
+        "wires": [
+            [
+                "cb2332f8.29c65",
+                "bf3bbeb6.27c5f"
+            ]
+        ]
+    },
+    {
+        "id": "7079fa00.acfb14",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "Reset Out",
+        "links": [
+            "ffc2fa3d.3054d8"
+        ],
+        "x": 1035,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "588676f8.07e648",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "Gate in use out",
+        "links": [
+            "cb51837e.00842"
+        ],
+        "x": 1515,
+        "y": 1940,
+        "wires": []
+    },
+    {
+        "id": "7ff0de00.271384",
+        "type": "link in",
+        "z": "5f562f66.a301e",
+        "name": "Init System In",
+        "links": [
+            "282435c4.bd84ba"
+        ],
+        "x": 255,
+        "y": 300,
+        "wires": [
+            [
+                "2635280b.22f548",
+                "3994b851.11f2f8"
+            ]
+        ]
+    },
+    {
+        "id": "d10b4167.c71e7",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Re Init system",
+        "func": "node.warn(msg);\nnode.warn(\"Reinitializing system\");\nreturn {topic:'init',payload:1};",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1280,
+        "y": 460,
+        "wires": [
+            [
+                "282435c4.bd84ba"
+            ]
+        ]
+    },
+    {
+        "id": "282435c4.bd84ba",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "Re init system out",
+        "links": [
+            "7ff0de00.271384"
+        ],
+        "x": 1395,
+        "y": 460,
         "wires": []
     }
 ]

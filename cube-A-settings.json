@@ -1,13 +1,13 @@
 {
   "deviceType": "vad-kul",
-  "name": "09",
+  "name": "06",
   "arcPeriod": 60000,
-  "timeStamp": 1604939538846,
+  "timeStamp": 1605035914479,
   "lastArchive": 1604472145283,
   "linkQuality": {
     "action": "reading",
     "type": "scalar",
-    "value": 67,
+    "value": 62,
     "unit": "/70",
     "alarm": {
       "value": 0,
@@ -27,7 +27,7 @@
   "signalLevel": {
     "action": "reading",
     "type": "scalar",
-    "value": -43,
+    "value": -48,
     "unit": "dBm",
     "alarm": {
       "value": 0,
@@ -47,7 +47,7 @@
   "pixelMin": {
     "action": "reading",
     "type": "scalar",
-    "value": 20.8,
+    "value": 21.5,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -87,7 +87,7 @@
   "ultraSoundDistance": {
     "action": "reading",
     "type": "scalar",
-    "value": 400,
+    "value": 131,
     "unit": "cm",
     "alarm": {
       "value": 0,
@@ -107,7 +107,7 @@
   "ultraSoundRange": {
     "action": "setting",
     "type": "scalar",
-    "value": 110,
+    "value": 190,
     "unit": "cm",
     "alarm": {
       "value": 0,
@@ -132,8 +132,8 @@
     "alarm": {
       "value": 0,
       "limits": {
-        "lolo": 2000,
-        "low": 2000,
+        "lolo": 1000,
+        "low": 1000,
         "high": 20000,
         "hihi": 21000
       },
@@ -172,8 +172,8 @@
     "alarm": {
       "value": 0,
       "limits": {
-        "lolo": 33,
-        "low": 35.5,
+        "lolo": 32,
+        "low": 34.5,
         "high": 38.5,
         "hihi": 41
       },
@@ -307,7 +307,7 @@
   "triggerMode": {
     "action": "setting",
     "type": "scalar",
-    "value": 0,
+    "value": 1,
     "unit": "unit",
     "alarm": {
       "value": 0,
@@ -367,7 +367,7 @@
   "language": {
     "action": "setting",
     "type": "scalar",
-    "value": 0,
+    "value": 1,
     "unit": "unit",
     "alarm": {
       "value": 0,
@@ -407,7 +407,7 @@
   "faceRegionWidth": {
     "action": "setting",
     "type": "scalar",
-    "value": 50,
+    "value": 25,
     "unit": "unit",
     "alarm": {
       "value": 0,
@@ -427,7 +427,7 @@
   "faceRegionHeight": {
     "action": "setting",
     "type": "scalar",
-    "value": 70,
+    "value": 35,
     "unit": "unit",
     "alarm": {
       "value": 0,
@@ -447,7 +447,7 @@
   "resMode": {
     "action": "setting",
     "type": "scalar",
-    "value": 2,
+    "value": 1,
     "unit": "unit",
     "alarm": {
       "value": 0,
