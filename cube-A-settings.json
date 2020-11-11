@@ -1,6 +1,6 @@
 {
   "deviceType": "vad-kul",
-  "name": "06",
+  "name": "09",
   "arcPeriod": 60000,
   "timeStamp": 1605081895212,
   "lastArchive": 1604472145283,
@@ -407,7 +407,7 @@
   "faceRegionWidth": {
     "action": "setting",
     "type": "scalar",
-    "value": 25,
+    "value": 50,
     "unit": "unit",
     "alarm": {
       "value": 0,
@@ -427,7 +427,7 @@
   "faceRegionHeight": {
     "action": "setting",
     "type": "scalar",
-    "value": 35,
+    "value": 70,
     "unit": "unit",
     "alarm": {
       "value": 0,
@@ -447,7 +447,7 @@
   "resMode": {
     "action": "setting",
     "type": "scalar",
-    "value": 1,
+    "value": 2,
     "unit": "unit",
     "alarm": {
       "value": 0,
