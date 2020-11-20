@@ -509,5 +509,110 @@
     "type": "pgm",
     "value": null,
     "unit": "unit"
+  },
+  "rawLeftEyeTemp": {
+    "action": "reading",
+    "type": "scalar",
+    "value": 3200,
+    "unit": "mS",
+    "alarm": {
+      "value": 0,
+      "limits": {
+        "lolo": 2000,
+        "low": 2500,
+        "high": 5000,
+        "hihi": 6000
+      },
+      "notify": {
+        "name": "",
+        "number": "",
+        "time": 0
+      }
+    }
+  },
+  "rawRightEyeTemp": {
+    "action": "reading",
+    "type": "scalar",
+    "value": 3200,
+    "unit": "mS",
+    "alarm": {
+      "value": 0,
+      "limits": {
+        "lolo": 2000,
+        "low": 2500,
+        "high": 5000,
+        "hihi": 6000
+      },
+      "notify": {
+        "name": "",
+        "number": "",
+        "time": 0
+      }
+    }
+  },
+  "rawSpareTemp1": {
+    "action": "reading",
+    "type": "scalar",
+    "value": 3200,
+    "unit": "mS",
+    "alarm": {
+      "value": 0,
+      "limits": {
+        "lolo": 2000,
+        "low": 2500,
+        "high": 5000,
+        "hihi": 6000
+      },
+      "notify": {
+        "name": "",
+        "number": "",
+        "time": 0
+      }
+    }
+  },
+  "rawSpareTemp2": {
+    "action": "reading",
+    "type": "scalar",
+    "value": 3200,
+    "unit": "mS",
+    "alarm": {
+      "value": 0,
+      "limits": {
+        "lolo": 2000,
+        "low": 2500,
+        "high": 5000,
+        "hihi": 6000
+      },
+      "notify": {
+        "name": "",
+        "number": "",
+        "time": 0
+      }
+    }
+  },
+  "faceLocation": {
+    "action": "reading",
+    "type": "vector",
+    "value": [[],[]]
+  },
+  "eyeSearchArea": {
+    "action": "reading",
+    "type": "vector",
+    "value": [[],[]]
+  },
+  "eyeLocation": {
+    "action": "reading",
+    "type": "vector",
+    "value": [[],[]]
+  },
+  "faceHorzSlice": {
+    "action": "reading",
+    "type": "vector",
+    "value": [[],[]]
+  },
+  "faceVertSlice": {
+    "action": "reading",
+    "type": "vector",
+    "value": [[],[]]
   }
 }
