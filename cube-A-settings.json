@@ -1,13 +1,13 @@
 {
   "deviceType": "vad-kul",
-  "name": "10",
+  "name": "08",
   "arcPeriod": 60000,
-  "timeStamp": 1605722813412,
+  "timeStamp": 1605943163918,
   "lastArchive": 1605297020274,
   "linkQuality": {
     "action": "reading",
     "type": "scalar",
-    "value": 70,
+    "value": 66,
     "unit": "/70",
     "alarm": {
       "value": 0,
@@ -27,7 +27,7 @@
   "signalLevel": {
     "action": "reading",
     "type": "scalar",
-    "value": -38,
+    "value": -44,
     "unit": "dBm",
     "alarm": {
       "value": 0,
@@ -67,7 +67,7 @@
   "pixelMax": {
     "action": "reading",
     "type": "scalar",
-    "value": 32.7,
+    "value": 34.1,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -87,7 +87,7 @@
   "ultraSoundDistance": {
     "action": "reading",
     "type": "scalar",
-    "value": 126,
+    "value": 125,
     "unit": "cm",
     "alarm": {
       "value": 0,
@@ -187,7 +187,7 @@
   "offsetTemp": {
     "action": "setting",
     "type": "scalar",
-    "value": 4,
+    "value": 2.8,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -407,7 +407,7 @@
   "faceRegionWidth": {
     "action": "setting",
     "type": "scalar",
-    "value": 70,
+    "value": 35,
     "unit": "unit",
     "alarm": {
       "value": 0,
@@ -427,7 +427,7 @@
   "faceRegionHeight": {
     "action": "setting",
     "type": "scalar",
-    "value": 90,
+    "value": 45,
     "unit": "unit",
     "alarm": {
       "value": 0,
@@ -467,7 +467,7 @@
   "resMode": {
     "action": "setting",
     "type": "scalar",
-    "value": 2,
+    "value": 1,
     "unit": "unit",
     "alarm": {
       "value": 0,
@@ -513,7 +513,7 @@
   "rawLeftEyeTemp": {
     "action": "reading",
     "type": "scalar",
-    "value": 3200,
+    "value": 3348,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -533,7 +533,7 @@
   "rawRightEyeTemp": {
     "action": "reading",
     "type": "scalar",
-    "value": 3200,
+    "value": 3394,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -553,7 +553,7 @@
   "rawSpareTemp1": {
     "action": "reading",
     "type": "scalar",
-    "value": 3200,
+    "value": 3005,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -573,7 +573,7 @@
   "rawSpareTemp2": {
     "action": "reading",
     "type": "scalar",
-    "value": 3200,
+    "value": 3268,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -593,26 +593,29 @@
   "faceLocation": {
     "action": "reading",
     "type": "vector",
-    "value": [[],[]]
-  },
-  "eyeSearchArea": {
-    "action": "reading",
-    "type": "vector",
-    "value": [[],[]]
+    "value": [
+      [
+        18,
+        27
+      ],
+      [
+        49,
+        48
+      ]
+    ]
   },
   "eyeLocation": {
     "action": "reading",
     "type": "vector",
-    "value": [[],[]]
-  },
-  "faceHorzSlice": {
-    "action": "reading",
-    "type": "vector",
-    "value": [[],[]]
-  },
-  "faceVertSlice": {
-    "action": "reading",
-    "type": "vector",
-    "value": [[],[]]
+    "value": [
+      [
+        43,
+        27
+      ],
+      [
+        43,
+        32
+      ]
+    ]
   }
 }
