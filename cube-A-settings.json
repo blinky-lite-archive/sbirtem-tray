@@ -2,12 +2,12 @@
   "deviceType": "sbirtem",
   "name": "08",
   "arcPeriod": 60000,
-  "timeStamp": 1606594358035,
+  "timeStamp": 1606684158029,
   "lastArchive": 1605297020274,
   "linkQuality": {
     "action": "reading",
     "type": "scalar",
-    "value": 60,
+    "value": 61,
     "unit": "/70",
     "alarm": {
       "value": 0,
@@ -27,7 +27,7 @@
   "signalLevel": {
     "action": "reading",
     "type": "scalar",
-    "value": -50,
+    "value": -49,
     "unit": "dBm",
     "alarm": {
       "value": 0,
@@ -47,7 +47,7 @@
   "pixelMin": {
     "action": "reading",
     "type": "scalar",
-    "value": 18.6,
+    "value": 22.8,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -67,7 +67,7 @@
   "pixelMax": {
     "action": "reading",
     "type": "scalar",
-    "value": 34.6,
+    "value": 33.6,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -87,7 +87,7 @@
   "ultraSoundDistance": {
     "action": "reading",
     "type": "scalar",
-    "value": 69,
+    "value": 125,
     "unit": "cm",
     "alarm": {
       "value": 0,
@@ -387,7 +387,7 @@
   "faceRegionWidth": {
     "action": "setting",
     "type": "scalar",
-    "value": 35,
+    "value": 40,
     "unit": "unit",
     "alarm": {
       "value": 0,
@@ -407,7 +407,7 @@
   "faceRegionHeight": {
     "action": "setting",
     "type": "scalar",
-    "value": 45,
+    "value": 50,
     "unit": "unit",
     "alarm": {
       "value": 0,
@@ -493,7 +493,7 @@
   "rawLeftEyeTemp": {
     "action": "reading",
     "type": "scalar",
-    "value": 3460,
+    "value": 3451,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -513,7 +513,7 @@
   "rawRightEyeTemp": {
     "action": "reading",
     "type": "scalar",
-    "value": 3442,
+    "value": 3405,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -533,7 +533,7 @@
   "rawSpareTemp1": {
     "action": "reading",
     "type": "scalar",
-    "value": 3142,
+    "value": 3223,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -553,7 +553,7 @@
   "rawSpareTemp2": {
     "action": "reading",
     "type": "scalar",
-    "value": 3342,
+    "value": 3314,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -575,12 +575,12 @@
     "type": "vector",
     "value": [
       [
-        23,
-        18
+        10,
+        25
       ],
       [
-        55,
-        41
+        52,
+        55
       ]
     ]
   },
@@ -589,12 +589,12 @@
     "type": "vector",
     "value": [
       [
-        43,
-        27
+        45,
+        28
       ],
       [
-        43,
-        32
+        45,
+        33
       ]
     ]
   },
