@@ -4775,5 +4775,54 @@
         "x": 1210,
         "y": 140,
         "wires": []
+    },
+    {
+        "id": "30402e82.89edc2",
+        "type": "mqtt in",
+        "z": "5f562f66.a301e",
+        "name": "Subscribe Ping",
+        "topic": "+/+/+/ping",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "516aef81.a2867",
+        "x": 120,
+        "y": 940,
+        "wires": [
+            [
+                "9b6cce5d.a32f9"
+            ]
+        ]
+    },
+    {
+        "id": "9b6cce5d.a32f9",
+        "type": "json",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 330,
+        "y": 940,
+        "wires": [
+            [
+                "1dcf2f6e.a964d1"
+            ]
+        ]
+    },
+    {
+        "id": "1dcf2f6e.a964d1",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Filter MQTT",
+        "func": "var mqttArray = msg.topic.split('/');\nif (mqttArray[0] != global.get('project')) return null;\nif (mqttArray[1] != global.get('deviceTypeA')) return null;\nif (mqttArray[2] != global.get('deviceNameA')) return null;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 530,
+        "y": 940,
+        "wires": [
+            [
+                "1a4abfdc.2fb1b"
+            ]
+        ]
     }
 ]
