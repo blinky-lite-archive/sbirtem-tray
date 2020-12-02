@@ -1445,7 +1445,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Initialize Stuff",
-        "func": "flow.set('resettingCamera',true);\nflow.set('cameraInUse',false);\nflow.set('lastTriggerTime',new Date().getTime());\nflow.set('lastHeartbeatTime',new Date().getTime());\nflow.set('lastObjectDetectedTime',new Date().getTime());\nvar voiceWarnings = [\n    [\"\"        , \"\"        ,\"\"            ,\"\"          ,\"\"         ,\"\"                   ,\"\"],\n    [\"Welcome\" ,\"Välkommen\",\"καλως ΗΡΘΑΤΕ\",\"Bienvenido\",\"Benvenuto\",\"Herzlich willkommen\",\"Bienvenu\"],\n    [\"Good bye\",\"Hej då\"   ,\"Αντιο σας\"   ,\"Adiós\"     ,\"Addio\"    ,\"Auf Wiedersehen\"    ,\"Au revoir\"],\n    [\"\"        ,\"\"         ,\"\"            ,\"\"          ,\"\"         ,\"\"                   ,\"\"] ];\nflow.set('voiceWarnings',voiceWarnings);\nvar languageFlags = [' -v en',' -v sv',' -v el',' -v es',' -v it',' -v de',' -v fr'];\nflow.set('languageFlags',languageFlags);\nflow.set('calTime',0);\nreturn msg;",
+        "func": "flow.set('resettingCamera',true);\nflow.set('cameraInUse',false);\nflow.set('lastTriggerTime',new Date().getTime());\nflow.set('lastHeartbeatTime',new Date().getTime());\nflow.set('lastObjectDetectedTime',0);\nflow.set('displayTurnedOnTime', new Date().getTime());\nvar voiceWarnings = [\n    [\"\"        , \"\"        ,\"\"            ,\"\"          ,\"\"         ,\"\"                   ,\"\"],\n    [\"Welcome\" ,\"Välkommen\",\"καλως ΗΡΘΑΤΕ\",\"Bienvenido\",\"Benvenuto\",\"Herzlich willkommen\",\"Bienvenu\"],\n    [\"Good bye\",\"Hej då\"   ,\"Αντιο σας\"   ,\"Adiós\"     ,\"Addio\"    ,\"Auf Wiedersehen\"    ,\"Au revoir\"],\n    [\"\"        ,\"\"         ,\"\"            ,\"\"          ,\"\"         ,\"\"                   ,\"\"] ];\nflow.set('voiceWarnings',voiceWarnings);\nvar languageFlags = [' -v en',' -v sv',' -v el',' -v es',' -v it',' -v de',' -v fr'];\nflow.set('languageFlags',languageFlags);\nflow.set('calTime',0);\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "x": 390,
@@ -2626,7 +2626,8 @@
         "wires": [
             [
                 "cf5e2ba4.3a2458",
-                "79eeb26a.e4b69c"
+                "79eeb26a.e4b69c",
+                "89c817a4.d1f078"
             ]
         ]
     },
@@ -2876,7 +2877,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Check for camera reset",
-        "func": "if (flow.get('resettingCamera')) return null;\nif (flow.get('cameraInUse')) return null;\nif (flow.get('device').triggerMode.value == 0)\n{\n    if ((new Date().getTime()) > (flow.get('lastObjectDetectedTime') + flow.get('device').keepAliveTime.value)) return null;\n}\nif (flow.get('device').triggerMode.value == 1)\n{\n//    if (flow.get('device').ultraSoundDistance.value > flow.get('device').ultraSoundRange.value) return null;\n}\nflow.set('lastTriggerTime',new Date().getTime());\nflow.set('cameraInUse',true);\n\nflow.get('device').archiveData.value = 0;\nmsg.payload = \"\"\nif (flow.get('device').resMode.value == 1) msg.payload = \"flirLepton25capture/flirLepton25capture.exe\"\nif (flow.get('device').resMode.value == 2) msg.payload = \"flirLepton35capture/flirLepton35capture.exe\"\nreturn msg;",
+        "func": "if (flow.get('resettingCamera')) return null;\nif (flow.get('cameraInUse')) return null;\nif (flow.get('device').triggerMode.value == 0)\n{\n    if ((new Date().getTime()) > (flow.get('lastObjectDetectedTime') + flow.get('device').keepAliveTime.value)) return null;\n}\nif (flow.get('device').triggerMode.value == 1)\n{\n//    if (flow.get('device').ultraSoundDistance.value > flow.get('device').ultraSoundRange.value) return null;\n}\nflow.set('cameraInUse',true);\n\nflow.get('device').archiveData.value = 0;\nmsg.payload = \"\"\nif (flow.get('device').resMode.value == 1) msg.payload = \"flirLepton25capture/flirLepton25capture.exe\"\nif (flow.get('device').resMode.value == 2) msg.payload = \"flirLepton35capture/flirLepton35capture.exe\"\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "x": 370,
@@ -2982,14 +2983,15 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Programmable interval",
-        "func": "var now = new Date().getTime();\nif ((now - flow.get('lastTriggerTime')) > flow.get('device').imageDelay.value) \n{\n    if(flow.get('device').triggerMode.value < 2) return msg;\n}\n\nreturn null;",
+        "func": "var now = new Date().getTime();\nif ((now - flow.get('lastTriggerTime')) > flow.get('device').imageDelay.value) \n{\n    flow.set('lastTriggerTime',now);\n    if(flow.get('device').triggerMode.value < 2) return msg;\n}\n\nreturn null;",
         "outputs": 1,
         "noerr": 0,
         "x": 340,
         "y": 660,
         "wires": [
             [
-                "a851f6f5.3a80f8"
+                "a851f6f5.3a80f8",
+                "e44807e0.8fd3d8"
             ]
         ]
     },
@@ -4823,6 +4825,122 @@
             [
                 "1a4abfdc.2fb1b"
             ]
+        ]
+    },
+    {
+        "id": "9df6c0f0.e313b",
+        "type": "exec",
+        "z": "5f562f66.a301e",
+        "command": "vcgencmd display_power 1",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Turn on Display",
+        "x": 1880,
+        "y": 820,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "89c817a4.d1f078",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Set Display Turned On Time",
+        "func": "flow.set('displayTurnedOnTime', new Date().getTime());\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1920,
+        "y": 700,
+        "wires": [
+            [
+                "c55063ed.a689f"
+            ]
+        ]
+    },
+    {
+        "id": "e44807e0.8fd3d8",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "turn screen off after 2 minutes",
+        "func": "if ((msg.payload - flow.get('displayTurnedOnTime')) < 120000) return null;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 610,
+        "y": 740,
+        "wires": [
+            [
+                "e28da7f3.279d48"
+            ]
+        ]
+    },
+    {
+        "id": "c55063ed.a689f",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "10",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "x": 1880,
+        "y": 760,
+        "wires": [
+            [
+                "9df6c0f0.e313b"
+            ]
+        ]
+    },
+    {
+        "id": "e28da7f3.279d48",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "minute",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "x": 850,
+        "y": 740,
+        "wires": [
+            [
+                "891d862.faed978"
+            ]
+        ]
+    },
+    {
+        "id": "891d862.faed978",
+        "type": "exec",
+        "z": "5f562f66.a301e",
+        "command": "vcgencmd display_power 0",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Turn off Display",
+        "x": 1040,
+        "y": 740,
+        "wires": [
+            [],
+            [],
+            []
         ]
     }
 ]
