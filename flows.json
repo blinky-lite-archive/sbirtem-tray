@@ -276,26 +276,6 @@
         "wholemsg": "false"
     },
     {
-        "id": "81c09030.dd70d",
-        "type": "serial-port",
-        "z": "",
-        "serialport": "/dev/rfcomm0",
-        "serialbaud": "9600",
-        "databits": "8",
-        "parity": "none",
-        "stopbits": "1",
-        "waitfor": "",
-        "dtr": "none",
-        "rts": "none",
-        "cts": "none",
-        "dsr": "none",
-        "newline": "12",
-        "bin": "bin",
-        "out": "count",
-        "addchar": "",
-        "responsetimeout": "1000"
-    },
-    {
         "id": "5902d0c0.241a6",
         "type": "file",
         "z": "5f562f66.a301e",
@@ -479,7 +459,7 @@
         "fieldType": "msg",
         "format": "html",
         "syntax": "mustache",
-        "template": "<!-- navBar -->\n    <div class=\"jumbotron\" width=\"100%\">\n        <table width=\"100%\">\n            <tr>\n                <td style=\"text-align:left; vertical-align:middle;\"  width=\"20%\">\n                    <a href='https://www.blinky-lite.io/' target='_blank'>\n                        <img src=\"/img/BlinkyLogo.gif\" height=\"75px\"/>\n                    </a>                \n                </td>\n                <td width=\"60%\" style=\"text-align:center; vertical-align:middle;\">\n                    <h1 class=\"jumbotron-title big-text bold-text\">\n                        <img src=\"/img/{{{payload.navBarIcon}}}\" height=\"75px\" style=\"padding-right:20px;\"/><span>{{{payload.title}}}</span>\n                    </h1>\n                </td>\n                <td style=\"text-align:right; vertical-align:middle;\" width=\"20%\">\n                    <a href='/'><img src=\"/img/home.png\" height=\"75px\"/></a>\n                </td>\n            </tr>\n        </table>\n    </div>\n",
+        "template": "<!-- navBar -->\n    <div class=\"jumbotron\" width=\"100%\">\n        <table width=\"100%\">\n            <tr>\n                <td width=\"100%\" style=\"text-align:center; vertical-align:middle;\">\n                    <h1 class=\"jumbotron-title big-text bold-text\">\n                        <img src=\"/img/{{{payload.navBarIcon}}}\" height=\"75px\" style=\"padding-right:5px;\"/><span>{{{payload.title}}}</span>\n                    </h1>\n                </td>\n            </tr>\n        </table>\n    </div>\n",
         "output": "str",
         "x": 200,
         "y": 80,
@@ -534,7 +514,7 @@
         "fieldType": "msg",
         "format": "html",
         "syntax": "mustache",
-        "template": "    <meta charset=\"UTF-8\">\n    <link rel=\"icon\" href=\"/img/favicon.ico?v=4\" type=\"image/x-icon\"/>\n    <title>{{payload.title}}</title>\n    <link rel=\"stylesheet\" href=\"/css/bootstrap.css\"/>\n    <link rel=\"stylesheet\" href=\"/jquery/jquery-ui.css\"/>\n    <link rel=\"stylesheet\" href=\"/jquery/jquery-ui-timepicker-addon.css\"/>\n    <script src=\"/jquery/jquery.js\"></script>\n    <script src=\"/jquery/jquery-ui.js\"></script>\n    <script src=\"/jquery/jquery-ui-timepicker-addon.js\"></script>\n    <script src=\"/scripts/plotly-latest.min.js\"></script>\n    <script src=\"/scripts/visDist/vis.js\"></script>\n    <style>\n{{{payload.css}}}\n    </style>\n    <script>\n{{{payload.utilityScripts}}}\n    </script>\n    <script>\n{{{payload.javascript}}}\n    </script>",
+        "template": "    <meta charset=\"UTF-8\">\n    <link rel=\"icon\" href=\"/img/favicon.ico?v=4\" type=\"image/x-icon\"/>\n    <title>{{payload.title}}</title>\n    <link rel=\"stylesheet\" href=\"/css/bootstrap.css\"/>\n    <link rel=\"stylesheet\" href=\"/jquery/jquery-ui.css\"/>\n    <link rel=\"stylesheet\" href=\"/jquery/jquery-ui-timepicker-addon.css\"/>\n    <script src=\"/jquery/jquery.js\"></script>\n    <script src=\"/jquery/jquery-ui.js\"></script>\n    <script src=\"/jquery/jquery-ui-timepicker-addon.js\"></script>\n    <script src=\"/scripts/plotly-latest.min.js\"></script>\n    <style>\n{{{payload.css}}}\n    </style>\n    <script>\n{{{payload.utilityScripts}}}\n    </script>\n    <script>\n{{{payload.javascript}}}\n    </script>",
         "output": "str",
         "x": 490,
         "y": 40,
@@ -1445,7 +1425,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Initialize Stuff",
-        "func": "flow.set('resettingCamera',true);\nflow.set('cameraInUse',false);\nflow.set('lastTriggerTime',new Date().getTime());\nflow.set('lastHeartbeatTime',new Date().getTime());\nflow.set('lastObjectDetectedTime',0);\nflow.set('displayTurnedOnTime', new Date().getTime());\nvar voiceWarnings = [\n    [\"\"        , \"\"        ,\"\"            ,\"\"          ,\"\"         ,\"\"                   ,\"\"],\n    [\"Welcome\" ,\"Välkommen\",\"καλως ΗΡΘΑΤΕ\",\"Bienvenido\",\"Benvenuto\",\"Herzlich willkommen\",\"Bienvenu\"],\n    [\"Good bye\",\"Hej då\"   ,\"Αντιο σας\"   ,\"Adiós\"     ,\"Addio\"    ,\"Auf Wiedersehen\"    ,\"Au revoir\"],\n    [\"\"        ,\"\"         ,\"\"            ,\"\"          ,\"\"         ,\"\"                   ,\"\"] ];\nflow.set('voiceWarnings',voiceWarnings);\nvar languageFlags = [' -v en',' -v sv',' -v el',' -v es',' -v it',' -v de',' -v fr'];\nflow.set('languageFlags',languageFlags);\nflow.set('calTime',0);\nreturn msg;",
+        "func": "flow.set('resettingCamera',true);\nflow.set('cameraInUse',false);\nflow.set('lastTriggerTime',new Date().getTime());\nflow.set('lastHeartbeatTime',new Date().getTime());\nflow.set('lastObjectDetectedTime',0);\nflow.set('displayTurnedOnTime', new Date().getTime());\nflow.set('calTime',0);\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "x": 390,
@@ -1671,7 +1651,7 @@
         "fieldType": "msg",
         "format": "html",
         "syntax": "mustache",
-        "template": "                <div class='card'>\n                    <div class='row'>\n                        <div class='col-md-2'>\n                        </div>\n                        <div class='col-md-8'>\n                            <p class='card-title'>Network Connection</p>\n                         </div>\n                        <div class='col-md-2'>\n                        </div>\n                    </div>\n                    <div class='card-body' align=\"center\">\n                        <div class='row' style='padding-bottom: 10px;'>\n                            <div class='col-md-6'>\n                                <span  class='card-text' >Connected to:</span>\n                            </div>\n                            <div class='col-md-6'>\n                                 <span  class='card-text' id='connectedSSID'>off/any</span>\n                            </div>\n                        </div>\n                        <div class='row' style='padding-bottom: 10px;'>\n                            <div class='col-md-4'>\n                                <span class=\"tableText\">SSID</span>\n                            </div>\n                            <div class='col-md-8'>\n                                <input class=\"form-control tableText\" id=\"ssid\" type=\"text\" value=\"\" />\n                             </div>\n                        </div>\n                        <div class='row' style='padding-bottom: 10px;'>\n                            <div class='col-md-4'>\n                                <span class=\"tableText\">KEY</span>\n                            </div>\n                            <div class='col-md-8'>\n                                <input class=\"form-control tableText\" id=\"ssidkey\" type=\"text\" value=\"\" />\n                             </div>\n                        </div>\n                        <div class='row' style='padding-bottom: 10px;'>\n                            <div class='col-md-4'>\n                            </div>\n                            <div class='col-md-4'>\n                                <button class='btn btn-block card-button big-text' id=\"ssidButton\" onclick=\"setSsid()\" >Connect</button>\n                             </div>\n                            <div class='col-md-4'>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n",
+        "template": "                <div class='card'>\n                    <div class='row'>\n                        <div class='col-md-2'>\n                        </div>\n                        <div class='col-md-8'>\n                            <p class='card-title'>Network Connection</p>\n                         </div>\n                        <div class='col-md-2'>\n                        </div>\n                    </div>\n                    <div class='card-body' align=\"center\">\n                        <div class='row' style='padding-bottom: 10px;'>\n                            <div class='col-md-6'>\n                                <span  class='card-text' >Connected to:</span>\n                            </div>\n                            <div class='col-md-6'>\n                                 <span  class='card-text' id='connectedSSID'>off/any</span>\n                            </div>\n                        </div>\n                        <div class='row' style='padding-bottom: 10px;'>\n                            <div class='col-md-4'>\n                                <span class=\"tableText\">SSID</span>\n                            </div>\n                            <div class='col-md-8'>\n                                <input class=\"form-control tableText\" id=\"ssid\" type=\"text\" value=\"\" />\n                             </div>\n                        </div>\n                        <div class='row' style='padding-bottom: 10px;'>\n                            <div class='col-md-4'>\n                                <span class=\"tableText\">KEY</span>\n                            </div>\n                            <div class='col-md-8'>\n                                <input class=\"form-control tableText\" id=\"ssidkey\" type=\"text\" value=\"\" />\n                             </div>\n                        </div>\n                        <div class='row' style='padding-bottom: 10px;'>\n                            <div class='col-md-4'>\n                            </div>\n                            <div class='col-md-6'>\n                                <button class='btn btn-block card-button big-text' id=\"ssidButton\" onclick=\"setSsid()\" >Connect & Reboot</button>\n                             </div>\n                            <div class='col-md-2'>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n",
         "output": "str",
         "x": 810,
         "y": 460,
@@ -1896,23 +1876,7 @@
         "y": 300,
         "wires": [
             [
-                "f4433528.9a4ab8"
-            ]
-        ]
-    },
-    {
-        "id": "f4433528.9a4ab8",
-        "type": "function",
-        "z": "26093b29.39d8d4",
-        "name": "set topic",
-        "func": "return {topic:msg.topic, payload:{topic:msg.topic, userID: msg.userID }};\n",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 1060,
-        "y": 300,
-        "wires": [
-            [
-                "9bc013a4.b46c"
+                "fa9ce40f.c3e948"
             ]
         ]
     },
@@ -2680,7 +2644,7 @@
         "fieldType": "msg",
         "format": "html",
         "syntax": "mustache",
-        "template": "<!-- Body HTML -->\n    <div class='container' width=\"100%\">\n        <div class='row vert-pad' >\n            <div class='col-md-12'>\n                <a class=\"btn jumbotron-button btn-block big-text bold-text\" width='80%' href=\"/simple\" >\n                    <table width=\"100%\" alight=\"left\">\n                        <tr>\n                            <td width=\"100%\" align=\"center\">Simple</td>\n                        </tr>\n                    </table>\n                </a>\n            </div>\n        </div>\n        <div class='row vert-pad' >\n            <div class='col-md-12'>\n                <a class=\"btn jumbotron-button btn-block big-text bold-text\" width='80%' href=\"/monitor\" >\n                    <table width=\"100%\" alight=\"left\">\n                        <tr>\n                            <td width=\"100%\" align=\"center\">Monitor</td>\n                        </tr>\n                    </table>\n                </a>\n            </div>\n        </div>\n        <div class='row vert-pad' >\n            <div class='col-md-12'>\n                <a class=\"btn jumbotron-button btn-block big-text bold-text\" width='80%' href=\"/expert\" >\n                    <table width=\"100%\" alight=\"left\">\n                        <tr>\n                            <td width=\"100%\" align=\"center\">Expert</td>\n                        </tr>\n                    </table>\n                </a>\n            </div>\n        </div>\n        <div class='row vert-pad' >\n            <div class='col-md-12'>\n                <a class=\"btn jumbotron-button btn-block big-text bold-text\" width='80%' href=\"/setup\" >\n                    <table width=\"100%\" alight=\"left\">\n                        <tr>\n                            <td width=\"100%\" align=\"center\">Setup</td>\n                        </tr>\n                    </table>\n                </a>\n            </div>\n        </div>\n    </div>",
+        "template": "<!-- Body HTML -->\n    <div class='container' width=\"100%\">\n        <div class='row vert-pad' >\n            <div class='col-md-12'>\n                <a class=\"btn jumbotron-button btn-block big-text bold-text\" width='80%' href=\"/monitor\" >\n                    <table width=\"100%\" alight=\"left\">\n                        <tr>\n                            <td width=\"100%\" align=\"center\">Monitor</td>\n                        </tr>\n                    </table>\n                </a>\n            </div>\n        </div>\n        <div class='row vert-pad' >\n            <div class='col-md-12'>\n                <a class=\"btn jumbotron-button btn-block big-text bold-text\" width='80%' href=\"/expert\" >\n                    <table width=\"100%\" alight=\"left\">\n                        <tr>\n                            <td width=\"100%\" align=\"center\">Expert</td>\n                        </tr>\n                    </table>\n                </a>\n            </div>\n        </div>\n        <div class='row vert-pad' >\n            <div class='col-md-12'>\n                <a class=\"btn jumbotron-button btn-block big-text bold-text\" width='80%' href=\"/setup\" >\n                    <table width=\"100%\" alight=\"left\">\n                        <tr>\n                            <td width=\"100%\" align=\"center\">Setup</td>\n                        </tr>\n                    </table>\n                </a>\n            </div>\n        </div>\n    </div>",
         "output": "str",
         "x": 970,
         "y": 680,
@@ -2979,250 +2943,6 @@
         ]
     },
     {
-        "id": "a179fc1c.4fe37",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Read Serial Handshake",
-        "func": "var ib;\nvar dataView     = new DataView(new ArrayBuffer(4));\nvar newSettingDone = 0;\nvar cubeInit = 0;\n\nfor (ib = 0; ib < 4; ++ib)   dataView.setUint8(ib, msg.payload[0 * 4 + 3 - ib]);\ncubeInit = dataView.getInt32(0);\nfor (ib = 0; ib < 4; ++ib)   dataView.setUint8(ib, msg.payload[1 * 4 + 3 - ib]);\nnewSettingDone = dataView.getInt32(0);\n\nvar newMsg = {topic:'userData', payload:[]};\nfor (var ii = 8; ii < msg.payload.length; ++ii) newMsg.payload[ii - 8] = msg.payload[ii];\n\nif (newSettingDone > 0) \n{\n    flow.get('gate').newSetting = 0;\n}\nif(cubeInit == 1) \n{\n    flow.get('gate').noStepsToTurn = 0;\n    flow.get('gate').stayAwakeAfterRotation = 0;\n    flow.get('gate').newSetting = 1;\n}\n//node.warn('newSettingDone = ' + newSettingDone.toString());\n//node.warn('cubeInit = ' + cubeInit.toString());\n\nreturn newMsg;\n",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 360,
-        "y": 1820,
-        "wires": [
-            [
-                "da003c14.5360e",
-                "716f188f.a84c68"
-            ]
-        ]
-    },
-    {
-        "id": "716f188f.a84c68",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "CreateSettings",
-        "func": "var bufsize = 24;\nvar buffer = new ArrayBuffer(bufsize);\nvar settingsView = new DataView(buffer);\nsettingsView.setInt32(0, flow.get('gate').newSetting, true);\nsettingsView.setInt32(4, flow.get('gate').noStepsToTurn, true);\nsettingsView.setInt32(8, flow.get('gate').motorDirection, true);\nsettingsView.setInt32(12, flow.get('gate').stepDelayuS, true);\nsettingsView.setInt32(16, flow.get('gate').stayAwakeAfterRotation, true);\nsettingsView.setInt32(20, flow.get('gate').loopDelay, true);\n\nreturn {topic:'settings',payload:Buffer.from(buffer)};\n",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 640,
-        "y": 1880,
-        "wires": [
-            [
-                "2fe75b8.09b33a4"
-            ]
-        ]
-    },
-    {
-        "id": "da003c14.5360e",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Create Readings",
-        "func": "var ib;\nvar dataView     = new DataView(new ArrayBuffer(4));\n\nfor (ib = 0; ib < 4; ++ib)   dataView.setUint8(ib, msg.payload[0 * 4 + 3 - ib]);\nvar stepLocation = dataView.getInt32(0);\n\n\nreturn {topic : 'reading', payload : stepLocation};\n",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 650,
-        "y": 1820,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "5315590c.3b1118",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Gate Control",
-        "func": "if(msg.payload == 1) \n{\n    flow.get('gate').noStepsToTurn = 50;\n    flow.get('gate').stayAwakeAfterRotation = 1;\n    flow.get('gate').motorDirection = 0;\n    flow.get('gate').newSetting = 1;\n}\nif(msg.payload == -1) \n{\n    flow.get('gate').noStepsToTurn = 50;\n    flow.get('gate').stayAwakeAfterRotation = 1;\n    flow.get('gate').motorDirection = 1;\n    flow.get('gate').newSetting = 1;\n}\nif(msg.payload == 0) \n{\n    flow.get('gate').noStepsToTurn = 0;\n    flow.get('gate').stayAwakeAfterRotation = 0;\n    flow.get('gate').motorDirection = 0;\n    flow.get('gate').newSetting = 1;\n}\nreturn null;",
-        "outputs": 0,
-        "noerr": 0,
-        "x": 1090,
-        "y": 2220,
-        "wires": []
-    },
-    {
-        "id": "d1ecd31c.85848",
-        "type": "inject",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "repeat": "",
-        "crontab": "",
-        "once": true,
-        "onceDelay": 0.1,
-        "x": 170,
-        "y": 1760,
-        "wires": [
-            [
-                "3eeb6d78.e660d2"
-            ]
-        ]
-    },
-    {
-        "id": "3eeb6d78.e660d2",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Initialize Gate",
-        "func": "var gate = \n{\n    noStepsToTurn : 0,\n    motorDirection :1,\n    stepDelayuS : 30000,\n    stayAwakeAfterRotation : 0,\n    loopDelay : 1000,\n    newSetting : 1\n}\nflow.set('gate',gate);\nflow.set('gateInUse',false);\nreturn msg;",
-        "outputs": 0,
-        "noerr": 0,
-        "x": 340,
-        "y": 1760,
-        "wires": []
-    },
-    {
-        "id": "8d4900c5.10495",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Gate State Open",
-        "func": "if (flow.get('device').gateMode.value == 0) return null;\nif (flow.get('gateInUse')) return null;\nflow.set('gateInUse',true);\nmsg.payload = 1;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 450,
-        "y": 2200,
-        "wires": [
-            [
-                "5315590c.3b1118",
-                "10afd993.3a5476"
-            ]
-        ]
-    },
-    {
-        "id": "b6cee558.861ca8",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Gate State Rest",
-        "func": "msg.payload = 0;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 820,
-        "y": 2280,
-        "wires": [
-            [
-                "5315590c.3b1118",
-                "6228d70b.c12288"
-            ]
-        ]
-    },
-    {
-        "id": "29ad2f9d.4ef79",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Gate State Close",
-        "func": "msg.payload = -1;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 830,
-        "y": 2220,
-        "wires": [
-            [
-                "5315590c.3b1118"
-            ]
-        ]
-    },
-    {
-        "id": "f02718de.991428",
-        "type": "delay",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "5",
-        "timeoutUnits": "seconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "x": 640,
-        "y": 2280,
-        "wires": [
-            [
-                "b6cee558.861ca8"
-            ]
-        ]
-    },
-    {
-        "id": "10afd993.3a5476",
-        "type": "delay",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "5",
-        "timeoutUnits": "seconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "x": 640,
-        "y": 2220,
-        "wires": [
-            [
-                "29ad2f9d.4ef79",
-                "f02718de.991428"
-            ]
-        ]
-    },
-    {
-        "id": "ada0569a.a42ec8",
-        "type": "inject",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "x": 440,
-        "y": 2240,
-        "wires": [
-            [
-                "8d4900c5.10495"
-            ]
-        ]
-    },
-    {
-        "id": "6228d70b.c12288",
-        "type": "delay",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "1",
-        "timeoutUnits": "seconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "x": 1020,
-        "y": 2280,
-        "wires": [
-            [
-                "7e0f54ac.ff713c",
-                "b805d53b.883178"
-            ]
-        ]
-    },
-    {
-        "id": "7e0f54ac.ff713c",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Set Gate State not in use",
-        "func": "flow.set('gateInUse',false);\n",
-        "outputs": 0,
-        "noerr": 0,
-        "x": 1230,
-        "y": 2280,
-        "wires": []
-    },
-    {
         "id": "a325a9ec.7e9188",
         "type": "link out",
         "z": "5f562f66.a301e",
@@ -3259,7 +2979,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 420,
-        "y": 2160,
+        "y": 1800,
         "wires": [
             [
                 "852a59a8.761b68"
@@ -3276,95 +2996,8 @@
             "cb51837e.00842"
         ],
         "x": 555,
-        "y": 2160,
+        "y": 1800,
         "wires": []
-    },
-    {
-        "id": "b805d53b.883178",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "set to 0",
-        "func": "msg.payload = 0;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 1180,
-        "y": 2340,
-        "wires": [
-            [
-                "d0988296.efa1"
-            ]
-        ]
-    },
-    {
-        "id": "d0988296.efa1",
-        "type": "link out",
-        "z": "5f562f66.a301e",
-        "name": "Gat Finish to 0",
-        "links": [
-            "c9d85cd7.b10c5",
-            "cb51837e.00842"
-        ],
-        "x": 1275,
-        "y": 2340,
-        "wires": []
-    },
-    {
-        "id": "33874547.4db68a",
-        "type": "exec",
-        "z": "5f562f66.a301e",
-        "command": "espeak ",
-        "addpay": true,
-        "append": "",
-        "useSpawn": "false",
-        "timer": "",
-        "oldrc": false,
-        "name": "espeak Please Enter",
-        "x": 1140,
-        "y": 1960,
-        "wires": [
-            [
-                "afb10d64.6b48d"
-            ],
-            [],
-            []
-        ]
-    },
-    {
-        "id": "f860f23f.a6e73",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Body Temp Speak",
-        "func": "if (flow.get('device').gateMode.value == 0) \n{\n    if (flow.get('gateInUse')) return null;\n    flow.set('gateInUse',true);\n}\nvar languageFlag = flow.get('languageFlags')[flow.get('device').language.value];\nmsg.payload = languageFlag + ' \"' + flow.get('device').bodyTemp.value.toString() + '\" --stdout | aplay'\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 470,
-        "y": 1960,
-        "wires": [
-            [
-                "50c51b36.f4cde4"
-            ]
-        ]
-    },
-    {
-        "id": "50c51b36.f4cde4",
-        "type": "exec",
-        "z": "5f562f66.a301e",
-        "command": "espeak",
-        "addpay": true,
-        "append": "",
-        "useSpawn": "false",
-        "timer": "",
-        "oldrc": false,
-        "name": "espeak Body Temp",
-        "x": 670,
-        "y": 1960,
-        "wires": [
-            [
-                "d30c7b04.5bf7d8"
-            ],
-            [],
-            []
-        ]
     },
     {
         "id": "e904ee06.b15af",
@@ -3375,7 +3008,7 @@
             "863d7a9.ab20888"
         ],
         "x": 75,
-        "y": 2180,
+        "y": 1820,
         "wires": [
             [
                 "514d03ca.0eae7c"
@@ -3417,7 +3050,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 440,
-        "y": 2480,
+        "y": 1860,
         "wires": [
             [
                 "5649f4af.4a03bc",
@@ -3434,7 +3067,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 800,
-        "y": 2480,
+        "y": 1860,
         "wires": [
             [
                 "f4c1fc1.3b91"
@@ -3457,7 +3090,7 @@
         "randomUnits": "seconds",
         "drop": false,
         "x": 630,
-        "y": 2520,
+        "y": 1900,
         "wires": [
             [
                 "94bf1fac.8b3e3"
@@ -3473,7 +3106,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 800,
-        "y": 2520,
+        "y": 1900,
         "wires": [
             [
                 "15e0e620.bb96fa",
@@ -3497,7 +3130,7 @@
         "randomUnits": "seconds",
         "drop": false,
         "x": 630,
-        "y": 2480,
+        "y": 1860,
         "wires": [
             [
                 "14f934e6.ded55b"
@@ -3527,7 +3160,7 @@
             "7af84ca8.ba5584"
         ],
         "x": 955,
-        "y": 2480,
+        "y": 1860,
         "wires": []
     },
     {
@@ -3600,13 +3233,12 @@
         "repair": false,
         "outputs": 4,
         "x": 190,
-        "y": 2180,
+        "y": 1820,
         "wires": [
             [
                 "1f55c9e4.6259b6"
             ],
             [
-                "8d4900c5.10495",
                 "90a53647.669d68",
                 "3d858b79.d58bd4"
             ],
@@ -3619,64 +3251,6 @@
         ]
     },
     {
-        "id": "fc88ddcf.296c3",
-        "type": "exec",
-        "z": "5f562f66.a301e",
-        "command": "espeak -v sv \"Hej då\" --stdout | aplay",
-        "addpay": false,
-        "append": "",
-        "useSpawn": "false",
-        "timer": "",
-        "oldrc": false,
-        "name": "espeak Too high",
-        "x": 1100,
-        "y": 2420,
-        "wires": [
-            [
-                "4462442a.61e38c"
-            ],
-            [],
-            []
-        ]
-    },
-    {
-        "id": "e7abb274.d325d",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Body Temp Speak",
-        "func": "if (flow.get('gateInUse')) return null;\nflow.set('gateInUse',true);\nvar languageFlag = flow.get('languageFlags')[flow.get('device').language.value];\nmsg.payload = languageFlag + ' \"' + flow.get('device').bodyTemp.value.toString() + '\" --stdout | aplay'\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 450,
-        "y": 2420,
-        "wires": [
-            [
-                "9300e65b.1644d8"
-            ]
-        ]
-    },
-    {
-        "id": "9300e65b.1644d8",
-        "type": "exec",
-        "z": "5f562f66.a301e",
-        "command": "espeak -v sv ",
-        "addpay": true,
-        "append": "",
-        "useSpawn": "false",
-        "timer": "",
-        "oldrc": false,
-        "name": "espeak Body Temp",
-        "x": 650,
-        "y": 2420,
-        "wires": [
-            [
-                "d560e222.c91c8"
-            ],
-            [],
-            []
-        ]
-    },
-    {
         "id": "89ab897e.bf7b28",
         "type": "function",
         "z": "5f562f66.a301e",
@@ -3685,7 +3259,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 720,
-        "y": 2600,
+        "y": 1980,
         "wires": [
             [
                 "d242b085.fde9e"
@@ -3701,7 +3275,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 420,
-        "y": 2580,
+        "y": 1960,
         "wires": [
             [
                 "165fcf02.2d29f1",
@@ -3725,7 +3299,7 @@
         "randomUnits": "seconds",
         "drop": false,
         "x": 570,
-        "y": 2600,
+        "y": 1980,
         "wires": [
             [
                 "89ab897e.bf7b28"
@@ -3741,68 +3315,8 @@
             "7af84ca8.ba5584"
         ],
         "x": 815,
-        "y": 2580,
-        "wires": []
-    },
-    {
-        "id": "4462442a.61e38c",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Set Gate State not in use",
-        "func": "flow.set('gateInUse',false);\n",
-        "outputs": 0,
-        "noerr": 0,
-        "x": 1330,
-        "y": 2400,
-        "wires": []
-    },
-    {
-        "id": "d30c7b04.5bf7d8",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Body Temp Speak Message",
-        "func": "var languageFlag = flow.get('languageFlags')[flow.get('device').language.value];\nmsg.payload = languageFlag + ' \"' + flow.get('voiceWarnings')[flow.get('device').autoModeAction.value][flow.get('device').language.value] + '\" --stdout | aplay'\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 900,
         "y": 1960,
-        "wires": [
-            [
-                "33874547.4db68a"
-            ]
-        ]
-    },
-    {
-        "id": "d560e222.c91c8",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Body Temp Speak Message",
-        "func": "var languageFlag = flow.get('languageFlags')[flow.get('device').language.value];\nmsg.payload = languageFlag + ' \"' + flow.get('voiceWarnings')[flow.get('device').autoModeAction.value][flow.get('device').language.value] + '\" --stdout | aplay'\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 880,
-        "y": 2420,
-        "wires": [
-            [
-                "fc88ddcf.296c3"
-            ]
-        ]
-    },
-    {
-        "id": "afb10d64.6b48d",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Set Gate State not in use",
-        "func": "if (flow.get('device').gateMode.value == 1) return null;\nflow.set('gateInUse',false);\nmsg.payload = 0;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 1370,
-        "y": 1940,
-        "wires": [
-            [
-                "588676f8.07e648"
-            ]
-        ]
+        "wires": []
     },
     {
         "id": "cb2332f8.29c65",
@@ -3878,7 +3392,7 @@
         "randomUnits": "seconds",
         "drop": false,
         "x": 430,
-        "y": 2120,
+        "y": 1760,
         "wires": [
             [
                 "a193f30.a33811"
@@ -3894,7 +3408,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 580,
-        "y": 2120,
+        "y": 1760,
         "wires": [
             [
                 "852a59a8.761b68"
@@ -4115,18 +3629,6 @@
         "wires": []
     },
     {
-        "id": "588676f8.07e648",
-        "type": "link out",
-        "z": "5f562f66.a301e",
-        "name": "Gate in use out",
-        "links": [
-            "cb51837e.00842"
-        ],
-        "x": 1515,
-        "y": 1940,
-        "wires": []
-    },
-    {
         "id": "7ff0de00.271384",
         "type": "link in",
         "z": "5f562f66.a301e",
@@ -4180,7 +3682,7 @@
         "fieldType": "msg",
         "format": "javascript",
         "syntax": "mustache",
-        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var colorScale = true;\n        var enhancementLevel = 0;\n        var pgm = null;\n        var lastUpdate = new Date().getTime();\n        var maxDisplayTime = 10000;\n        var peakHoldTemp = 0;\n        var imageArray =  null;\n        var language = 0;\n        var imeasurementCount = 0;\n        var maxMeasurments = 5;\n        var warnings = [\n            [\"Person outside range\"     ,\"Person utanför räckhåll\"    ,\"Άτομο εκτός εμβέλειας\"   ,\"Persona fuera del alcance\"  ,\"Persona fuori portata\"  ,\"Person außerhalb der Reichweite\"  ,\"Personne hors de portée\"],\n            [\"Normal Temperature\"       ,\"Normal temperatur\"          ,\"Κανονική θερμοκρασία\"    ,\"Temperatura normal\"         ,\"Temperatura normale\"    ,\"Normale Temperatur\"               ,\"Température normale\"],\n            [\"High Temperature\"         ,\"Hög temperatur\"             ,\"Υψηλή θερμοκρασία\"       ,\"Alta temperatura\"           ,\"Alta temperatura\"       ,\"Hohe Temperatur\"                  ,\"Haute température\"],\n            [\"Temperature outside range\",\"Temperatur utanför räckhåll\",\"Θερμοκρασία εκτός εύρους\",\"Temperatura fuera del rango\",\"Temperatura fuori range\",\"Temperatur außerhalb des Bereichs\",\"Température hors plage\"] ];\n        var instructions = [\n            [\"Take off your glasses.\",\"Please stand straight.\",\"Align your face in the circle.\"],\n            [\"Ta av dig dina glasögon.\",\"Vänligen stå rakt.\",\"Rikta in ditt ansikte i cirkeln.\"],\n            [\"Βγάλτε τα γυαλιά σας.\",\"Παρακαλώ σταθείτε ευθεία.\",\"Ευθυγραμμίστε το πρόσωπό σας στον κύκλο.\"],\n            [\"Quítate las gafas.\",\"Por favor, párese derecho.\",\"Alinea tu cara en el círculo.\"],\n            [\"Togliti gli occhiali.\",\"Per favore, stai dritto.\",\"Allinea il tuo viso nel cerchio.\"],\n            [\"Nimm deine Brille ab.\",\"Bitte stehen Sie gerade.\",\"Richten Sie Ihr Gesicht im Kreis aus.\"],\n            [\"Enlève tes lunettes.\",\"Veuillez vous tenir droit.\",\"Alignez votre visage dans le cercle.\"]];    \n        var aquireDataInfo = [\"Wait! Acquiring data\",\"Vänta! Inhämtar data\",\"Περίμενε! Λήψη δεδομένων\",\"¡Espere! Adquirir datos\",\"Aspettare! Acquisizione dei dati\",\"Warten! Daten akquirieren\",\"Attendez! Acquérir des données\"];\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n            $('#tempLegend').hide();\n            $('#tempBarPlot').hide();\n            $('#instruction1Id').hide();\n            $('#instruction2Id').hide();\n            $('#instruction3Id').hide();\n            $('#tempComment').hide();\n            setInterval(function()\n            {\n                if ((new Date().getTime() - lastUpdate) > maxDisplayTime)\n                {\n                    $('#tempComment').hide();\n                    clearImage();\n                    $('#tempLegend').hide();\n                    $('#tempBarPlot').hide();\n                    $('#instruction1Id').hide();\n                    $('#instruction2Id').hide();\n                    $('#instruction3Id').hide();\n                    peakHoldTemp = 0;\n                    imeasurementCount = 0;\n                }\n            }, 1000);\n\n        }\n        function onWebSocketOpen()\n        {\n        }\n        function onWebSocketClose()\n        {\n            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        \n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            if (device.imageData.value != null)\n            {\n                var style = 'font-size:200%; font-weight:200; color:#ffff00;';\n                if ((device.triggerMode.value == 0) || (device.triggerMode.value == 1))\n                {\n                    $('#instruction1Id').text(instructions[device.language.value][0]);\n                    $('#instruction2Id').text(instructions[device.language.value][1]);\n                    $('#instruction3Id').text(instructions[device.language.value][2]);\n                    $('#instruction1Id').show();\n                    $('#instruction2Id').show();\n                    $('#instruction3Id').show();\n                    $('#tempComment').show();\n                    $('#tempBarPlot').show();\n                    var tempBarConfig = \n                        {\n                            lolo            : device.bodyTemp.alarm.limits.lolo, \n                            low             : device.bodyTemp.alarm.limits.low, \n                            high            : device.bodyTemp.alarm.limits.high, \n                            hihi            : device.bodyTemp.alarm.limits.hihi, \n                            value           : device.bodyTemp.value, \n                            unit            : device.bodyTemp.unit, \n                            title           : '',\n                            textsize        : 20,\n                            label           : 'temp', \n                            lowColor        : '#0000ff', \n                            mediumColor     : '#00ff00',\n                            highColor       : '#ff0000', \n                            backgroundColor : '#000000', \n                            labelColor      : '#ffffff', \n                            gridColor       : '#000000',\n                            titleColor      : '#000000',\n                            height          : 125, \n                            htmlId          : 'tempBarPlot'\n                        };\n                    if (device.autoModeAction.value > 0)\n                    {\n                        if ((device.bodyTemp.alarm.limits.lolo <=  device.bodyTemp.value) && ( device.bodyTemp.value <= device.bodyTemp.alarm.limits.hihi))\n                        {\n                            if (peakHoldTemp < device.bodyTemp.value) peakHoldTemp = device.bodyTemp.value;\n                            imeasurementCount = imeasurementCount + 1;\n                        }\n                        if ((device.bodyTemp.alarm.limits.lolo <= peakHoldTemp) && (peakHoldTemp <= device.bodyTemp.alarm.limits.hihi))\n                        {\n                            var infoText = aquireDataInfo[device.language.value];\n                            if (peakHoldTemp < device.bodyTemp.alarm.limits.low)\n                            {\n                                tempBarConfig.titleColor = '#0000ff';\n                                if (imeasurementCount >= maxMeasurments)\n                                {\n                                    style = 'font-size:200%; font-weight:200; background-color:#0000ff;color:black;';\n                                    infoText = warnings[3][device.language.value];\n                                }\n                             }\n                            else\n                            {\n                                if (peakHoldTemp < device.bodyTemp.alarm.limits.high)\n                                {\n                                    tempBarConfig.titleColor = '#00ff00';\n                                    if (imeasurementCount >= maxMeasurments)\n                                    {\n                                        style = 'font-size:200%; font-weight:200; background-color:#00ff00;color:black;';\n                                        infoText = warnings[1][device.language.value];\n                                    }\n                                }\n                                else\n                                {\n                                    tempBarConfig.titleColor = '#ff0000';\n                                    if (imeasurementCount >= maxMeasurments)\n                                    {\n                                        style = 'font-size:200%; font-weight:200; background-color:#ff0000;color:black;';\n                                        infoText = warnings[2][device.language.value];\n                                    }\n                                }\n                            }\n                            $('#tempComment').attr(\"style\", style);\n                            $('#tempComment').text(infoText);\n                            \n                        }\n                        else\n                        {\n                            peakHoldTemp = 0;\n                            imeasurementCount = 0;\n                            style = 'font-size:200%; font-weight:200; color:#ff00ff;';\n                            $('#tempComment').attr(\"style\", style);\n                            $('#tempComment').text(warnings[3][device.language.value]);\n                            tempBarConfig.titleColor = '#000000';\n                        }\n                    }\n                    else\n                    {\n                        style = 'font-size:200%; font-weight:200; color:#ff00ff;';\n                         $('#tempComment').attr(\"style\", style);\n                        $('#tempComment').text(warnings[0][device.language.value]);\n                        peakHoldTemp = 0;\n                        imeasurementCount = 0;\n                        tempBarConfig.lowColor = '#000000';\n                        tempBarConfig.mediumColor = '#000000';\n                        tempBarConfig.highColor = '#000000';\n                        tempBarConfig.labelColor = '#000000';\n                        tempBarConfig.titleColor = '#000000';\n                    }\n                    tempBarConfig.title = peakHoldTemp.toString();\n                    setHorzBarWidget(tempBarConfig);\n                }\n                else\n                {\n                    $('#tempComment').attr(\"style\", style);\n                    $('#tempComment').text(\"Surface Temperature\");\n                }\n                lastUpdate = new Date().getTime();\n                pgm = JSON.parse(JSON.stringify(device.imageData.value));\n                imageArray = pgm.imageArray;\n                plotImage();\n            }\n        }\n        function plotImage()\n        {\n            $('#tempLegend').show();\n            var rgb = [];\n            var plow = (pgm.minval - 27315) / 100;\n            var phigh = (pgm.maxval - 27315) / 100;\n            var pdelta = phigh - plow;\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            var rectWidth  = Math.round(canvasWidth / pgm.ncols);\n            var rectHeight =  Math.round(canvasHeight / pgm.nrows);\n\n            for (var irow = 0; irow < pgm.nrows; ++irow)\n            {\n                for (var icol = 0; icol < pgm.ncols; ++icol)\n                {\n                    var intensity = imageArray[irow][icol] / 256.0;\n                    if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                    if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                    if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                    if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                    if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                    if (colorScale)\n                    {\n                        rgb = getRGB(intensity);\n                        rgb[0] = Math.floor(rgb[0]);\n                        rgb[1] = Math.floor(rgb[1]);\n                        rgb[2] = Math.floor(rgb[2]);\n                    }\n                    else\n                    {\n                        rgb[0] = Math.floor(255 * intensity);\n                        rgb[1] = Math.floor(255 * intensity);\n                        rgb[2] = Math.floor(255 * intensity);\n                    }\n                    canvasContext.fillStyle = 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                    var wx = Math.round(icol * canvasWidth / pgm.ncols);\n                    var hy =  Math.round(canvasHeight - (1 + irow) * canvasHeight / pgm.nrows) ;\n                    canvasContext.fillRect(wx, hy, rectWidth, rectHeight);\n                }    \n            }\n            if ((device.triggerMode.value == 0) || (device.triggerMode.value == 1)) \n            {\n                \n                canvasContext.strokeStyle = 'black';\n                var ellipseWidth =  Math.round(device.faceRegionWidth.value * canvasWidth / pgm.ncols);\n                var ellipseHeight =  Math.round(device.faceRegionHeight.value * canvasHeight / pgm.nrows);\n                \n                drawEllipse(canvasContext, (canvasWidth - ellipseWidth) / 2, (canvasHeight -  ellipseHeight)/ 2, ellipseWidth, ellipseHeight);\n                drawEllipse(canvasContext, (canvasWidth - ellipseWidth - 3) / 2, (canvasHeight -  ellipseHeight - 3)/ 2, ellipseWidth + 3, ellipseHeight + 3);\n                drawEllipse(canvasContext, (canvasWidth - ellipseWidth - 6) / 2, (canvasHeight -  ellipseHeight - 6)/ 2, ellipseWidth + 6, ellipseHeight + 6);\n               \n                canvasContext.strokeStyle = '#00ff00'\n                if (device.autoModeAction.value == 0) canvasContext.strokeStyle = '#ff0000';\n                var faceEllipseWidth  =  device.faceLocation.value[1][1] -  device.faceLocation.value[0][1];\n                var faceEllipseHeight =  device.faceLocation.value[1][0] -  device.faceLocation.value[0][0] ;\n                var faceEllipseCol    = (device.faceLocation.value[1][1] +  device.faceLocation.value[0][1]) / 2 ;\n                var faceEllipseRow    = (device.faceLocation.value[1][0] +  device.faceLocation.value[0][0]) / 2 ;\n                faceEllipseCol = faceEllipseCol - faceEllipseWidth  / 2.0;\n                faceEllipseRow = pgm.nrows - (faceEllipseRow + faceEllipseHeight / 2.0);\n                faceEllipseWidth  = Math.round( faceEllipseWidth  * canvasWidth  / pgm.ncols);\n                faceEllipseHeight = Math.round( faceEllipseHeight * canvasHeight / pgm.nrows);\n                faceEllipseCol    = Math.round( faceEllipseCol    * canvasWidth  / pgm.ncols);\n                faceEllipseRow    = Math.round( faceEllipseRow    * canvasHeight / pgm.nrows);\n                drawEllipse(canvasContext, faceEllipseCol, faceEllipseRow, faceEllipseWidth, faceEllipseHeight);\n\n\n                if (device.autoModeAction.value > 0)\n                {\n                    canvasContext.fillStyle = '#000000';\n                    for (var ipt = 0; ipt < 2; ++ipt)\n                    {\n                        var wx =  Math.round(device.eyeLocation.value[ipt][1] * canvasWidth / pgm.ncols);\n                        var hy =  Math.round(canvasHeight - (1 + device.eyeLocation.value[ipt][0]) * canvasHeight / pgm.nrows) ;\n//                        canvasContext.fillRect(wx - rectWidth, hy - rectHeight, 3 * rectWidth, 3 * rectHeight);\n                        canvasContext.strokeStyle = '#000000'\n                        for (var idraw = 0; idraw < 3; ++idraw)\n                        {\n                            canvasContext.beginPath();\n                            canvasContext.arc(wx + 0.5 * rectWidth, hy + 0.5 * rectHeight,  rectWidth + idraw, 0, 6.2831854);\n                            canvasContext.stroke();\n                        }\n                    }\n                }\n\n            }\n        }\n        function getRGB(intensity)\n        {\n          var rgb = [0,0,0];\n//plasma\n          var rgbCoeff = [\n              [  48.6, 349.0,    5.72, -172.0],\n              [-164.0, 705.0, -667.0 ,  379.0],\n              [ 135.0, 332.0, -976.0,   536.0]];\n          var intensityStart = [0.0, 0.3176, 0.0];\n//viridis\n/*\n          var rgbCoeff = [\n              [  72.7, 161.0, -928.0,  962.0],\n              [-0.316, 334.0,  -62.8 , -35.3],\n              [  89.3, 296.0, -379.0,  -11.5]];\n          var intensityStart = [0.0, 0.0117, 0.0];\n*/\n//inferno\n/* \n          var rgbCoeff = [\n              [   0,0,  343.0,  264.0, -376.0],\n              [   5.0,  -69.7,  320.0,   -1.1],\n              [   0.0, 1193.0,-2957.0, 1939.0]];\n          var intensityStart = [0.0, 0.0, 0.0];\n*/\n          var power = [1.0, 0.0, 0.0, 0.0];\n          for (var ii = 1; ii < 4; ++ii) power[ii] = power[ii - 1] * intensity;\n          for (var irgb = 0; irgb < 3; ++irgb)\n          {\n              if (intensity >= intensityStart[irgb])\n              {\n                  for (var ipow = 0; ipow < 4; ++ipow)\n                  {\n                      rgb[irgb] = rgb[irgb] + rgbCoeff[irgb][ipow] * power[ipow];\n                  }\n              }\n              if (rgb[irgb] <   0) rgb[irgb] =   0;\n              if (rgb[irgb] > 255) rgb[irgb] = 255;\n         }\n          return rgb;\n        }\n        function getRGBRainBow(intensity)\n        {\n          var rgb = [0,0,0];\n          if ( (0 <= intensity) && (intensity <= 0.25) )\n          {\n            rgb[0] = 0;\n            rgb[1] = Math.floor(255 * intensity * 4);    \n            rgb[2] = 255;\n          }\n          if ( (0.25 < intensity) && (intensity <= 0.50) )\n          {\n            rgb[0] = 0;\n            rgb[1] = 255;    \n            rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n          }\n          if ( (0.50 < intensity) && (intensity <= 0.75) )\n          {\n            rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n            rgb[1] = 255;    \n            rgb[2] = 0;\n          }\n          if ( (0.75 < intensity) && (intensity <= 1.0) )\n          {\n            rgb[0] = 255;\n            rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n            rgb[2] = 0;\n          }\n          return rgb;\n        }\n        function clearImage()\n        {\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);        \n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var pbox = 0.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(' ');\n            } \n        }\n        function drawEllipse(ctx, x, y, w, h) \n        {\n            var kappa = .5522848,\n              ox = (w / 2) * kappa, // control point offset horizontal\n              oy = (h / 2) * kappa, // control point offset vertical\n              xe = x + w,           // x-end\n              ye = y + h,           // y-end\n              xm = x + w / 2,       // x-middle\n              ym = y + h / 2;       // y-middle\n            \n            ctx.beginPath();\n            ctx.moveTo(x, ym);\n            ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);\n            ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);\n            ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);\n            ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);\n            //ctx.closePath(); // not used correctly, see comments (use to close off open path)\n            ctx.stroke();\n        }\n",
+        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var colorScale = true;\n        var enhancementLevel = 0;\n        var pgm = null;\n        var lastUpdate = new Date().getTime();\n        var maxDisplayTime = 10000;\n        var peakHoldTemp = 0;\n        var imageArray =  null;\n        var language = 0;\n        var imeasurementCount = 0;\n        var maxMeasurments = 5;\n        var warnings = [\n            [\"Person outside range\"     ,\"Person utanför räckhåll\"    ,\"Άτομο εκτός εμβέλειας\"   ,\"Persona fuera del alcance\"  ,\"Persona fuori portata\"  ,\"Person außerhalb der Reichweite\"  ,\"Personne hors de portée\"],\n            [\"Normal Temperature\"       ,\"Normal temperatur\"          ,\"Κανονική θερμοκρασία\"    ,\"Temperatura normal\"         ,\"Temperatura normale\"    ,\"Normale Temperatur\"               ,\"Température normale\"],\n            [\"High Temperature\"         ,\"Hög temperatur\"             ,\"Υψηλή θερμοκρασία\"       ,\"Alta temperatura\"           ,\"Alta temperatura\"       ,\"Hohe Temperatur\"                  ,\"Haute température\"],\n            [\"Temperature outside range\",\"Temperatur utanför räckhåll\",\"Θερμοκρασία εκτός εύρους\",\"Temperatura fuera del rango\",\"Temperatura fuori range\",\"Temperatur außerhalb des Bereichs\",\"Température hors plage\"] ];\n        var instructions = [\n            [\"Take off your glasses.\",  \"Please stand straight.\",     \"Align face in the circle.\"],\n            [\"Ta av dig dina glasögon.\",\"Vänligen stå rakt.\",         \"Rikta in ansiktet i cirkeln.\"],\n            [\"Βγάλτε τα γυαλιά σας.\",   \"Παρακαλώ σταθείτε ευθεία.\",  \"Ευθυγραμμίστε το πρόσωπο στον κύκλο.\"],\n            [\"Quítate las gafas.\",      \"Por favor, párese derecho.\", \"Alinear la cara en el círculo.\"],\n            [\"Togliti gli occhiali.\",   \"Per favore, stai dritto.\",   \"Allinea la faccia nel cerchio.\"],\n            [\"Nimm deine Brille ab.\",   \"Bitte stehen Sie gerade.\",   \"Richten Sie das Gesicht im Kreis aus.\"],\n            [\"Enlève tes lunettes.\",    \"Veuillez vous tenir droit.\", \"Alignez le visage dans le cercle.\"]];    \n        var aquireDataInfo = [\"Wait! Measuring...\",\"Vänta! Mätning...\",\"Περίμενε! Μέτρημα...\",\"¡Espere! Medición...\",\"Aspettare! Misurazione ...\",\"Warten! Messung...\",\"Attendez! Mesure...\"];\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n            $('#tempLegend').hide();\n            $('#tempBarPlot').hide();\n            $('#instruction1Id').hide();\n            $('#instruction2Id').hide();\n            $('#instruction3Id').hide();\n            $('#tempComment').hide();\n            setInterval(function()\n            {\n                if ((new Date().getTime() - lastUpdate) > maxDisplayTime)\n                {\n                    $('#tempComment').hide();\n                    clearImage();\n                    $('#tempLegend').hide();\n                    $('#tempBarPlot').hide();\n                    $('#instruction1Id').hide();\n                    $('#instruction2Id').hide();\n                    $('#instruction3Id').hide();\n                    peakHoldTemp = 0;\n                    imeasurementCount = 0;\n                }\n            }, 1000);\n\n        }\n        function onWebSocketOpen()\n        {\n        }\n        function onWebSocketClose()\n        {\n            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        \n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            if (device.imageData.value != null)\n            {\n                var style = 'font-size:200%; font-weight:200; color:#ffff00;';\n                if ((device.triggerMode.value == 0) || (device.triggerMode.value == 1))\n                {\n                    $('#instruction1Id').text(instructions[device.language.value][0]);\n                    $('#instruction2Id').text(instructions[device.language.value][1]);\n                    $('#instruction3Id').text(instructions[device.language.value][2]);\n                    $('#instruction1Id').show();\n                    $('#instruction2Id').show();\n                    $('#instruction3Id').show();\n                    $('#tempComment').show();\n                    $('#tempBarPlot').show();\n                    var tempBarConfig = \n                        {\n                            lolo            : device.bodyTemp.alarm.limits.lolo, \n                            low             : device.bodyTemp.alarm.limits.low, \n                            high            : device.bodyTemp.alarm.limits.high, \n                            hihi            : device.bodyTemp.alarm.limits.hihi, \n                            value           : device.bodyTemp.value, \n                            unit            : device.bodyTemp.unit, \n                            title           : '',\n                            textsize        : 20,\n                            label           : 'temp', \n                            lowColor        : '#0000ff', \n                            mediumColor     : '#00ff00',\n                            highColor       : '#ff0000', \n                            backgroundColor : '#000000', \n                            labelColor      : '#ffffff', \n                            gridColor       : '#000000',\n                            titleColor      : '#000000',\n                            height          : 125, \n                            htmlId          : 'tempBarPlot'\n                        };\n                    if (device.autoModeAction.value > 0)\n                    {\n                        if ((device.bodyTemp.alarm.limits.lolo <=  device.bodyTemp.value) && ( device.bodyTemp.value <= device.bodyTemp.alarm.limits.hihi))\n                        {\n                            if (peakHoldTemp < device.bodyTemp.value) peakHoldTemp = device.bodyTemp.value;\n                            imeasurementCount = imeasurementCount + 1;\n                        }\n                        if ((device.bodyTemp.alarm.limits.lolo <= peakHoldTemp) && (peakHoldTemp <= device.bodyTemp.alarm.limits.hihi))\n                        {\n                            var infoText = aquireDataInfo[device.language.value];\n                            if (peakHoldTemp < device.bodyTemp.alarm.limits.low)\n                            {\n                                tempBarConfig.titleColor = '#0000ff';\n                                if (imeasurementCount >= maxMeasurments)\n                                {\n                                    style = 'font-size:200%; font-weight:200; background-color:#0000ff;color:black;';\n                                    infoText = warnings[3][device.language.value];\n                                }\n                             }\n                            else\n                            {\n                                if (peakHoldTemp < device.bodyTemp.alarm.limits.high)\n                                {\n                                    tempBarConfig.titleColor = '#00ff00';\n                                    if (imeasurementCount >= maxMeasurments)\n                                    {\n                                        style = 'font-size:200%; font-weight:200; background-color:#00ff00;color:black;';\n                                        infoText = warnings[1][device.language.value];\n                                    }\n                                }\n                                else\n                                {\n                                    tempBarConfig.titleColor = '#ff0000';\n                                    if (imeasurementCount >= maxMeasurments)\n                                    {\n                                        style = 'font-size:200%; font-weight:200; background-color:#ff0000;color:black;';\n                                        infoText = warnings[2][device.language.value];\n                                    }\n                                }\n                            }\n                            $('#tempComment').attr(\"style\", style);\n                            $('#tempComment').text(infoText);\n                            \n                        }\n                        else\n                        {\n                            peakHoldTemp = 0;\n                            imeasurementCount = 0;\n                            style = 'font-size:200%; font-weight:200; color:#ff00ff;';\n                            $('#tempComment').attr(\"style\", style);\n                            $('#tempComment').text(warnings[3][device.language.value]);\n                            tempBarConfig.titleColor = '#000000';\n                        }\n                    }\n                    else\n                    {\n                        style = 'font-size:200%; font-weight:200; color:#ff00ff;';\n                         $('#tempComment').attr(\"style\", style);\n                        $('#tempComment').text(warnings[0][device.language.value]);\n                        peakHoldTemp = 0;\n                        imeasurementCount = 0;\n                        tempBarConfig.lowColor = '#000000';\n                        tempBarConfig.mediumColor = '#000000';\n                        tempBarConfig.highColor = '#000000';\n                        tempBarConfig.labelColor = '#000000';\n                        tempBarConfig.titleColor = '#000000';\n                    }\n                    tempBarConfig.title = peakHoldTemp.toString();\n                    setHorzBarWidget(tempBarConfig);\n                }\n                else\n                {\n                    $('#tempComment').attr(\"style\", style);\n                    $('#tempComment').text(\"Surface Temperature\");\n                }\n                lastUpdate = new Date().getTime();\n                pgm = JSON.parse(JSON.stringify(device.imageData.value));\n                imageArray = pgm.imageArray;\n                plotImage();\n            }\n        }\n        function plotImage()\n        {\n            $('#tempLegend').show();\n            var rgb = [];\n            var plow = (pgm.minval - 27315) / 100;\n            var phigh = (pgm.maxval - 27315) / 100;\n            var pdelta = phigh - plow;\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            var rectWidth  = Math.round(canvasWidth / pgm.ncols);\n            var rectHeight =  Math.round(canvasHeight / pgm.nrows);\n\n            for (var irow = 0; irow < pgm.nrows; ++irow)\n            {\n                for (var icol = 0; icol < pgm.ncols; ++icol)\n                {\n                    var intensity = imageArray[irow][icol] / 256.0;\n                    if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                    if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                    if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                    if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                    if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                    if (colorScale)\n                    {\n                        rgb = getRGB(intensity);\n                        rgb[0] = Math.floor(rgb[0]);\n                        rgb[1] = Math.floor(rgb[1]);\n                        rgb[2] = Math.floor(rgb[2]);\n                    }\n                    else\n                    {\n                        rgb[0] = Math.floor(255 * intensity);\n                        rgb[1] = Math.floor(255 * intensity);\n                        rgb[2] = Math.floor(255 * intensity);\n                    }\n                    canvasContext.fillStyle = 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                    var wx = Math.round(icol * canvasWidth / pgm.ncols);\n                    var hy =  Math.round(canvasHeight - (1 + irow) * canvasHeight / pgm.nrows) ;\n                    canvasContext.fillRect(wx, hy, rectWidth, rectHeight);\n                }    \n            }\n            if ((device.triggerMode.value == 0) || (device.triggerMode.value == 1)) \n            {\n                \n                canvasContext.strokeStyle = 'black';\n                var ellipseWidth =  Math.round(device.faceRegionWidth.value * canvasWidth / pgm.ncols);\n                var ellipseHeight =  Math.round(device.faceRegionHeight.value * canvasHeight / pgm.nrows);\n                \n                drawEllipse(canvasContext, (canvasWidth - ellipseWidth) / 2, (canvasHeight -  ellipseHeight)/ 2, ellipseWidth, ellipseHeight);\n                drawEllipse(canvasContext, (canvasWidth - ellipseWidth - 3) / 2, (canvasHeight -  ellipseHeight - 3)/ 2, ellipseWidth + 3, ellipseHeight + 3);\n                drawEllipse(canvasContext, (canvasWidth - ellipseWidth - 6) / 2, (canvasHeight -  ellipseHeight - 6)/ 2, ellipseWidth + 6, ellipseHeight + 6);\n               \n                canvasContext.strokeStyle = '#00ff00'\n                if (device.autoModeAction.value == 0) canvasContext.strokeStyle = '#ff0000';\n                var faceEllipseWidth  =  device.faceLocation.value[1][1] -  device.faceLocation.value[0][1];\n                var faceEllipseHeight =  device.faceLocation.value[1][0] -  device.faceLocation.value[0][0] ;\n                var faceEllipseCol    = (device.faceLocation.value[1][1] +  device.faceLocation.value[0][1]) / 2 ;\n                var faceEllipseRow    = (device.faceLocation.value[1][0] +  device.faceLocation.value[0][0]) / 2 ;\n                faceEllipseCol = faceEllipseCol - faceEllipseWidth  / 2.0;\n                faceEllipseRow = pgm.nrows - (faceEllipseRow + faceEllipseHeight / 2.0);\n                faceEllipseWidth  = Math.round( faceEllipseWidth  * canvasWidth  / pgm.ncols);\n                faceEllipseHeight = Math.round( faceEllipseHeight * canvasHeight / pgm.nrows);\n                faceEllipseCol    = Math.round( faceEllipseCol    * canvasWidth  / pgm.ncols);\n                faceEllipseRow    = Math.round( faceEllipseRow    * canvasHeight / pgm.nrows);\n                drawEllipse(canvasContext, faceEllipseCol, faceEllipseRow, faceEllipseWidth, faceEllipseHeight);\n\n\n                if (device.autoModeAction.value > 0)\n                {\n                    canvasContext.fillStyle = '#000000';\n                    for (var ipt = 0; ipt < 2; ++ipt)\n                    {\n                        var wx =  Math.round(device.eyeLocation.value[ipt][1] * canvasWidth / pgm.ncols);\n                        var hy =  Math.round(canvasHeight - (1 + device.eyeLocation.value[ipt][0]) * canvasHeight / pgm.nrows) ;\n//                        canvasContext.fillRect(wx - rectWidth, hy - rectHeight, 3 * rectWidth, 3 * rectHeight);\n                        canvasContext.strokeStyle = '#000000'\n                        for (var idraw = 0; idraw < 3; ++idraw)\n                        {\n                            canvasContext.beginPath();\n                            canvasContext.arc(wx + 0.5 * rectWidth, hy + 0.5 * rectHeight,  rectWidth + idraw, 0, 6.2831854);\n                            canvasContext.stroke();\n                        }\n                    }\n                }\n\n            }\n        }\n        function getRGB(intensity)\n        {\n          var rgb = [0,0,0];\n//plasma\n          var rgbCoeff = [\n              [  48.6, 349.0,    5.72, -172.0],\n              [-164.0, 705.0, -667.0 ,  379.0],\n              [ 135.0, 332.0, -976.0,   536.0]];\n          var intensityStart = [0.0, 0.3176, 0.0];\n//viridis\n/*\n          var rgbCoeff = [\n              [  72.7, 161.0, -928.0,  962.0],\n              [-0.316, 334.0,  -62.8 , -35.3],\n              [  89.3, 296.0, -379.0,  -11.5]];\n          var intensityStart = [0.0, 0.0117, 0.0];\n*/\n//inferno\n/* \n          var rgbCoeff = [\n              [   0,0,  343.0,  264.0, -376.0],\n              [   5.0,  -69.7,  320.0,   -1.1],\n              [   0.0, 1193.0,-2957.0, 1939.0]];\n          var intensityStart = [0.0, 0.0, 0.0];\n*/\n          var power = [1.0, 0.0, 0.0, 0.0];\n          for (var ii = 1; ii < 4; ++ii) power[ii] = power[ii - 1] * intensity;\n          for (var irgb = 0; irgb < 3; ++irgb)\n          {\n              if (intensity >= intensityStart[irgb])\n              {\n                  for (var ipow = 0; ipow < 4; ++ipow)\n                  {\n                      rgb[irgb] = rgb[irgb] + rgbCoeff[irgb][ipow] * power[ipow];\n                  }\n              }\n              if (rgb[irgb] <   0) rgb[irgb] =   0;\n              if (rgb[irgb] > 255) rgb[irgb] = 255;\n         }\n          return rgb;\n        }\n        function getRGBRainBow(intensity)\n        {\n          var rgb = [0,0,0];\n          if ( (0 <= intensity) && (intensity <= 0.25) )\n          {\n            rgb[0] = 0;\n            rgb[1] = Math.floor(255 * intensity * 4);    \n            rgb[2] = 255;\n          }\n          if ( (0.25 < intensity) && (intensity <= 0.50) )\n          {\n            rgb[0] = 0;\n            rgb[1] = 255;    \n            rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n          }\n          if ( (0.50 < intensity) && (intensity <= 0.75) )\n          {\n            rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n            rgb[1] = 255;    \n            rgb[2] = 0;\n          }\n          if ( (0.75 < intensity) && (intensity <= 1.0) )\n          {\n            rgb[0] = 255;\n            rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n            rgb[2] = 0;\n          }\n          return rgb;\n        }\n        function clearImage()\n        {\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);        \n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var pbox = 0.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(' ');\n            } \n        }\n        function drawEllipse(ctx, x, y, w, h) \n        {\n            var kappa = .5522848,\n              ox = (w / 2) * kappa, // control point offset horizontal\n              oy = (h / 2) * kappa, // control point offset vertical\n              xe = x + w,           // x-end\n              ye = y + h,           // y-end\n              xm = x + w / 2,       // x-middle\n              ym = y + h / 2;       // y-middle\n            \n            ctx.beginPath();\n            ctx.moveTo(x, ym);\n            ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);\n            ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);\n            ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);\n            ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);\n            //ctx.closePath(); // not used correctly, see comments (use to close off open path)\n            ctx.stroke();\n        }\n",
         "output": "str",
         "x": 630,
         "y": 880,
@@ -4237,7 +3739,7 @@
         "fieldType": "msg",
         "format": "css",
         "syntax": "mustache",
-        "template": "        :root \n        {\n          --color1: #415c71;\n          --color2: #547792;\n          --color3: #9eb5c7;\n          --color4: #c6c2bb;\n          --color5: #fdc300;\n          --big-text-size :300%;\n          --bold-text :900;\n          --vert-pad : 25px;\n          --horz-pad : 25px;\n        }\n        body \n        {\n          background-color: black !important;\n          padding-left:25px;\n          padding-right:25px;\n        }\n        \n        img \n        {\n          object-fit: contain;\n        }\n        a\n        {\n            color: white;\n        }\n        a:visited \n        { \n            color: var(--white);\n        }\n        a:hover \n        { \n            color: var(--color5);\n        }\n\n        .jumbotron \n        {\n          background-color: var(--color2) !important;\n          color: white;\n          padding-top:25px;\n          padding-bottom:25px;\n        }\n        .jumbotron-title\n        {\n          color:var(--color5);\n        }\n        .jumbotron-button\n        {\n          color: white;\n          background-color: var(--color1);\n       }\n        .card\n        {\n          background-color: var(--color2) !important;\n          text-align: center;\n        }\n        .card-body\n        {\n          background-color: var(--color3);;\n        }\n        .card-button\n        {\n          color: var(--color5) !important;\n          background-color: var(--color1) !important;\n          font-weight: bold;\n        }\n        .card-title\n        {\n          color: var(--color5);\n          font-weight: var(--bold-text);\n          font-size: var(--big-text-size);\n         }\n        .card-text\n        {\n          color: white;\n          text-align: left;\n          font-size: var(--big-text-size);\n        }\n        .danger-card\n        {\n          background-color: yellow !important;\n          text-align: center;\n        }\n        .danger-card-body\n        {\n          background-color: yellow;\n        }\n        .danger-card-button\n        {\n          color: yellow !important;\n          background-color: red !important;\n          font-weight: bold;\n        }\n        .danger-card-title\n        {\n          color: red;\n          font-weight: var(--bold-text);\n          font-size: var(--big-text-size);\n         }\n        .danger-card-text\n        {\n          color: white;\n          text-align: left;\n          font-size: var(--big-text-size);\n        }\n        .tableHeading\n        {\n          color:var(--container-title-color);\n        }\n        .tableText\n        {\n          color:var(--container-text-color);\n          font-size: var(--big-text-size);\n        }\n       .vert-pad\n        {\n            padding-top:var(--vert-pad);;\n            padding-bottom:var(--vert-pad);;\n        }\n        .horz-pad\n        {\n            padding-left:var(--horz-pad);;\n            padding-right:var(--horz-pad);;\n        }\n        .big-text\n        {\n            font-size: var(--big-text-size);\n        }\n        .bold-text\n        {\n            font-weight: var(--bold-text);\n        }\n        .ui-slider\n        {\n            height: 90px;\n            background-color: var(--color1) !important;\n        }\n        .ui-slider .ui-slider-handle \n        {\n            height: 100px;\n            width: 100px;\n            background-color: var(--color5) !important;\n        }\n        .ui-dialog-titlebar-close \n        {\n            visibility: hidden;\n        }\n",
+        "template": "        :root \n        {\n          --color1: #415c71;\n          --color2: #547792;\n          --color3: #9eb5c7;\n          --color4: #c6c2bb;\n          --color5: #fdc300;\n          --big-text-size :300%;\n          --bold-text :900;\n          --vert-pad : 25px;\n          --horz-pad : 25px;\n        }\n        html,body\n        {\n            width: 100%;\n            height: 100%;\n            margin: 0; /* Space from this element (entire page) and others*/\n            padding: 0; /*space from content and border*/\n            border: solid blue;\n            border-width: thick;\n            overflow:hidden;\n            display:block;\n            background-color: black !important;\n        }\n        img \n        {\n          object-fit: contain;\n        }\n        a\n        {\n            color: white;\n        }\n        a:visited \n        { \n            color: var(--white);\n        }\n        a:hover \n        { \n            color: var(--color5);\n        }\n\n        .jumbotron \n        {\n          background-color: var(--color2) !important;\n          color: white;\n          padding-top:25px;\n          padding-bottom:25px;\n        }\n        .jumbotron-title\n        {\n          color:var(--color5);\n        }\n        .jumbotron-button\n        {\n          color: white;\n          background-color: var(--color1);\n       }\n        .card\n        {\n          background-color: var(--color2) !important;\n          text-align: center;\n        }\n        .card-body\n        {\n          background-color: var(--color3);;\n        }\n        .card-button\n        {\n          color: var(--color5) !important;\n          background-color: var(--color1) !important;\n          font-weight: bold;\n        }\n        .card-title\n        {\n          color: var(--color5);\n          font-weight: var(--bold-text);\n          font-size: var(--big-text-size);\n         }\n        .card-text\n        {\n          color: white;\n          text-align: left;\n          font-size: var(--big-text-size);\n        }\n        .danger-card\n        {\n          background-color: yellow !important;\n          text-align: center;\n        }\n        .danger-card-body\n        {\n          background-color: yellow;\n        }\n        .danger-card-button\n        {\n          color: yellow !important;\n          background-color: red !important;\n          font-weight: bold;\n        }\n        .danger-card-title\n        {\n          color: red;\n          font-weight: var(--bold-text);\n          font-size: var(--big-text-size);\n         }\n        .danger-card-text\n        {\n          color: white;\n          text-align: left;\n          font-size: var(--big-text-size);\n        }\n        .tableHeading\n        {\n          color:var(--container-title-color);\n        }\n        .tableText\n        {\n          color:var(--container-text-color);\n          font-size: var(--big-text-size);\n        }\n       .vert-pad\n        {\n            padding-top:var(--vert-pad);;\n            padding-bottom:var(--vert-pad);;\n        }\n        .horz-pad\n        {\n            padding-left:var(--horz-pad);;\n            padding-right:var(--horz-pad);;\n        }\n        .big-text\n        {\n            font-size: var(--big-text-size);\n        }\n        .bold-text\n        {\n            font-weight: var(--bold-text);\n        }\n        .ui-slider\n        {\n            height: 90px;\n            background-color: var(--color1) !important;\n        }\n        .ui-slider .ui-slider-handle \n        {\n            height: 100px;\n            width: 100px;\n            background-color: var(--color5) !important;\n        }\n        .ui-dialog-titlebar-close \n        {\n            visibility: hidden;\n        }\n",
         "output": "str",
         "x": 1130,
         "y": 920,
@@ -4310,7 +3812,7 @@
         "fieldType": "msg",
         "format": "html",
         "syntax": "mustache",
-        "template": "<!-- Dashboard HTML -->\n                <div align=\"center\" style='padding-top: 1px; width: 100%; overflow-x: hidden;'>\n                    <table width=440px>\n                        <tr>\n                            <td  width=100% align='center'>\n                                <span style='color:magenta;font-size:150%' id='instruction1Id'></span>\n                            </td>\n                        </tr>\n                        <tr>\n                            <td  width=100% align='center'>\n                                <span style='color:yellow;font-size:150%' id='instruction2Id'></span>\n                            </td>\n                        </tr>\n                        <tr>\n                            <td  width=100% align='center'>\n                                <span style='color:yellow;font-size:150%' id='instruction3Id'></span>\n                            </td>\n                        </tr>\n                        <tr>\n                            <td width='100%' align='center' style='padding-bottom: 10px;'>\n                                <div id=\"tempBarPlot\" width='100%' ></div>\n                            </td>\n                        </tr>\n                        <tr>\n                            <td width='90%' align='center'>\n                                <span  class='btn btn-block' style='' id='tempComment'></span>\n                            </td>\n                        </tr>\n                        <tr>\n                            <td width=100%>\n                                <div id=\"wrapper\" width=\"335\" height=\"440\" style=\"text-align: center; padding-top: 10px;\" >\n                                    <canvas id=\"flirCanvas\" width=\"300\" height=\"400\" style=\"border:1px solid #000000;\"></canvas>\n                                </div>\n                            </td>\n                        </tr>\n                    </table>\n                </div>\n",
+        "template": "<!-- Dashboard HTML -->\n                <div align=\"center\" style='padding-top: 1px; width: 100%; overflow-x: hidden;'>\n                    <table width=440px>\n                        <tr>\n                            <td  width=100% align='center'>\n                                <span style='color:magenta;font-size:150%' id='instruction1Id'></span>\n                            </td>\n                        </tr>\n                        <tr>\n                            <td  width=100% align='center'>\n                                <span style='color:yellow;font-size:150%' id='instruction2Id'></span>\n                            </td>\n                        </tr>\n                        <tr>\n                            <td  width=100% align='center'>\n                                <span style='color:yellow;font-size:150%' id='instruction3Id'></span>\n                            </td>\n                        </tr>\n                        <tr>\n                            <td width='100%' align='center' style='padding-bottom: 10px;'>\n                                <div id=\"tempBarPlot\" width='100%' ></div>\n                            </td>\n                        </tr>\n                        <tr>\n                            <td width='90%' align='center'>\n                                <span  class='btn btn-block' style='' id='tempComment'></span>\n                            </td>\n                        </tr>\n                        <tr>\n                            <td width=100%>\n                                <div id=\"wrapper\" width=\"335\" height=\"440\" style=\"text-align: center; padding-top: 10px;\" >\n                                    <canvas id=\"flirCanvas\" width=\"300\" height=\"400\" style=\"border:1px solid #000000;\"></canvas>\n                                </div>\n                            </td>\n                        </tr>\n                        <tr>\n                            <td width=100% align='center'>\n                                <img src=\"/img/BlinkyLogo-Text.png\" height=\"35px\"/>\n                            </td>\n                        </tr>\n                    </table>\n                </div>\n",
         "output": "str",
         "x": 970,
         "y": 880,
@@ -4352,30 +3854,6 @@
                 "7efa3b18.d187d4"
             ]
         ]
-    },
-    {
-        "id": "58b8d1f6.bdc9c",
-        "type": "serial in",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "serial": "81c09030.dd70d",
-        "x": 150,
-        "y": 1820,
-        "wires": [
-            [
-                "a179fc1c.4fe37"
-            ]
-        ]
-    },
-    {
-        "id": "2fe75b8.09b33a4",
-        "type": "serial out",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "serial": "81c09030.dd70d",
-        "x": 840,
-        "y": 1880,
-        "wires": []
     },
     {
         "id": "1b0c5934.6f9c97",
@@ -4747,6 +4225,25 @@
             [
                 "d15ddcdf.7826a"
             ]
+        ]
+    },
+    {
+        "id": "fa9ce40f.c3e948",
+        "type": "exec",
+        "z": "26093b29.39d8d4",
+        "command": "sudo reboot",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "",
+        "x": 930,
+        "y": 300,
+        "wires": [
+            [],
+            [],
+            []
         ]
     }
 ]
