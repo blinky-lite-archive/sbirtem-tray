@@ -3674,155 +3674,6 @@
         "wires": []
     },
     {
-        "id": "88dd1a6c.d8ae68",
-        "type": "template",
-        "z": "c4285970.3276d8",
-        "name": "script.global",
-        "field": "payload.script.global",
-        "fieldType": "msg",
-        "format": "javascript",
-        "syntax": "mustache",
-        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var colorScale = true;\n        var enhancementLevel = 0;\n        var pgm = null;\n        var lastUpdate = new Date().getTime();\n        var maxDisplayTime = 10000;\n        var peakHoldTemp = 0;\n        var imageArray =  null;\n        var language = 0;\n        var imeasurementCount = 0;\n        var maxMeasurments = 5;\n        var warnings = [\n            [\"Person outside range\"     ,\"Person utanför räckhåll\"    ,\"Άτομο εκτός εμβέλειας\"   ,\"Persona fuera del alcance\"  ,\"Persona fuori portata\"  ,\"Person außerhalb der Reichweite\"  ,\"Personne hors de portée\"],\n            [\"Normal Temperature\"       ,\"Normal temperatur\"          ,\"Κανονική θερμοκρασία\"    ,\"Temperatura normal\"         ,\"Temperatura normale\"    ,\"Normale Temperatur\"               ,\"Température normale\"],\n            [\"High Temperature\"         ,\"Hög temperatur\"             ,\"Υψηλή θερμοκρασία\"       ,\"Alta temperatura\"           ,\"Alta temperatura\"       ,\"Hohe Temperatur\"                  ,\"Haute température\"],\n            [\"Temperature outside range\",\"Temperatur utanför räckhåll\",\"Θερμοκρασία εκτός εύρους\",\"Temperatura fuera del rango\",\"Temperatura fuori range\",\"Temperatur außerhalb des Bereichs\",\"Température hors plage\"] ];\n        var instructions = [\n            [\"Take off your glasses.\",  \"Please stand straight.\",     \"Align face in the circle.\"],\n            [\"Ta av dig dina glasögon.\",\"Vänligen stå rakt.\",         \"Rikta in ansiktet i cirkeln.\"],\n            [\"Βγάλτε τα γυαλιά σας.\",   \"Παρακαλώ σταθείτε ευθεία.\",  \"Ευθυγραμμίστε το πρόσωπο στον κύκλο.\"],\n            [\"Quítate las gafas.\",      \"Por favor, párese derecho.\", \"Alinear la cara en el círculo.\"],\n            [\"Togliti gli occhiali.\",   \"Per favore, stai dritto.\",   \"Allinea la faccia nel cerchio.\"],\n            [\"Nimm deine Brille ab.\",   \"Bitte stehen Sie gerade.\",   \"Richten Sie das Gesicht im Kreis aus.\"],\n            [\"Enlève tes lunettes.\",    \"Veuillez vous tenir droit.\", \"Alignez le visage dans le cercle.\"]];    \n        var aquireDataInfo = [\"Wait! Measuring...\",\"Vänta! Mätning...\",\"Περίμενε! Μέτρημα...\",\"¡Espere! Medición...\",\"Aspettare! Misurazione ...\",\"Warten! Messung...\",\"Attendez! Mesure...\"];\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n            $('#tempLegend').hide();\n            $('#tempBarPlot').hide();\n            $('#instruction1Id').hide();\n            $('#instruction2Id').hide();\n            $('#instruction3Id').hide();\n            $('#tempComment').hide();\n            setInterval(function()\n            {\n                if ((new Date().getTime() - lastUpdate) > maxDisplayTime)\n                {\n                    $('#tempComment').hide();\n                    clearImage();\n                    $('#tempLegend').hide();\n                    $('#tempBarPlot').hide();\n                    $('#instruction1Id').hide();\n                    $('#instruction2Id').hide();\n                    $('#instruction3Id').hide();\n                    peakHoldTemp = 0;\n                    imeasurementCount = 0;\n                }\n            }, 1000);\n\n        }\n        function onWebSocketOpen()\n        {\n        }\n        function onWebSocketClose()\n        {\n            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        \n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            if (device.imageData.value != null)\n            {\n                var style = 'font-size:200%; font-weight:200; color:#ffff00;';\n                if ((device.triggerMode.value == 0) || (device.triggerMode.value == 1))\n                {\n                    $('#instruction1Id').text(instructions[device.language.value][0]);\n                    $('#instruction2Id').text(instructions[device.language.value][1]);\n                    $('#instruction3Id').text(instructions[device.language.value][2]);\n                    $('#instruction1Id').show();\n                    $('#instruction2Id').show();\n                    $('#instruction3Id').show();\n                    $('#tempComment').show();\n                    $('#tempBarPlot').show();\n                    var tempBarConfig = \n                        {\n                            lolo            : device.bodyTemp.alarm.limits.lolo, \n                            low             : device.bodyTemp.alarm.limits.low, \n                            high            : device.bodyTemp.alarm.limits.high, \n                            hihi            : device.bodyTemp.alarm.limits.hihi, \n                            value           : device.bodyTemp.value, \n                            unit            : device.bodyTemp.unit, \n                            title           : '',\n                            textsize        : 20,\n                            label           : 'temp', \n                            lowColor        : '#0000ff', \n                            mediumColor     : '#00ff00',\n                            highColor       : '#ff0000', \n                            backgroundColor : '#000000', \n                            labelColor      : '#ffffff', \n                            gridColor       : '#000000',\n                            titleColor      : '#000000',\n                            height          : 125, \n                            htmlId          : 'tempBarPlot'\n                        };\n                    if (device.autoModeAction.value > 0)\n                    {\n                        if ((device.bodyTemp.alarm.limits.lolo <=  device.bodyTemp.value) && ( device.bodyTemp.value <= device.bodyTemp.alarm.limits.hihi))\n                        {\n                            if (peakHoldTemp < device.bodyTemp.value) peakHoldTemp = device.bodyTemp.value;\n                            imeasurementCount = imeasurementCount + 1;\n                        }\n                        if ((device.bodyTemp.alarm.limits.lolo <= peakHoldTemp) && (peakHoldTemp <= device.bodyTemp.alarm.limits.hihi))\n                        {\n                            var infoText = aquireDataInfo[device.language.value];\n                            if (peakHoldTemp < device.bodyTemp.alarm.limits.low)\n                            {\n                                tempBarConfig.titleColor = '#0000ff';\n                                if (imeasurementCount >= maxMeasurments)\n                                {\n                                    style = 'font-size:200%; font-weight:200; background-color:#0000ff;color:black;';\n                                    infoText = warnings[3][device.language.value];\n                                }\n                             }\n                            else\n                            {\n                                if (peakHoldTemp < device.bodyTemp.alarm.limits.high)\n                                {\n                                    tempBarConfig.titleColor = '#00ff00';\n                                    if (imeasurementCount >= maxMeasurments)\n                                    {\n                                        style = 'font-size:200%; font-weight:200; background-color:#00ff00;color:black;';\n                                        infoText = warnings[1][device.language.value];\n                                    }\n                                }\n                                else\n                                {\n                                    tempBarConfig.titleColor = '#ff0000';\n                                    if (imeasurementCount >= maxMeasurments)\n                                    {\n                                        style = 'font-size:200%; font-weight:200; background-color:#ff0000;color:black;';\n                                        infoText = warnings[2][device.language.value];\n                                    }\n                                }\n                            }\n                            $('#tempComment').attr(\"style\", style);\n                            $('#tempComment').text(infoText);\n                            \n                        }\n                        else\n                        {\n                            peakHoldTemp = 0;\n                            imeasurementCount = 0;\n                            style = 'font-size:200%; font-weight:200; color:#ff00ff;';\n                            $('#tempComment').attr(\"style\", style);\n                            $('#tempComment').text(warnings[3][device.language.value]);\n                            tempBarConfig.titleColor = '#000000';\n                        }\n                    }\n                    else\n                    {\n                        style = 'font-size:200%; font-weight:200; color:#ff00ff;';\n                         $('#tempComment').attr(\"style\", style);\n                        $('#tempComment').text(warnings[0][device.language.value]);\n                        peakHoldTemp = 0;\n                        imeasurementCount = 0;\n                        tempBarConfig.lowColor = '#000000';\n                        tempBarConfig.mediumColor = '#000000';\n                        tempBarConfig.highColor = '#000000';\n                        tempBarConfig.labelColor = '#000000';\n                        tempBarConfig.titleColor = '#000000';\n                    }\n                    tempBarConfig.title = peakHoldTemp.toString();\n                    setHorzBarWidget(tempBarConfig);\n                }\n                else\n                {\n                    $('#tempComment').attr(\"style\", style);\n                    $('#tempComment').text(\"Surface Temperature\");\n                }\n                lastUpdate = new Date().getTime();\n                pgm = JSON.parse(JSON.stringify(device.imageData.value));\n                imageArray = pgm.imageArray;\n                plotImage();\n            }\n        }\n        function plotImage()\n        {\n            $('#tempLegend').show();\n            var rgb = [];\n            var plow = (pgm.minval - 27315) / 100;\n            var phigh = (pgm.maxval - 27315) / 100;\n            var pdelta = phigh - plow;\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            var rectWidth  = Math.round(canvasWidth / pgm.ncols);\n            var rectHeight =  Math.round(canvasHeight / pgm.nrows);\n\n            for (var irow = 0; irow < pgm.nrows; ++irow)\n            {\n                for (var icol = 0; icol < pgm.ncols; ++icol)\n                {\n                    var intensity = imageArray[irow][icol] / 256.0;\n                    if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                    if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                    if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                    if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                    if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                    if (colorScale)\n                    {\n                        rgb = getRGB(intensity);\n                        rgb[0] = Math.floor(rgb[0]);\n                        rgb[1] = Math.floor(rgb[1]);\n                        rgb[2] = Math.floor(rgb[2]);\n                    }\n                    else\n                    {\n                        rgb[0] = Math.floor(255 * intensity);\n                        rgb[1] = Math.floor(255 * intensity);\n                        rgb[2] = Math.floor(255 * intensity);\n                    }\n                    canvasContext.fillStyle = 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                    var wx = Math.round(icol * canvasWidth / pgm.ncols);\n                    var hy =  Math.round(canvasHeight - (1 + irow) * canvasHeight / pgm.nrows) ;\n                    canvasContext.fillRect(wx, hy, rectWidth, rectHeight);\n                }    \n            }\n            if ((device.triggerMode.value == 0) || (device.triggerMode.value == 1)) \n            {\n                \n                canvasContext.strokeStyle = 'black';\n                var ellipseWidth =  Math.round(device.faceRegionWidth.value * canvasWidth / pgm.ncols);\n                var ellipseHeight =  Math.round(device.faceRegionHeight.value * canvasHeight / pgm.nrows);\n                \n                drawEllipse(canvasContext, (canvasWidth - ellipseWidth) / 2, (canvasHeight -  ellipseHeight)/ 2, ellipseWidth, ellipseHeight);\n                drawEllipse(canvasContext, (canvasWidth - ellipseWidth - 3) / 2, (canvasHeight -  ellipseHeight - 3)/ 2, ellipseWidth + 3, ellipseHeight + 3);\n                drawEllipse(canvasContext, (canvasWidth - ellipseWidth - 6) / 2, (canvasHeight -  ellipseHeight - 6)/ 2, ellipseWidth + 6, ellipseHeight + 6);\n               \n                canvasContext.strokeStyle = '#00ff00'\n                if (device.autoModeAction.value == 0) canvasContext.strokeStyle = '#ff0000';\n                var faceEllipseWidth  =  device.faceLocation.value[1][1] -  device.faceLocation.value[0][1];\n                var faceEllipseHeight =  device.faceLocation.value[1][0] -  device.faceLocation.value[0][0] ;\n                var faceEllipseCol    = (device.faceLocation.value[1][1] +  device.faceLocation.value[0][1]) / 2 ;\n                var faceEllipseRow    = (device.faceLocation.value[1][0] +  device.faceLocation.value[0][0]) / 2 ;\n                faceEllipseCol = faceEllipseCol - faceEllipseWidth  / 2.0;\n                faceEllipseRow = pgm.nrows - (faceEllipseRow + faceEllipseHeight / 2.0);\n                faceEllipseWidth  = Math.round( faceEllipseWidth  * canvasWidth  / pgm.ncols);\n                faceEllipseHeight = Math.round( faceEllipseHeight * canvasHeight / pgm.nrows);\n                faceEllipseCol    = Math.round( faceEllipseCol    * canvasWidth  / pgm.ncols);\n                faceEllipseRow    = Math.round( faceEllipseRow    * canvasHeight / pgm.nrows);\n                drawEllipse(canvasContext, faceEllipseCol, faceEllipseRow, faceEllipseWidth, faceEllipseHeight);\n\n\n                if (device.autoModeAction.value > 0)\n                {\n                    canvasContext.fillStyle = '#000000';\n                    for (var ipt = 0; ipt < 2; ++ipt)\n                    {\n                        var wx =  Math.round(device.eyeLocation.value[ipt][1] * canvasWidth / pgm.ncols);\n                        var hy =  Math.round(canvasHeight - (1 + device.eyeLocation.value[ipt][0]) * canvasHeight / pgm.nrows) ;\n//                        canvasContext.fillRect(wx - rectWidth, hy - rectHeight, 3 * rectWidth, 3 * rectHeight);\n                        canvasContext.strokeStyle = '#000000'\n                        for (var idraw = 0; idraw < 3; ++idraw)\n                        {\n                            canvasContext.beginPath();\n                            canvasContext.arc(wx + 0.5 * rectWidth, hy + 0.5 * rectHeight,  rectWidth + idraw, 0, 6.2831854);\n                            canvasContext.stroke();\n                        }\n                    }\n                }\n\n            }\n        }\n        function getRGB(intensity)\n        {\n          var rgb = [0,0,0];\n//plasma\n          var rgbCoeff = [\n              [  48.6, 349.0,    5.72, -172.0],\n              [-164.0, 705.0, -667.0 ,  379.0],\n              [ 135.0, 332.0, -976.0,   536.0]];\n          var intensityStart = [0.0, 0.3176, 0.0];\n//viridis\n/*\n          var rgbCoeff = [\n              [  72.7, 161.0, -928.0,  962.0],\n              [-0.316, 334.0,  -62.8 , -35.3],\n              [  89.3, 296.0, -379.0,  -11.5]];\n          var intensityStart = [0.0, 0.0117, 0.0];\n*/\n//inferno\n/* \n          var rgbCoeff = [\n              [   0,0,  343.0,  264.0, -376.0],\n              [   5.0,  -69.7,  320.0,   -1.1],\n              [   0.0, 1193.0,-2957.0, 1939.0]];\n          var intensityStart = [0.0, 0.0, 0.0];\n*/\n          var power = [1.0, 0.0, 0.0, 0.0];\n          for (var ii = 1; ii < 4; ++ii) power[ii] = power[ii - 1] * intensity;\n          for (var irgb = 0; irgb < 3; ++irgb)\n          {\n              if (intensity >= intensityStart[irgb])\n              {\n                  for (var ipow = 0; ipow < 4; ++ipow)\n                  {\n                      rgb[irgb] = rgb[irgb] + rgbCoeff[irgb][ipow] * power[ipow];\n                  }\n              }\n              if (rgb[irgb] <   0) rgb[irgb] =   0;\n              if (rgb[irgb] > 255) rgb[irgb] = 255;\n         }\n          return rgb;\n        }\n        function getRGBRainBow(intensity)\n        {\n          var rgb = [0,0,0];\n          if ( (0 <= intensity) && (intensity <= 0.25) )\n          {\n            rgb[0] = 0;\n            rgb[1] = Math.floor(255 * intensity * 4);    \n            rgb[2] = 255;\n          }\n          if ( (0.25 < intensity) && (intensity <= 0.50) )\n          {\n            rgb[0] = 0;\n            rgb[1] = 255;    \n            rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n          }\n          if ( (0.50 < intensity) && (intensity <= 0.75) )\n          {\n            rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n            rgb[1] = 255;    \n            rgb[2] = 0;\n          }\n          if ( (0.75 < intensity) && (intensity <= 1.0) )\n          {\n            rgb[0] = 255;\n            rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n            rgb[2] = 0;\n          }\n          return rgb;\n        }\n        function clearImage()\n        {\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);        \n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var pbox = 0.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(' ');\n            } \n        }\n        function drawEllipse(ctx, x, y, w, h) \n        {\n            var kappa = .5522848,\n              ox = (w / 2) * kappa, // control point offset horizontal\n              oy = (h / 2) * kappa, // control point offset vertical\n              xe = x + w,           // x-end\n              ye = y + h,           // y-end\n              xm = x + w / 2,       // x-middle\n              ym = y + h / 2;       // y-middle\n            \n            ctx.beginPath();\n            ctx.moveTo(x, ym);\n            ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);\n            ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);\n            ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);\n            ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);\n            //ctx.closePath(); // not used correctly, see comments (use to close off open path)\n            ctx.stroke();\n        }\n",
-        "output": "str",
-        "x": 630,
-        "y": 880,
-        "wires": [
-            [
-                "5673473c.72e0d8"
-            ]
-        ]
-    },
-    {
-        "id": "fe677dd1.0ed15",
-        "type": "template",
-        "z": "c4285970.3276d8",
-        "name": "javascript",
-        "field": "payload.javascript",
-        "fieldType": "msg",
-        "format": "javascript",
-        "syntax": "mustache",
-        "template": "{{{payload.script.global}}}\n{{{payload.script.horzbarWidget}}}\n{{{payload.script.editDevice}}}\n",
-        "output": "str",
-        "x": 620,
-        "y": 960,
-        "wires": [
-            [
-                "6540bbf8.883f34"
-            ]
-        ]
-    },
-    {
-        "id": "e95f9d3f.e2242",
-        "type": "template",
-        "z": "c4285970.3276d8",
-        "name": "body",
-        "field": "payload.body",
-        "fieldType": "msg",
-        "format": "html",
-        "syntax": "mustache",
-        "template": "    <div width=\"100%\">\n        <div class='row' style='padding-bottom: 10px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.display}}}\n            </div>\n        </div>\n    </div>\n",
-        "output": "str",
-        "x": 950,
-        "y": 920,
-        "wires": [
-            [
-                "a43315f0.373978"
-            ]
-        ]
-    },
-    {
-        "id": "a43315f0.373978",
-        "type": "template",
-        "z": "c4285970.3276d8",
-        "name": "CSS",
-        "field": "payload.css",
-        "fieldType": "msg",
-        "format": "css",
-        "syntax": "mustache",
-        "template": "        :root \n        {\n          --color1: #415c71;\n          --color2: #547792;\n          --color3: #9eb5c7;\n          --color4: #c6c2bb;\n          --color5: #fdc300;\n          --big-text-size :300%;\n          --bold-text :900;\n          --vert-pad : 25px;\n          --horz-pad : 25px;\n        }\n        html,body\n        {\n            width: 100%;\n            height: 100%;\n            margin: 0; /* Space from this element (entire page) and others*/\n            padding: 0; /*space from content and border*/\n            border: solid blue;\n            border-width: thick;\n            overflow:hidden;\n            display:block;\n            background-color: black !important;\n        }\n        img \n        {\n          object-fit: contain;\n        }\n        a\n        {\n            color: white;\n        }\n        a:visited \n        { \n            color: var(--white);\n        }\n        a:hover \n        { \n            color: var(--color5);\n        }\n\n        .jumbotron \n        {\n          background-color: var(--color2) !important;\n          color: white;\n          padding-top:25px;\n          padding-bottom:25px;\n        }\n        .jumbotron-title\n        {\n          color:var(--color5);\n        }\n        .jumbotron-button\n        {\n          color: white;\n          background-color: var(--color1);\n       }\n        .card\n        {\n          background-color: var(--color2) !important;\n          text-align: center;\n        }\n        .card-body\n        {\n          background-color: var(--color3);;\n        }\n        .card-button\n        {\n          color: var(--color5) !important;\n          background-color: var(--color1) !important;\n          font-weight: bold;\n        }\n        .card-title\n        {\n          color: var(--color5);\n          font-weight: var(--bold-text);\n          font-size: var(--big-text-size);\n         }\n        .card-text\n        {\n          color: white;\n          text-align: left;\n          font-size: var(--big-text-size);\n        }\n        .danger-card\n        {\n          background-color: yellow !important;\n          text-align: center;\n        }\n        .danger-card-body\n        {\n          background-color: yellow;\n        }\n        .danger-card-button\n        {\n          color: yellow !important;\n          background-color: red !important;\n          font-weight: bold;\n        }\n        .danger-card-title\n        {\n          color: red;\n          font-weight: var(--bold-text);\n          font-size: var(--big-text-size);\n         }\n        .danger-card-text\n        {\n          color: white;\n          text-align: left;\n          font-size: var(--big-text-size);\n        }\n        .tableHeading\n        {\n          color:var(--container-title-color);\n        }\n        .tableText\n        {\n          color:var(--container-text-color);\n          font-size: var(--big-text-size);\n        }\n       .vert-pad\n        {\n            padding-top:var(--vert-pad);;\n            padding-bottom:var(--vert-pad);;\n        }\n        .horz-pad\n        {\n            padding-left:var(--horz-pad);;\n            padding-right:var(--horz-pad);;\n        }\n        .big-text\n        {\n            font-size: var(--big-text-size);\n        }\n        .bold-text\n        {\n            font-weight: var(--bold-text);\n        }\n        .ui-slider\n        {\n            height: 90px;\n            background-color: var(--color1) !important;\n        }\n        .ui-slider .ui-slider-handle \n        {\n            height: 100px;\n            width: 100px;\n            background-color: var(--color5) !important;\n        }\n        .ui-dialog-titlebar-close \n        {\n            visibility: hidden;\n        }\n",
-        "output": "str",
-        "x": 1130,
-        "y": 920,
-        "wires": [
-            [
-                "1aca5409.d5e93c"
-            ]
-        ]
-    },
-    {
-        "id": "1aca5409.d5e93c",
-        "type": "template",
-        "z": "c4285970.3276d8",
-        "name": "navBar",
-        "field": "payload.navBar",
-        "fieldType": "msg",
-        "format": "html",
-        "syntax": "mustache",
-        "template": "<!-- navBar -->\n",
-        "output": "str",
-        "x": 1280,
-        "y": 920,
-        "wires": [
-            [
-                "b0e0afdf.1c534"
-            ]
-        ]
-    },
-    {
-        "id": "d15ddcdf.7826a",
-        "type": "function",
-        "z": "c4285970.3276d8",
-        "name": "Set Name And Device Type",
-        "func": "msg.payload['script'] = {};\nmsg.payload['script']['name'] = global.get('deviceNameA')\nmsg.payload['script']['deviceType'] = global.get('deviceTypeA');\nmsg.payload['script']['project'] = global.get('project');\nreturn msg;\n",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 300,
-        "y": 880,
-        "wires": [
-            [
-                "827198c0.6ed3f8"
-            ]
-        ]
-    },
-    {
-        "id": "5673473c.72e0d8",
-        "type": "template",
-        "z": "c4285970.3276d8",
-        "name": "script.horzbarWidget",
-        "field": "payload.script.horzbarWidget",
-        "fieldType": "msg",
-        "format": "javascript",
-        "syntax": "mustache",
-        "template": "// Horz Bar Widget\n        function setHorzBarWidget(barConfig)\n        {\n            var lowValue = 0;\n            var mediumValue = 0;\n            var highValue = 0;\n        \n            var lowColor = barConfig.backgroundColor;\n            var mediumColor = barConfig.backgroundColor;\n            var highColor = barConfig.backgroundColor;\n            var valueColor = barConfig.backgroundColor; \n            \n            if ( barConfig.value <= barConfig.lolo)\n            {\n                lowValue = barConfig.lolo;\n                lowColor = barConfig.lowColor;\n                valueColor = lowColor;\n            }\n            if ( (barConfig.lolo <= barConfig.value) && (barConfig.value < barConfig.low) )\n            {\n                lowValue = barConfig.value;\n                lowColor = barConfig.lowColor;\n                valueColor = lowColor;\n            }\n            if ( (barConfig.low  <= barConfig.value) && (barConfig.value < barConfig.high) )\n            {\n                lowValue = barConfig.low;\n                mediumValue = barConfig.value - barConfig.low; \n                lowColor = barConfig.mediumColor;\n                mediumColor = barConfig.mediumColor;\n                valueColor = mediumColor;\n        \n            }\n            if ( (barConfig.high <= barConfig.value) && (barConfig.value < barConfig.hihi) )\n            {\n                lowValue = barConfig.low;\n                mediumValue = barConfig.high - barConfig.low;\n                highValue = barConfig.value - barConfig.high;\n                lowColor = barConfig.highColor;\n                mediumColor = barConfig.highColor;\n                highColor = barConfig.highColor;\n                valueColor = highColor;\n            }\n            if ( barConfig.hihi <= barConfig.value)\n            {\n                lowValue = barConfig.low;\n                mediumValue = barConfig.high - barConfig.low; \n                highValue = barConfig.hihi - barConfig.high; \n                lowColor = barConfig.highColor;\n                mediumColor = barConfig.highColor;\n                highColor = barConfig.highColor;\n                valueColor = highColor;\n            }\n            \n            var lowBar = \n            {\n                y: ['', '-'],\n                x: [ barConfig.low, lowValue],\n                type: 'bar',\n                orientation: 'h',\n                showlegend: false,\n                marker:{color: [barConfig.lowColor, lowColor]},\n              width: [0.1, 1.0],\n            };\n            var mediumBar = \n            {\n                y: ['', '-'],\n                x: [barConfig.high - barConfig.low, mediumValue],\n                type: 'bar',\n                orientation: 'h',\n                showlegend: false,\n                marker:{color: [barConfig.mediumColor, mediumColor]},\n              width: [0.1, 1.0],\n            };\n            var highBar = \n            {\n                y: ['', '-'],\n                x: [barConfig.hihi - barConfig.high, highValue],\n                orientation: 'h',\n                type: 'bar',\n                showlegend: false,\n                marker:{color: [barConfig.highColor, highColor]},\n              width: [0.1, 1.0],\n            };\n            var layout = \n                {\n                    barmode: 'stack',\n                    plot_bgcolor:barConfig.backgroundColor,\n                    paper_bgcolor:barConfig.backgroundColor,\n                    margin: \n                        {\n                            t: 60, //top margin\n                            l: 10, //left margin\n                            r: 10, //right margin\n                            b: 30 //bottom margin\n                        },\n \n                    height: barConfig.height,\n                    title: \n                        {\n                            text: barConfig.title + ' ' + barConfig.unit,\n                            font: {color: barConfig.titleColor, size:barConfig.textsize * 2}\n//                            font: {color: '#000000', size:10},\n                        },\n                    yaxis: \n                        {\n                            tickfont: {color:valueColor, size:barConfig.textsize}\n                        },\n                    xaxis: \n                        {\n                            range: [barConfig.lolo, barConfig.hihi],\n                            tickfont: {color:barConfig.labelColor, size:barConfig.textsize},\n                            gridcolor       : barConfig.gridColor\n\n                        },\n                };\n           Plotly.newPlot(barConfig.htmlId, [lowBar, mediumBar, highBar], layout, {'displayModeBar': false});\n        }\n",
-        "output": "str",
-        "x": 660,
-        "y": 920,
-        "wires": [
-            [
-                "fe677dd1.0ed15"
-            ]
-        ]
-    },
-    {
-        "id": "6540bbf8.883f34",
-        "type": "template",
-        "z": "c4285970.3276d8",
-        "name": "html.display",
-        "field": "payload.html.display",
-        "fieldType": "msg",
-        "format": "html",
-        "syntax": "mustache",
-        "template": "<!-- Dashboard HTML -->\n                <div align=\"center\" style='padding-top: 1px; width: 100%; overflow-x: hidden;'>\n                    <table width=440px>\n                        <tr>\n                            <td  width=100% align='center'>\n                                <span style='color:magenta;font-size:150%' id='instruction1Id'></span>\n                            </td>\n                        </tr>\n                        <tr>\n                            <td  width=100% align='center'>\n                                <span style='color:yellow;font-size:150%' id='instruction2Id'></span>\n                            </td>\n                        </tr>\n                        <tr>\n                            <td  width=100% align='center'>\n                                <span style='color:yellow;font-size:150%' id='instruction3Id'></span>\n                            </td>\n                        </tr>\n                        <tr>\n                            <td width='100%' align='center' style='padding-bottom: 10px;'>\n                                <div id=\"tempBarPlot\" width='100%' ></div>\n                            </td>\n                        </tr>\n                        <tr>\n                            <td width='90%' align='center'>\n                                <span  class='btn btn-block' style='' id='tempComment'></span>\n                            </td>\n                        </tr>\n                        <tr>\n                            <td width=100%>\n                                <div id=\"wrapper\" width=\"335\" height=\"440\" style=\"text-align: center; padding-top: 10px;\" >\n                                    <canvas id=\"flirCanvas\" width=\"300\" height=\"400\" style=\"border:1px solid #000000;\"></canvas>\n                                </div>\n                            </td>\n                        </tr>\n                        <tr>\n                            <td width=100% align='center'>\n                                <img src=\"/img/BlinkyLogo-Text.png\" height=\"35px\"/>\n                            </td>\n                        </tr>\n                    </table>\n                </div>\n",
-        "output": "str",
-        "x": 970,
-        "y": 880,
-        "wires": [
-            [
-                "e95f9d3f.e2242"
-            ]
-        ]
-    },
-    {
         "id": "94b1b6c9.79fca8",
         "type": "function",
         "z": "5f562f66.a301e",
@@ -3906,25 +3757,6 @@
         "wires": [
             [
                 "319a97e8.f017c8"
-            ]
-        ]
-    },
-    {
-        "id": "827198c0.6ed3f8",
-        "type": "template",
-        "z": "c4285970.3276d8",
-        "name": "Set Title",
-        "field": "payload.title",
-        "fieldType": "msg",
-        "format": "html",
-        "syntax": "mustache",
-        "template": "SbirTem {{{payload.script.name}}}",
-        "output": "str",
-        "x": 240,
-        "y": 920,
-        "wires": [
-            [
-                "88dd1a6c.d8ae68"
             ]
         ]
     },
@@ -4211,23 +4043,6 @@
         ]
     },
     {
-        "id": "3cf49879.03da88",
-        "type": "http in",
-        "z": "c4285970.3276d8",
-        "name": "/monitor",
-        "url": "/monitor",
-        "method": "get",
-        "upload": false,
-        "swaggerDoc": "",
-        "x": 100,
-        "y": 880,
-        "wires": [
-            [
-                "d15ddcdf.7826a"
-            ]
-        ]
-    },
-    {
         "id": "fa9ce40f.c3e948",
         "type": "exec",
         "z": "26093b29.39d8d4",
@@ -4244,6 +4059,181 @@
             [],
             [],
             []
+        ]
+    },
+    {
+        "id": "1e99b64b.0a114a",
+        "type": "subflow:188d93e1.8dcc1c",
+        "z": "c4285970.3276d8",
+        "name": "",
+        "x": 930,
+        "y": 1160,
+        "wires": []
+    },
+    {
+        "id": "39851b4d.f8a564",
+        "type": "template",
+        "z": "c4285970.3276d8",
+        "name": "script.global",
+        "field": "payload.script.global",
+        "fieldType": "msg",
+        "format": "javascript",
+        "syntax": "mustache",
+        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var colorScale = true;\n        var enhancementLevel = 0;\n        var pgm = null;\n        var lastUpdate = new Date().getTime();\n        var maxDisplayTime = 10000;\n        var peakHoldTemp = 0;\n        var imageArray =  null;\n        var language = 0;\n        var imeasurementCount = 0;\n        var maxMeasurments = 5;\n        var warnings = [\n            [\"Person outside range\"     ,\"Person utanför räckhåll\"    ,\"Άτομο εκτός εμβέλειας\"   ,\"Persona fuera del alcance\"  ,\"Persona fuori portata\"  ,\"Person außerhalb der Reichweite\"  ,\"Personne hors de portée\"],\n            [\"Normal Temperature\"       ,\"Normal temperatur\"          ,\"Κανονική θερμοκρασία\"    ,\"Temperatura normal\"         ,\"Temperatura normale\"    ,\"Normale Temperatur\"               ,\"Température normale\"],\n            [\"High Temperature\"         ,\"Hög temperatur\"             ,\"Υψηλή θερμοκρασία\"       ,\"Alta temperatura\"           ,\"Alta temperatura\"       ,\"Hohe Temperatur\"                  ,\"Haute température\"],\n            [\"Temperature outside range\",\"Temperatur utanför räckhåll\",\"Θερμοκρασία εκτός εύρους\",\"Temperatura fuera del rango\",\"Temperatura fuori range\",\"Temperatur außerhalb des Bereichs\",\"Température hors plage\"] ];\n        var instructions = [\n            [\"Take off your glasses.\",  \"Please stand straight.\",     \"Align face in the circle.\"],\n            [\"Ta av dig dina glasögon.\",\"Vänligen stå rakt.\",         \"Rikta in ansiktet i cirkeln.\"],\n            [\"Βγάλτε τα γυαλιά σας.\",   \"Παρακαλώ σταθείτε ευθεία.\",  \"Ευθυγραμμίστε το πρόσωπο στον κύκλο.\"],\n            [\"Quítate las gafas.\",      \"Por favor, párese derecho.\", \"Alinear la cara en el círculo.\"],\n            [\"Togliti gli occhiali.\",   \"Per favore, stai dritto.\",   \"Allinea la faccia nel cerchio.\"],\n            [\"Nimm deine Brille ab.\",   \"Bitte stehen Sie gerade.\",   \"Richten Sie das Gesicht im Kreis aus.\"],\n            [\"Enlève tes lunettes.\",    \"Veuillez vous tenir droit.\", \"Alignez le visage dans le cercle.\"]];    \n        var aquireDataInfo = [\"Wait! Measuring...\",\"Vänta! Mätning...\",\"Περίμενε! Μέτρημα...\",\"¡Espere! Medición...\",\"Aspettare! Misurazione ...\",\"Warten! Messung...\",\"Attendez! Mesure...\"];\n        var warningStartTime = 0;\n        var warningOn = false;\n        var warniningDuration = 5000;\n\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n            $('#instructionId').hide();\n            $('#tempBarId').hide();\n//            $('#imageId').hide();\n            warningStartTime = 0;\n            warningOn = false;\n            setInterval(function()\n            {\n                if ((new Date().getTime() - lastUpdate) > maxDisplayTime)\n                {\n                    $('#instructionId').hide();\n                    $('#tempBarId').hide();\n//                    $('#imageId').hide();\n                    clearImage();\n                    peakHoldTemp = 0;\n                    imeasurementCount = 0;\n                    warningStartTime = 0;\n                    warningOn = false;\n                }\n            }, 1000);\n\n        }\n        function onWebSocketOpen()\n        {\n        }\n        function onWebSocketClose()\n        {\n            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        \n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            if (device.imageData.value != null)\n            {\n                lastUpdate = new Date().getTime();\n                var style = 'font-size:250%; font-weight:200; color:#ffff00;';\n                if (warningStartTime < 1)\n                {\n                    warningStartTime = lastUpdate;\n                    warningOn = true;\n                }\n                else\n                {\n                    if ((lastUpdate - warningStartTime) > warniningDuration)\n                    {\n                        warningOn = false;\n                    }\n                }\n                if (warningOn)\n                {\n                    $('#instructionId').show();\n                    $('#instruction1Id').text(instructions[device.language.value][0]);\n                    $('#instruction2Id').text(instructions[device.language.value][1]);\n                    $('#instruction3Id').text(instructions[device.language.value][2]);\n                }\n                else\n                {\n                    $('#instructionId').hide();\n                    $('#tempBarId').show();\n                }\n                $('#imageId').show();\n                var tempBarConfig = \n                    {\n                        lolo            : device.bodyTemp.alarm.limits.lolo, \n                        low             : device.bodyTemp.alarm.limits.low, \n                        high            : device.bodyTemp.alarm.limits.high, \n                        hihi            : device.bodyTemp.alarm.limits.hihi, \n                        value           : device.bodyTemp.value, \n                        unit            : device.bodyTemp.unit, \n                        title           : '',\n                        textsize        : 20,\n                        label           : 'temp', \n                        lowColor        : '#0000ff', \n                        mediumColor     : '#00ff00',\n                        highColor       : '#ff0000', \n                        backgroundColor : '#000000', \n                        labelColor      : '#ffffff', \n                        gridColor       : '#000000',\n                        titleColor      : '#000000',\n                        height          : 125, \n                        width           : 440,\n                        htmlId          : 'tempBarPlot'\n                    };\n                if ((device.autoModeAction.value > 0) && !warningOn)\n                {\n                    if ((device.bodyTemp.alarm.limits.lolo <=  device.bodyTemp.value) && ( device.bodyTemp.value <= device.bodyTemp.alarm.limits.hihi))\n                    {\n                        if (peakHoldTemp < device.bodyTemp.value) peakHoldTemp = device.bodyTemp.value;\n                        imeasurementCount = imeasurementCount + 1;\n                    }\n                    if ((device.bodyTemp.alarm.limits.lolo <= peakHoldTemp) && (peakHoldTemp <= device.bodyTemp.alarm.limits.hihi))\n                    {\n                        var infoText = aquireDataInfo[device.language.value];\n                        if (peakHoldTemp < device.bodyTemp.alarm.limits.low)\n                        {\n                            tempBarConfig.titleColor = '#0000ff';\n                            if (imeasurementCount >= maxMeasurments)\n                            {\n                                style = 'font-size:250%; font-weight:200; background-color:#0000ff;color:black;';\n                                infoText = warnings[3][device.language.value];\n                            }\n                         }\n                        else\n                        {\n                            if (peakHoldTemp < device.bodyTemp.alarm.limits.high)\n                            {\n                                tempBarConfig.titleColor = '#00ff00';\n                                if (imeasurementCount >= maxMeasurments)\n                                {\n                                    style = 'font-size:250%; font-weight:200; background-color:#00ff00;color:black;';\n                                    infoText = warnings[1][device.language.value];\n                                }\n                            }\n                            else\n                            {\n                                tempBarConfig.titleColor = '#ff0000';\n                                if (imeasurementCount >= maxMeasurments)\n                                {\n                                    style = 'font-size:250%; font-weight:200; background-color:#ff0000;color:black;';\n                                    infoText = warnings[2][device.language.value];\n                                }\n                            }\n                        }\n                        $('#tempComment').attr(\"style\", style);\n                        $('#tempComment').text(infoText);\n                        \n                    }\n                    else\n                    {\n                        peakHoldTemp = 0;\n                        imeasurementCount = 0;\n                        style = 'font-size:250%; font-weight:200; color:#ff00ff;';\n                        $('#tempComment').attr(\"style\", style);\n                        $('#tempComment').text(warnings[3][device.language.value]);\n                        tempBarConfig.titleColor = '#000000';\n                    }\n                }\n                else\n                {\n                    style = 'font-size:250%; font-weight:200; color:#ff00ff;';\n                     $('#tempComment').attr(\"style\", style);\n                    $('#tempComment').text(warnings[0][device.language.value]);\n                    peakHoldTemp = 0;\n                    imeasurementCount = 0;\n                    tempBarConfig.lowColor = '#000000';\n                    tempBarConfig.mediumColor = '#000000';\n                    tempBarConfig.highColor = '#000000';\n                    tempBarConfig.labelColor = '#000000';\n                    tempBarConfig.titleColor = '#000000';\n                }\n                tempBarConfig.title = peakHoldTemp.toString();\n                setHorzBarWidget(tempBarConfig);\n                pgm = JSON.parse(JSON.stringify(device.imageData.value));\n                imageArray = pgm.imageArray;\n                plotImage();\n            }\n        }\n        function plotImage()\n        {\n            var rgb = [];\n            var plow = (pgm.minval - 27315) / 100;\n            var phigh = (pgm.maxval - 27315) / 100;\n            var pdelta = phigh - plow;\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            var rectWidth  = canvasWidth / pgm.ncols;\n            var rectHeight =  canvasHeight / pgm.nrows;\n\n            for (var irow = 0; irow < pgm.nrows; ++irow)\n            {\n                for (var icol = 0; icol < pgm.ncols; ++icol)\n                {\n                    var intensity = imageArray[irow][icol] / 256.0;\n                    if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                    if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                    if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                    if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                    if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                    if (colorScale)\n                    {\n                        rgb = getRGB(intensity);\n                        rgb[0] = Math.floor(rgb[0]);\n                        rgb[1] = Math.floor(rgb[1]);\n                        rgb[2] = Math.floor(rgb[2]);\n                    }\n                    else\n                    {\n                        rgb[0] = Math.floor(255 * intensity);\n                        rgb[1] = Math.floor(255 * intensity);\n                        rgb[2] = Math.floor(255 * intensity);\n                    }\n                    canvasContext.fillStyle = 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                    var wx = icol * canvasWidth / pgm.ncols;\n                    var hy =  canvasHeight - (1 + irow) * canvasHeight / pgm.nrows ;\n                    canvasContext.fillRect(wx, hy, rectWidth, rectHeight);\n                }    \n            }\n            if ((device.triggerMode.value == 0) || (device.triggerMode.value == 1)) \n            {\n                \n                canvasContext.strokeStyle = 'black';\n                var ellipseWidth =  device.faceRegionWidth.value * canvasWidth / pgm.ncols;\n                var ellipseHeight =  device.faceRegionHeight.value * canvasHeight / pgm.nrows;\n                \n                drawEllipse(canvasContext, (canvasWidth - ellipseWidth) / 2, (canvasHeight -  ellipseHeight)/ 2, ellipseWidth, ellipseHeight);\n                drawEllipse(canvasContext, (canvasWidth - ellipseWidth - 3) / 2, (canvasHeight -  ellipseHeight - 3)/ 2, ellipseWidth + 3, ellipseHeight + 3);\n                drawEllipse(canvasContext, (canvasWidth - ellipseWidth - 6) / 2, (canvasHeight -  ellipseHeight - 6)/ 2, ellipseWidth + 6, ellipseHeight + 6);\n               \n                canvasContext.strokeStyle = '#00ff00'\n                if (device.autoModeAction.value == 0) canvasContext.strokeStyle = '#ff0000';\n                var faceEllipseWidth  =  device.faceLocation.value[1][1] -  device.faceLocation.value[0][1];\n                var faceEllipseHeight =  device.faceLocation.value[1][0] -  device.faceLocation.value[0][0] ;\n                var faceEllipseCol    = (device.faceLocation.value[1][1] +  device.faceLocation.value[0][1]) / 2 ;\n                var faceEllipseRow    = (device.faceLocation.value[1][0] +  device.faceLocation.value[0][0]) / 2 ;\n                faceEllipseCol = faceEllipseCol - faceEllipseWidth  / 2.0;\n                faceEllipseRow = pgm.nrows - (faceEllipseRow + faceEllipseHeight / 2.0);\n                faceEllipseWidth  =  faceEllipseWidth  * canvasWidth  / pgm.ncols;\n                faceEllipseHeight =  faceEllipseHeight * canvasHeight / pgm.nrows;\n                faceEllipseCol    =  faceEllipseCol    * canvasWidth  / pgm.ncols;\n                faceEllipseRow    =  faceEllipseRow    * canvasHeight / pgm.nrows;\n                drawEllipse(canvasContext, faceEllipseCol, faceEllipseRow, faceEllipseWidth, faceEllipseHeight);\n\n\n                if (device.autoModeAction.value > 0)\n                {\n                    canvasContext.fillStyle = '#000000';\n                    for (var ipt = 0; ipt < 2; ++ipt)\n                    {\n                        var wx =  Math.round(device.eyeLocation.value[ipt][1] * canvasWidth / pgm.ncols);\n                        var hy =  Math.round(canvasHeight - (1 + device.eyeLocation.value[ipt][0]) * canvasHeight / pgm.nrows) ;\n//                        canvasContext.fillRect(wx - rectWidth, hy - rectHeight, 3 * rectWidth, 3 * rectHeight);\n                        canvasContext.strokeStyle = '#000000'\n                        for (var idraw = 0; idraw < 3; ++idraw)\n                        {\n                            canvasContext.beginPath();\n                            canvasContext.arc(wx + 0.5 * rectWidth, hy + 0.5 * rectHeight,  rectWidth + idraw, 0, 6.2831854);\n                            canvasContext.stroke();\n                        }\n                    }\n                }\n\n            }\n        }\n        function getRGB(intensity)\n        {\n          var rgb = [0,0,0];\n//plasma\n          var rgbCoeff = [\n              [  48.6, 349.0,    5.72, -172.0],\n              [-164.0, 705.0, -667.0 ,  379.0],\n              [ 135.0, 332.0, -976.0,   536.0]];\n          var intensityStart = [0.0, 0.3176, 0.0];\n//viridis\n/*\n          var rgbCoeff = [\n              [  72.7, 161.0, -928.0,  962.0],\n              [-0.316, 334.0,  -62.8 , -35.3],\n              [  89.3, 296.0, -379.0,  -11.5]];\n          var intensityStart = [0.0, 0.0117, 0.0];\n*/\n//inferno\n/* \n          var rgbCoeff = [\n              [   0,0,  343.0,  264.0, -376.0],\n              [   5.0,  -69.7,  320.0,   -1.1],\n              [   0.0, 1193.0,-2957.0, 1939.0]];\n          var intensityStart = [0.0, 0.0, 0.0];\n*/\n          var power = [1.0, 0.0, 0.0, 0.0];\n          for (var ii = 1; ii < 4; ++ii) power[ii] = power[ii - 1] * intensity;\n          for (var irgb = 0; irgb < 3; ++irgb)\n          {\n              if (intensity >= intensityStart[irgb])\n              {\n                  for (var ipow = 0; ipow < 4; ++ipow)\n                  {\n                      rgb[irgb] = rgb[irgb] + rgbCoeff[irgb][ipow] * power[ipow];\n                  }\n              }\n              if (rgb[irgb] <   0) rgb[irgb] =   0;\n              if (rgb[irgb] > 255) rgb[irgb] = 255;\n         }\n          return rgb;\n        }\n        function getRGBRainBow(intensity)\n        {\n          var rgb = [0,0,0];\n          if ( (0 <= intensity) && (intensity <= 0.25) )\n          {\n            rgb[0] = 0;\n            rgb[1] = Math.floor(255 * intensity * 4);    \n            rgb[2] = 255;\n          }\n          if ( (0.25 < intensity) && (intensity <= 0.50) )\n          {\n            rgb[0] = 0;\n            rgb[1] = 255;    \n            rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n          }\n          if ( (0.50 < intensity) && (intensity <= 0.75) )\n          {\n            rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n            rgb[1] = 255;    \n            rgb[2] = 0;\n          }\n          if ( (0.75 < intensity) && (intensity <= 1.0) )\n          {\n            rgb[0] = 255;\n            rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n            rgb[2] = 0;\n          }\n          return rgb;\n        }\n        function clearImage()\n        {\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);        \n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var pbox = 0.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(' ');\n            } \n        }\n        function drawEllipse(ctx, x, y, w, h) \n        {\n            var kappa = .5522848,\n              ox = (w / 2) * kappa, // control point offset horizontal\n              oy = (h / 2) * kappa, // control point offset vertical\n              xe = x + w,           // x-end\n              ye = y + h,           // y-end\n              xm = x + w / 2,       // x-middle\n              ym = y + h / 2;       // y-middle\n            \n            ctx.beginPath();\n            ctx.moveTo(x, ym);\n            ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);\n            ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);\n            ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);\n            ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);\n            //ctx.closePath(); // not used correctly, see comments (use to close off open path)\n            ctx.stroke();\n        }\n",
+        "output": "str",
+        "x": 430,
+        "y": 1120,
+        "wires": [
+            [
+                "30ed4889.bfec08"
+            ]
+        ]
+    },
+    {
+        "id": "5554fce5.3b2fc4",
+        "type": "template",
+        "z": "c4285970.3276d8",
+        "name": "javascript",
+        "field": "payload.javascript",
+        "fieldType": "msg",
+        "format": "javascript",
+        "syntax": "mustache",
+        "template": "{{{payload.script.global}}}\n{{{payload.script.horzbarWidget}}}\n{{{payload.script.editDevice}}}\n",
+        "output": "str",
+        "x": 420,
+        "y": 1200,
+        "wires": [
+            [
+                "5a042c6e.51f744"
+            ]
+        ]
+    },
+    {
+        "id": "5a042c6e.51f744",
+        "type": "template",
+        "z": "c4285970.3276d8",
+        "name": "body",
+        "field": "payload.body",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "    <div style=\"width:100%;\" >\n        <table width=\"100%\" align=\"center\">\n            <tr>\n                <td width=\"100%\" align=\"center\">\n                    <div id=\"instructionId\">\n                        <table width=\"100%\" align=\"center\">\n                            <tr>\n                                <td width=\"100%\" align=\"center\">\n                                    <span style='color:magenta;font-size:250%' id='instruction1Id'></span>\n                                </td>\n                            </tr>\n                            <tr>\n                                <td width=\"100%\" align=\"center\">\n                                    <span style='color:yellow;font-size:250%' id='instruction2Id'></span>\n                                </td>\n                            </tr>\n                            <tr>\n                                <td width=\"100%\" align=\"center\">\n                                    <span style='color:cyan;font-size:250%' id='instruction3Id'></span>\n                                </td>\n                            </tr>\n                        </table>\n                    </div>\n                </td>\n            </tr>\n            <tr>\n                <td width=\"100%\" align=\"center\">\n                    <div id=\"tempBarId\" align=\"center\">\n                        <table width=\"100%\" align=\"center\">\n                            <tr>\n                                <td width=\"100%\" align=\"center\">\n                                    <div id=\"tempBarPlot\" width='100%' ></div>\n                                </td>\n                            </tr>\n                            <tr>\n                                <td width=\"90%\" align=\"center\">\n                                    <span  class='btn btn-block' style='' id='tempComment'></span>\n                                </td>\n                            </tr>\n                        </table>\n                    </div>\n                </td>\n            </tr>\n            <tr>\n                <td width=\"100%\" align=\"center\">\n                    <div id=\"imageId\" align=\"center\">\n                        <div id=\"wrapper\" width=\"450px\" height=\"600px\" style=\"text-align: center;\">\n                            <canvas id=\"flirCanvas\" width=\"450\" height=\"600\"></canvas>\n                        </div>\n                    </div>\n                </td>\n            </tr>\n            <tr>\n                <td width=\"100%\" align=\"center\">\n                    <div class=\"container\" id='logoId'  width=\"100%\" >\n                        <a href=\"/\"><img src=\"/img/BlinkyLogo-Text.png\" height=\"35px\"/></a>\n                    </div>\n                </td>\n            </tr>\n        </table>\n    </div>\n",
+        "output": "str",
+        "x": 750,
+        "y": 1080,
+        "wires": [
+            [
+                "455f2094.da902"
+            ]
+        ]
+    },
+    {
+        "id": "455f2094.da902",
+        "type": "template",
+        "z": "c4285970.3276d8",
+        "name": "CSS",
+        "field": "payload.css",
+        "fieldType": "msg",
+        "format": "css",
+        "syntax": "mustache",
+        "template": "        :root \n        {\n          --color1: #415c71;\n          --color2: #547792;\n          --color3: #9eb5c7;\n          --color4: #c6c2bb;\n          --color5: #fdc300;\n          --big-text-size :300%;\n          --bold-text :900;\n          --vert-pad : 25px;\n          --horz-pad : 25px;\n        }\n        html,body\n        {\n            margin: 0; /* Space from this element (entire page) and others*/\n            padding: 0; /*space from content and border*/\n            border: solid blue;\n            border-width: thick;\n            overflow:hidden;\n            display:block;\n            height:100%;\n            width: 100%;\n            background-color: black !important;\n        }\n        img \n        {\n          object-fit: contain;\n        }\n        a\n        {\n            color: white;\n        }\n        a:visited \n        { \n            color: var(--white);\n        }\n        a:hover \n        { \n            color: var(--color5);\n        }\n\n        .jumbotron \n        {\n          background-color: var(--color2) !important;\n          color: white;\n          padding-top:25px;\n          padding-bottom:25px;\n        }\n        .jumbotron-title\n        {\n          color:var(--color5);\n        }\n        .jumbotron-button\n        {\n          color: white;\n          background-color: var(--color1);\n       }\n        .card\n        {\n          background-color: var(--color2) !important;\n          text-align: center;\n        }\n        .card-body\n        {\n          background-color: var(--color3);;\n        }\n        .card-button\n        {\n          color: var(--color5) !important;\n          background-color: var(--color1) !important;\n          font-weight: bold;\n        }\n        .card-title\n        {\n          color: var(--color5);\n          font-weight: var(--bold-text);\n          font-size: var(--big-text-size);\n         }\n        .card-text\n        {\n          color: white;\n          text-align: left;\n          font-size: var(--big-text-size);\n        }\n        .danger-card\n        {\n          background-color: yellow !important;\n          text-align: center;\n        }\n        .danger-card-body\n        {\n          background-color: yellow;\n        }\n        .danger-card-button\n        {\n          color: yellow !important;\n          background-color: red !important;\n          font-weight: bold;\n        }\n        .danger-card-title\n        {\n          color: red;\n          font-weight: var(--bold-text);\n          font-size: var(--big-text-size);\n         }\n        .danger-card-text\n        {\n          color: white;\n          text-align: left;\n          font-size: var(--big-text-size);\n        }\n        .tableHeading\n        {\n          color:var(--container-title-color);\n        }\n        .tableText\n        {\n          color:var(--container-text-color);\n          font-size: var(--big-text-size);\n        }\n       .vert-pad\n        {\n            padding-top:var(--vert-pad);;\n            padding-bottom:var(--vert-pad);;\n        }\n        .horz-pad\n        {\n            padding-left:var(--horz-pad);;\n            padding-right:var(--horz-pad);;\n        }\n        .big-text\n        {\n            font-size: var(--big-text-size);\n        }\n        .bold-text\n        {\n            font-weight: var(--bold-text);\n        }\n        .ui-slider\n        {\n            height: 90px;\n            background-color: var(--color1) !important;\n        }\n        .ui-slider .ui-slider-handle \n        {\n            height: 100px;\n            width: 100px;\n            background-color: var(--color5) !important;\n        }\n        .ui-dialog-titlebar-close \n        {\n            visibility: hidden;\n        }\n",
+        "output": "str",
+        "x": 750,
+        "y": 1120,
+        "wires": [
+            [
+                "15d97c15.ef2524"
+            ]
+        ]
+    },
+    {
+        "id": "15d97c15.ef2524",
+        "type": "template",
+        "z": "c4285970.3276d8",
+        "name": "navBar",
+        "field": "payload.navBar",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "<!-- navBar -->\n",
+        "output": "str",
+        "x": 760,
+        "y": 1160,
+        "wires": [
+            [
+                "1e99b64b.0a114a"
+            ]
+        ]
+    },
+    {
+        "id": "614c6264.32e0dc",
+        "type": "function",
+        "z": "c4285970.3276d8",
+        "name": "Set Name And Device Type",
+        "func": "msg.payload['script'] = {};\nmsg.payload['script']['name'] = global.get('deviceNameA')\nmsg.payload['script']['deviceType'] = global.get('deviceTypeA');\nmsg.payload['script']['project'] = global.get('project');\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 160,
+        "y": 1120,
+        "wires": [
+            [
+                "c324759e.1aa9c8"
+            ]
+        ]
+    },
+    {
+        "id": "30ed4889.bfec08",
+        "type": "template",
+        "z": "c4285970.3276d8",
+        "name": "script.horzbarWidget",
+        "field": "payload.script.horzbarWidget",
+        "fieldType": "msg",
+        "format": "javascript",
+        "syntax": "mustache",
+        "template": "// Horz Bar Widget\n        function setHorzBarWidget(barConfig)\n        {\n            var lowValue = 0;\n            var mediumValue = 0;\n            var highValue = 0;\n        \n            var lowColor = barConfig.backgroundColor;\n            var mediumColor = barConfig.backgroundColor;\n            var highColor = barConfig.backgroundColor;\n            var valueColor = barConfig.backgroundColor; \n            \n            if ( barConfig.value <= barConfig.lolo)\n            {\n                lowValue = barConfig.lolo;\n                lowColor = barConfig.lowColor;\n                valueColor = lowColor;\n            }\n            if ( (barConfig.lolo <= barConfig.value) && (barConfig.value < barConfig.low) )\n            {\n                lowValue = barConfig.value;\n                lowColor = barConfig.lowColor;\n                valueColor = lowColor;\n            }\n            if ( (barConfig.low  <= barConfig.value) && (barConfig.value < barConfig.high) )\n            {\n                lowValue = barConfig.low;\n                mediumValue = barConfig.value - barConfig.low; \n                lowColor = barConfig.mediumColor;\n                mediumColor = barConfig.mediumColor;\n                valueColor = mediumColor;\n        \n            }\n            if ( (barConfig.high <= barConfig.value) && (barConfig.value < barConfig.hihi) )\n            {\n                lowValue = barConfig.low;\n                mediumValue = barConfig.high - barConfig.low;\n                highValue = barConfig.value - barConfig.high;\n                lowColor = barConfig.highColor;\n                mediumColor = barConfig.highColor;\n                highColor = barConfig.highColor;\n                valueColor = highColor;\n            }\n            if ( barConfig.hihi <= barConfig.value)\n            {\n                lowValue = barConfig.low;\n                mediumValue = barConfig.high - barConfig.low; \n                highValue = barConfig.hihi - barConfig.high; \n                lowColor = barConfig.highColor;\n                mediumColor = barConfig.highColor;\n                highColor = barConfig.highColor;\n                valueColor = highColor;\n            }\n            \n            var lowBar = \n            {\n                y: ['', '-'],\n                x: [ barConfig.low, lowValue],\n                type: 'bar',\n                orientation: 'h',\n                showlegend: false,\n                marker:{color: [barConfig.lowColor, lowColor]},\n              width: [0.1, 1.0],\n            };\n            var mediumBar = \n            {\n                y: ['', '-'],\n                x: [barConfig.high - barConfig.low, mediumValue],\n                type: 'bar',\n                orientation: 'h',\n                showlegend: false,\n                marker:{color: [barConfig.mediumColor, mediumColor]},\n              width: [0.1, 1.0],\n            };\n            var highBar = \n            {\n                y: ['', '-'],\n                x: [barConfig.hihi - barConfig.high, highValue],\n                orientation: 'h',\n                type: 'bar',\n                showlegend: false,\n                marker:{color: [barConfig.highColor, highColor]},\n              width: [0.1, 1.0],\n            };\n            var layout = \n                {\n                    barmode: 'stack',\n                    plot_bgcolor:barConfig.backgroundColor,\n                    paper_bgcolor:barConfig.backgroundColor,\n                    margin: \n                        {\n                            t: 60, //top margin\n                            l: 10, //left margin\n                            r: 10, //right margin\n                            b: 30 //bottom margin\n                        },\n \n                    height: barConfig.height,\n                    autosize: false,\n                    width: barConfig.width,\n\n                    title: \n                        {\n                            text: barConfig.title + ' ' + barConfig.unit,\n                            font: {color: barConfig.titleColor, size:barConfig.textsize * 2}\n//                            font: {color: '#000000', size:10},\n                        },\n                    yaxis: \n                        {\n                            tickfont: {color:valueColor, size:barConfig.textsize}\n                        },\n                    xaxis: \n                        {\n                            range: [barConfig.lolo, barConfig.hihi],\n                            tickfont: {color:barConfig.labelColor, size:barConfig.textsize},\n                            gridcolor       : barConfig.gridColor\n\n                        },\n                };\n           Plotly.newPlot(barConfig.htmlId, [lowBar, mediumBar, highBar], layout, {'displayModeBar': false});\n        }\n",
+        "output": "str",
+        "x": 460,
+        "y": 1160,
+        "wires": [
+            [
+                "5554fce5.3b2fc4"
+            ]
+        ]
+    },
+    {
+        "id": "c324759e.1aa9c8",
+        "type": "template",
+        "z": "c4285970.3276d8",
+        "name": "Set Title",
+        "field": "payload.title",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "SbirTem {{{payload.script.name}}}",
+        "output": "str",
+        "x": 420,
+        "y": 1080,
+        "wires": [
+            [
+                "39851b4d.f8a564"
+            ]
+        ]
+    },
+    {
+        "id": "c7143c72.68bfc",
+        "type": "http in",
+        "z": "c4285970.3276d8",
+        "name": "/monitor",
+        "url": "/monitor",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 100,
+        "y": 1080,
+        "wires": [
+            [
+                "614c6264.32e0dc"
+            ]
         ]
     }
 ]

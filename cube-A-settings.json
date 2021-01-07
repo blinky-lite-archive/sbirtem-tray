@@ -2,12 +2,12 @@
   "deviceType": "sbirtem",
   "name": "Demo-01",
   "arcPeriod": 60000,
-  "timeStamp": 1609247759050,
+  "timeStamp": 1610052805278,
   "lastArchive": 1605297020274,
   "linkQuality": {
     "action": "reading",
     "type": "scalar",
-    "value": 56,
+    "value": 70,
     "unit": "/70",
     "alarm": {
       "value": 0,
@@ -27,7 +27,7 @@
   "signalLevel": {
     "action": "reading",
     "type": "scalar",
-    "value": -54,
+    "value": -33,
     "unit": "dBm",
     "alarm": {
       "value": 0,
@@ -47,7 +47,7 @@
   "pixelMin": {
     "action": "reading",
     "type": "scalar",
-    "value": 20.1,
+    "value": 18.7,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -67,7 +67,7 @@
   "pixelMax": {
     "action": "reading",
     "type": "scalar",
-    "value": 30.2,
+    "value": 31.3,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -87,7 +87,7 @@
   "ultraSoundDistance": {
     "action": "reading",
     "type": "scalar",
-    "value": 68,
+    "value": 146,
     "unit": "cm",
     "alarm": {
       "value": 0,
@@ -347,7 +347,7 @@
   "language": {
     "action": "setting",
     "type": "scalar",
-    "value": 1,
+    "value": 0,
     "unit": "unit",
     "alarm": {
       "value": 0,
@@ -493,7 +493,7 @@
   "rawLeftEyeTemp": {
     "action": "reading",
     "type": "scalar",
-    "value": 3021,
+    "value": 3444,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -513,7 +513,7 @@
   "rawRightEyeTemp": {
     "action": "reading",
     "type": "scalar",
-    "value": 2942,
+    "value": 3410,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -533,10 +533,10 @@
   "rawSpareTemp1": {
     "action": "reading",
     "type": "scalar",
-    "value": 2283,
+    "value": 3189,
     "unit": "mS",
     "alarm": {
-      "value": 1,
+      "value": 0,
       "limits": {
         "lolo": 2000,
         "low": 2500,
@@ -553,7 +553,7 @@
   "rawSpareTemp2": {
     "action": "reading",
     "type": "scalar",
-    "value": 2680,
+    "value": 3351,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -575,12 +575,12 @@
     "type": "vector",
     "value": [
       [
-        37,
+        29,
         19
       ],
       [
-        64,
-        38
+        58,
+        40
       ]
     ]
   },
@@ -589,11 +589,11 @@
     "type": "vector",
     "value": [
       [
-        51,
+        45,
         26
       ],
       [
-        51,
+        46,
         31
       ]
     ]
