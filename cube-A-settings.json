@@ -2,12 +2,12 @@
   "deviceType": "sbirtem",
   "name": "Demo-01",
   "arcPeriod": 60000,
-  "timeStamp": 1610052805278,
+  "timeStamp": 1610191141725,
   "lastArchive": 1605297020274,
   "linkQuality": {
     "action": "reading",
     "type": "scalar",
-    "value": 70,
+    "value": 57,
     "unit": "/70",
     "alarm": {
       "value": 0,
@@ -27,7 +27,7 @@
   "signalLevel": {
     "action": "reading",
     "type": "scalar",
-    "value": -33,
+    "value": -53,
     "unit": "dBm",
     "alarm": {
       "value": 0,
@@ -47,7 +47,7 @@
   "pixelMin": {
     "action": "reading",
     "type": "scalar",
-    "value": 18.7,
+    "value": 23.6,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -67,7 +67,7 @@
   "pixelMax": {
     "action": "reading",
     "type": "scalar",
-    "value": 31.3,
+    "value": 33.9,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -87,7 +87,7 @@
   "ultraSoundDistance": {
     "action": "reading",
     "type": "scalar",
-    "value": 146,
+    "value": 86,
     "unit": "cm",
     "alarm": {
       "value": 0,
@@ -493,7 +493,7 @@
   "rawLeftEyeTemp": {
     "action": "reading",
     "type": "scalar",
-    "value": 3444,
+    "value": 3209,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -513,7 +513,7 @@
   "rawRightEyeTemp": {
     "action": "reading",
     "type": "scalar",
-    "value": 3410,
+    "value": 3229,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -533,7 +533,7 @@
   "rawSpareTemp1": {
     "action": "reading",
     "type": "scalar",
-    "value": 3189,
+    "value": 3229,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -553,7 +553,7 @@
   "rawSpareTemp2": {
     "action": "reading",
     "type": "scalar",
-    "value": 3351,
+    "value": 3169,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -575,12 +575,12 @@
     "type": "vector",
     "value": [
       [
-        29,
-        19
+        21,
+        29
       ],
       [
-        58,
-        40
+        32,
+        37
       ]
     ]
   },
@@ -589,12 +589,12 @@
     "type": "vector",
     "value": [
       [
-        45,
-        26
+        27,
+        33
       ],
       [
-        46,
-        31
+        27,
+        34
       ]
     ]
   },
