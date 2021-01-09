@@ -2,7 +2,7 @@
   "deviceType": "sbirtem",
   "name": "Demo-01",
   "arcPeriod": 60000,
-  "timeStamp": 1610206353085,
+  "timeStamp": 1610222443225,
   "lastArchive": 1605297020274,
   "linkQuality": {
     "action": "reading",
@@ -47,7 +47,7 @@
   "pixelMin": {
     "action": "reading",
     "type": "scalar",
-    "value": 23.9,
+    "value": 24.1,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -67,7 +67,7 @@
   "pixelMax": {
     "action": "reading",
     "type": "scalar",
-    "value": 25.3,
+    "value": 34,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -87,7 +87,7 @@
   "ultraSoundDistance": {
     "action": "reading",
     "type": "scalar",
-    "value": 73,
+    "value": 79,
     "unit": "cm",
     "alarm": {
       "value": 0,
@@ -493,7 +493,7 @@
   "rawLeftEyeTemp": {
     "action": "reading",
     "type": "scalar",
-    "value": 3400,
+    "value": 3440,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -513,7 +513,7 @@
   "rawRightEyeTemp": {
     "action": "reading",
     "type": "scalar",
-    "value": 3417,
+    "value": 3423,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -533,7 +533,7 @@
   "rawSpareTemp1": {
     "action": "reading",
     "type": "scalar",
-    "value": 2904,
+    "value": 3209,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -553,7 +553,7 @@
   "rawSpareTemp2": {
     "action": "reading",
     "type": "scalar",
-    "value": 3344,
+    "value": 3370,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -575,12 +575,12 @@
     "type": "vector",
     "value": [
       [
-        29,
-        20
+        0,
+        1
       ],
       [
-        57,
-        40
+        62,
+        46
       ]
     ]
   },
@@ -590,11 +590,11 @@
     "value": [
       [
         45,
-        27
+        30
       ],
       [
-        45,
-        32
+        44,
+        35
       ]
     ]
   },
