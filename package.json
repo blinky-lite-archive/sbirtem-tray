@@ -1,5 +1,5 @@
 {
-  "name": "blinky-lite-basic-device-message-adapter",
+  "name": "sbirtem-tray",
   "version": "1.0.0",
   "description": "",
   "main": "node_modules/node-red/red.js -s ./settings.js -u ./",
@@ -20,11 +20,11 @@
   },
   "homepage": "",
   "dependencies": {
-    "node-red": "^1.0.3",
-    "node-red-dashboard": "^2.19.3",
-    "node-red-node-pi-gpio": "^1.1.1",
-    "node-red-node-pisrf": "^0.1.4",
-    "node-red-node-serialport": "^0.11.0",
+    "node-red": "^2.1.3",
+    "node-red-dashboard": "^3.1.1",
+    "node-red-node-pi-gpio": "^1.2.3",
+    "node-red-node-pisrf": "^0.1.7",
+    "node-red-node-serialport": "^0.14.0",
     "pi-spi": "^1.2.1"
   }
 }

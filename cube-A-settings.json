@@ -1,6 +1,6 @@
 {
   "deviceType": "sbirtem",
-  "name": "Demo-01",
+  "name": "Demo-03",
   "arcPeriod": 60000,
   "timeStamp": 1610263288794,
   "lastArchive": 1605297020274,
@@ -78,7 +78,7 @@
         "hihi": 45
       },
       "notify": {
-        "name": "Dave",
+        "name": "",
         "number": "",
         "time": 0
       }
@@ -107,14 +107,14 @@
   "ultraSoundRange": {
     "action": "setting",
     "type": "scalar",
-    "value": 100,
+    "value": 30,
     "unit": "cm",
     "alarm": {
       "value": 0,
       "limits": {
         "lolo": 10,
-        "low": 15,
-        "high": 20000,
+        "low": 30,
+        "high": 120,
         "hihi": 21000
       },
       "notify": {
@@ -127,7 +127,7 @@
   "imageDelay": {
     "action": "setting",
     "type": "scalar",
-    "value": 2000,
+    "value": 3000,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -158,7 +158,7 @@
         "hihi": 4
       },
       "notify": {
-        "name": "Dave",
+        "name": "",
         "number": "",
         "time": 0
       }
@@ -179,7 +179,7 @@
       },
       "notify": {
         "name": "Dave",
-        "number": "46725722472",
+        "number": "",
         "time": 0
       }
     }
@@ -265,66 +265,6 @@
     }
   },
   "flipVertical": {
-    "action": "setting",
-    "type": "scalar",
-    "value": 0,
-    "unit": "unit",
-    "alarm": {
-      "value": 0,
-      "limits": {
-        "lolo": -2,
-        "low": -1,
-        "high": 2,
-        "hihi": 3
-      },
-      "notify": {
-        "name": "",
-        "number": "",
-        "time": 0
-      }
-    }
-  },
-  "triggerMode": {
-    "action": "setting",
-    "type": "scalar",
-    "value": 0,
-    "unit": "unit",
-    "alarm": {
-      "value": 0,
-      "limits": {
-        "lolo": -2,
-        "low": -1,
-        "high": 3,
-        "hihi": 4
-      },
-      "notify": {
-        "name": "",
-        "number": "",
-        "time": 0
-      }
-    }
-  },
-  "manualTrigger": {
-    "action": "setting",
-    "type": "scalar",
-    "value": 0,
-    "unit": "unit",
-    "alarm": {
-      "value": 0,
-      "limits": {
-        "lolo": -2,
-        "low": -1,
-        "high": 2,
-        "hihi": 3
-      },
-      "notify": {
-        "name": "",
-        "number": "",
-        "time": 0
-      }
-    }
-  },
-  "gateMode": {
     "action": "setting",
     "type": "scalar",
     "value": 0,
