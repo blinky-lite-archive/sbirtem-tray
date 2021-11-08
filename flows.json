@@ -259,6 +259,12 @@
         "wholemsg": "false"
     },
     {
+        "id": "6df0514375410c8c",
+        "type": "websocket-listener",
+        "path": "/sensor/websocket",
+        "wholemsg": "false"
+    },
+    {
         "id": "3ab766b1.558d9a",
         "type": "template",
         "z": "f07e020c.d4d43",
@@ -777,7 +783,8 @@
         "y": 940,
         "wires": [
             [
-                "b4dd92bb.129c7"
+                "b4dd92bb.129c7",
+                "9104571421cb5872"
             ]
         ]
     },
@@ -1113,8 +1120,8 @@
         "func": "msg.payload = 0;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 520,
-        "y": 2320,
+        "x": 500,
+        "y": 2520,
         "wires": [
             [
                 "a325a9ec.7e9188"
@@ -1129,8 +1136,8 @@
         "func": "msg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 220,
-        "y": 2300,
+        "x": 200,
+        "y": 2500,
         "wires": [
             [
                 "78708c9a.23eac4",
@@ -1154,8 +1161,8 @@
         "randomUnits": "seconds",
         "drop": false,
         "outputs": 1,
-        "x": 370,
-        "y": 2320,
+        "x": 350,
+        "y": 2520,
         "wires": [
             [
                 "56b21d74.f13534"
@@ -1675,8 +1682,8 @@
         "level": "0",
         "freq": "",
         "out": "out",
-        "x": 1350,
-        "y": 2060,
+        "x": 1330,
+        "y": 2260,
         "wires": []
     },
     {
@@ -1687,8 +1694,8 @@
         "func": "msg.payload = 0;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 440,
-        "y": 2100,
+        "x": 420,
+        "y": 2300,
         "wires": [
             [
                 "30a567e5.1d7ed8"
@@ -1712,8 +1719,8 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 300,
-        "y": 2100,
+        "x": 280,
+        "y": 2300,
         "wires": [
             [
                 "939d3b6e.eb78b8"
@@ -1744,8 +1751,8 @@
         "topic": "",
         "payload": "1",
         "payloadType": "num",
-        "x": 170,
-        "y": 2060,
+        "x": 150,
+        "y": 2260,
         "wires": [
             [
                 "1f98b300.d5ce3d",
@@ -1761,8 +1768,8 @@
         "func": "msg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 360,
-        "y": 2060,
+        "x": 340,
+        "y": 2260,
         "wires": [
             [
                 "30a567e5.1d7ed8"
@@ -1860,8 +1867,8 @@
         "links": [
             "9067a4c6.5d4488"
         ],
-        "x": 115,
-        "y": 2180,
+        "x": 95,
+        "y": 2380,
         "wires": [
             [
                 "aedeaccf.3f23d"
@@ -1874,8 +1881,8 @@
         "z": "5f562f66.a301e",
         "name": "Hung Process Toggle out",
         "links": [],
-        "x": 755,
-        "y": 2180,
+        "x": 735,
+        "y": 2380,
         "wires": []
     },
     {
@@ -1900,8 +1907,8 @@
         "links": [
             "316e94c2.271bec"
         ],
-        "x": 535,
-        "y": 2060,
+        "x": 515,
+        "y": 2260,
         "wires": []
     },
     {
@@ -1924,8 +1931,8 @@
             "d9b1bb3f.ca7528",
             "a325a9ec.7e9188"
         ],
-        "x": 1235,
-        "y": 2060,
+        "x": 1215,
+        "y": 2260,
         "wires": [
             [
                 "f3ff0af9.c4fdb8"
@@ -2001,8 +2008,8 @@
         "links": [
             "316e94c2.271bec"
         ],
-        "x": 755,
-        "y": 2300,
+        "x": 735,
+        "y": 2500,
         "wires": []
     },
     {
@@ -2013,8 +2020,8 @@
         "links": [
             "de65ab7c.eced98"
         ],
-        "x": 115,
-        "y": 2300,
+        "x": 95,
+        "y": 2500,
         "wires": [
             [
                 "620ca605.e38238"
@@ -2029,8 +2036,8 @@
         "func": "msg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 460,
-        "y": 2460,
+        "x": 440,
+        "y": 2660,
         "wires": [
             [
                 "852a59a8.761b68"
@@ -2045,8 +2052,8 @@
         "links": [
             "c9d85cd7.b10c5"
         ],
-        "x": 595,
-        "y": 2460,
+        "x": 575,
+        "y": 2660,
         "wires": []
     },
     {
@@ -2057,8 +2064,8 @@
         "links": [
             "863d7a9.ab20888"
         ],
-        "x": 115,
-        "y": 2480,
+        "x": 95,
+        "y": 2680,
         "wires": [
             [
                 "514d03ca.0eae7c"
@@ -2087,8 +2094,8 @@
         "level": "0",
         "freq": "",
         "out": "out",
-        "x": 1340,
-        "y": 2120,
+        "x": 1320,
+        "y": 2320,
         "wires": []
     },
     {
@@ -2099,8 +2106,8 @@
         "func": "var burstCount = context.get('burstCount');\nif (burstCount == undefined) burstCount = 0;\nif (msg.topic == 'tooHotAlarm') burstCount = 0;\n++burstCount;\ncontext.set('burstCount',burstCount)\nif (burstCount < 20) return msg;\nreturn null;",
         "outputs": 1,
         "noerr": 0,
-        "x": 480,
-        "y": 2520,
+        "x": 460,
+        "y": 2720,
         "wires": [
             [
                 "5649f4af.4a03bc",
@@ -2116,8 +2123,8 @@
         "func": "msg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 840,
-        "y": 2520,
+        "x": 820,
+        "y": 2720,
         "wires": [
             [
                 "f4c1fc1.3b91"
@@ -2140,8 +2147,8 @@
         "randomUnits": "seconds",
         "drop": false,
         "outputs": 1,
-        "x": 670,
-        "y": 2560,
+        "x": 650,
+        "y": 2760,
         "wires": [
             [
                 "94bf1fac.8b3e3"
@@ -2156,8 +2163,8 @@
         "func": "return {topic:'redLed',payload:0};",
         "outputs": 1,
         "noerr": 0,
-        "x": 840,
-        "y": 2560,
+        "x": 820,
+        "y": 2760,
         "wires": [
             [
                 "15e0e620.bb96fa",
@@ -2181,8 +2188,8 @@
         "randomUnits": "seconds",
         "drop": false,
         "outputs": 1,
-        "x": 670,
-        "y": 2520,
+        "x": 650,
+        "y": 2720,
         "wires": [
             [
                 "14f934e6.ded55b"
@@ -2199,8 +2206,8 @@
         "level": "0",
         "freq": "",
         "out": "out",
-        "x": 1340,
-        "y": 2180,
+        "x": 1320,
+        "y": 2380,
         "wires": []
     },
     {
@@ -2209,8 +2216,8 @@
         "z": "5f562f66.a301e",
         "name": "Red alarm Burst Out",
         "links": [],
-        "x": 995,
-        "y": 2520,
+        "x": 975,
+        "y": 2720,
         "wires": []
     },
     {
@@ -2223,8 +2230,8 @@
             "e7beb734.ed9628",
             "7667b964.83dff8"
         ],
-        "x": 1235,
-        "y": 2120,
+        "x": 1215,
+        "y": 2320,
         "wires": [
             [
                 "73e006b1.cf7528"
@@ -2240,8 +2247,8 @@
             "d9b1bb3f.ca7528",
             "69b81e64.314a7"
         ],
-        "x": 1235,
-        "y": 2180,
+        "x": 1215,
+        "y": 2380,
         "wires": [
             [
                 "19963a75.2b0f46"
@@ -2280,8 +2287,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 4,
-        "x": 230,
-        "y": 2480,
+        "x": 210,
+        "y": 2680,
         "wires": [
             [
                 "1f55c9e4.6259b6"
@@ -2306,8 +2313,8 @@
         "func": "msg.payload = 0;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 760,
-        "y": 2640,
+        "x": 740,
+        "y": 2840,
         "wires": [
             [
                 "d242b085.fde9e"
@@ -2322,8 +2329,8 @@
         "func": "msg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 460,
-        "y": 2620,
+        "x": 440,
+        "y": 2820,
         "wires": [
             [
                 "165fcf02.2d29f1",
@@ -2347,8 +2354,8 @@
         "randomUnits": "seconds",
         "drop": false,
         "outputs": 1,
-        "x": 610,
-        "y": 2640,
+        "x": 590,
+        "y": 2840,
         "wires": [
             [
                 "89ab897e.bf7b28"
@@ -2361,8 +2368,8 @@
         "z": "5f562f66.a301e",
         "name": "notInRangeBlink",
         "links": [],
-        "x": 855,
-        "y": 2620,
+        "x": 835,
+        "y": 2820,
         "wires": []
     },
     {
@@ -2435,8 +2442,8 @@
         "randomUnits": "seconds",
         "drop": false,
         "outputs": 1,
-        "x": 470,
-        "y": 2420,
+        "x": 450,
+        "y": 2620,
         "wires": [
             [
                 "a193f30.a33811"
@@ -2451,8 +2458,8 @@
         "func": "msg.payload = 0;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 620,
-        "y": 2420,
+        "x": 600,
+        "y": 2620,
         "wires": [
             [
                 "852a59a8.761b68"
@@ -2491,8 +2498,8 @@
         "func": "var burstCount = context.get('burstCount');\nif (burstCount == undefined) burstCount = 0;\nif (msg.topic == 'killProcess') burstCount = 0;\n++burstCount;\ncontext.set('burstCount',burstCount)\nif (burstCount < 5) return msg;\nreturn null;",
         "outputs": 1,
         "noerr": 0,
-        "x": 260,
-        "y": 2180,
+        "x": 240,
+        "y": 2380,
         "wires": [
             [
                 "808ee76f.0ad4e8",
@@ -2508,8 +2515,8 @@
         "func": "msg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 620,
-        "y": 2180,
+        "x": 600,
+        "y": 2380,
         "wires": [
             [
                 "81c528f.cc489d8"
@@ -2532,8 +2539,8 @@
         "randomUnits": "seconds",
         "drop": false,
         "outputs": 1,
-        "x": 450,
-        "y": 2220,
+        "x": 430,
+        "y": 2420,
         "wires": [
             [
                 "1575881a.c78e98"
@@ -2548,8 +2555,8 @@
         "func": "return {topic:'redLed',payload:0};",
         "outputs": 1,
         "noerr": 0,
-        "x": 620,
-        "y": 2220,
+        "x": 600,
+        "y": 2420,
         "wires": [
             [
                 "aedeaccf.3f23d",
@@ -2573,8 +2580,8 @@
         "randomUnits": "seconds",
         "drop": false,
         "outputs": 1,
-        "x": 450,
-        "y": 2180,
+        "x": 430,
+        "y": 2380,
         "wires": [
             [
                 "9915e189.c1453"
@@ -3306,6 +3313,200 @@
         "wires": []
     },
     {
+        "id": "9104571421cb5872",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "Split MQTT Topic out",
+        "mode": "link",
+        "links": [
+            "caded6c2adfad00f"
+        ],
+        "x": 2015,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "58aa550c.06cb4c",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "Settings Out",
+        "links": [
+            "6c15c07a.68169"
+        ],
+        "x": 695,
+        "y": 2020,
+        "wires": []
+    },
+    {
+        "id": "3a1fb97e.c10786",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "sendSettingToMqtt",
+        "func": "return {\n    topic   : msg.payload.mqttMessage.topic, \n    payload : msg.payload.mqttMessage.payload, \n    userID  : msg.payload.userID };\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 530,
+        "y": 2020,
+        "wires": [
+            [
+                "58aa550c.06cb4c"
+            ]
+        ]
+    },
+    {
+        "id": "75bcac45.dd63c4",
+        "type": "json",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 190,
+        "y": 2040,
+        "wires": [
+            [
+                "f167b45d.9136c8"
+            ]
+        ]
+    },
+    {
+        "id": "f167b45d.9136c8",
+        "type": "switch",
+        "z": "5f562f66.a301e",
+        "name": "topics",
+        "property": "payload.topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "sendSettingToMqtt",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "ping",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "getLastImage",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 310,
+        "y": 2040,
+        "wires": [
+            [
+                "3a1fb97e.c10786"
+            ],
+            [
+                "1a4abfdc.2fb1b"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "1a4abfdc.2fb1b",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Ping Response",
+        "func": "if (msg.payload.restfulDevice.project != global.get('project')) return null;\nif (msg.payload.restfulDevice.deviceType != global.get('deviceTypeA')) return null;\nif (msg.payload.restfulDevice.name != global.get('deviceNameA')) return null;\ndevice = flow.get('device');\ndevice.archiveData.value = 0;\ndevice.imageData.value = null;\ndevice.faceVertSlice.value = [[],[]];\ndevice.linkQuality.value     = global.get('linkQuality');\ndevice.signalLevel.value     = global.get('signalLevel');\nvar toppy = global.get('project') + '/' + global.get('deviceTypeA') + '/' + global.get('deviceNameA') + '/reading';\nreturn {topic:toppy, payload:device};\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 520,
+        "y": 2060,
+        "wires": [
+            [
+                "76f8176c.8bfcf8"
+            ]
+        ]
+    },
+    {
+        "id": "76f8176c.8bfcf8",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "Ping request",
+        "links": [
+            "76055218.57995c",
+            "0a0d6febbbe8041a"
+        ],
+        "x": 695,
+        "y": 2060,
+        "wires": []
+    },
+    {
+        "id": "9b6cce5d.a32f9",
+        "type": "json",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 310,
+        "y": 2100,
+        "wires": [
+            [
+                "1a4abfdc.2fb1b"
+            ]
+        ]
+    },
+    {
+        "id": "73d8249e883fd432",
+        "type": "link in",
+        "z": "5f562f66.a301e",
+        "name": "websocket router in",
+        "links": [
+            "0ea325d0584f821d"
+        ],
+        "x": 95,
+        "y": 2040,
+        "wires": [
+            [
+                "75bcac45.dd63c4"
+            ]
+        ]
+    },
+    {
+        "id": "94116ed843c0725b",
+        "type": "mqtt in",
+        "z": "5f562f66.a301e",
+        "name": "Subscribe ping",
+        "topic": "$(PINGTOPIC)",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "516aef81.a2867",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 160,
+        "y": 2100,
+        "wires": [
+            [
+                "9b6cce5d.a32f9"
+            ]
+        ]
+    },
+    {
+        "id": "0a0d6febbbe8041a",
+        "type": "link in",
+        "z": "5f562f66.a301e",
+        "name": "Readings Alarm Scan in",
+        "links": [
+            "76f8176c.8bfcf8"
+        ],
+        "x": 1555,
+        "y": 840,
+        "wires": [
+            [
+                "94b1b6c9.79fca8"
+            ]
+        ]
+    },
+    {
         "id": "dd643202.3b06d",
         "type": "http in",
         "z": "c4285970.3276d8",
@@ -3331,7 +3532,7 @@
         "fieldType": "msg",
         "format": "html",
         "syntax": "mustache",
-        "template": "<!-- Body HTML -->\n    <div class='container' width=\"100%\">\n        <div class='row vert-pad' >\n            <div class='col-md-12'>\n                <a class=\"btn jumbotron-button btn-block big-text bold-text\" width='80%' href=\"/monitor\" >\n                    <table width=\"100%\" alight=\"left\">\n                        <tr>\n                            <td width=\"100%\" align=\"center\">Monitor</td>\n                        </tr>\n                    </table>\n                </a>\n            </div>\n        </div>\n        <div class='row vert-pad' >\n            <div class='col-md-12'>\n                <a class=\"btn jumbotron-button btn-block big-text bold-text\" width='80%' href=\"/setup\" >\n                    <table width=\"100%\" alight=\"left\">\n                        <tr>\n                            <td width=\"100%\" align=\"center\">Setup</td>\n                        </tr>\n                    </table>\n                </a>\n            </div>\n        </div>\n    </div>",
+        "template": "<!-- Body HTML -->\n    <div class='container' width=\"100%\">\n        <div class='row vert-pad' >\n            <div class='col-md-12'>\n                <a class=\"btn jumbotron-button btn-block big-text bold-text\" width='80%' href=\"/monitor\" >\n                    <table width=\"100%\" alight=\"left\">\n                        <tr>\n                            <td width=\"100%\" align=\"center\">Monitor</td>\n                        </tr>\n                    </table>\n                </a>\n            </div>\n        </div>\n        <div class='row vert-pad' >\n            <div class='col-md-12'>\n                <a class=\"btn jumbotron-button btn-block big-text bold-text\" width='80%' href=\"/sensor\" >\n                    <table width=\"100%\" alight=\"left\">\n                        <tr>\n                            <td width=\"100%\" align=\"center\">Sensor</td>\n                        </tr>\n                    </table>\n                </a>\n            </div>\n        </div>\n        <div class='row vert-pad' >\n            <div class='col-md-12'>\n                <a class=\"btn jumbotron-button btn-block big-text bold-text\" width='80%' href=\"/setup\" >\n                    <table width=\"100%\" alight=\"left\">\n                        <tr>\n                            <td width=\"100%\" align=\"center\">Setup</td>\n                        </tr>\n                    </table>\n                </a>\n            </div>\n        </div>\n    </div>",
         "output": "str",
         "x": 770,
         "y": 80,
@@ -3595,6 +3796,350 @@
         "wires": [
             [
                 "614c6264.32e0dc"
+            ]
+        ]
+    },
+    {
+        "id": "251eb3d859cd5d9c",
+        "type": "subflow:6a402d92.12d7c4",
+        "z": "c4285970.3276d8",
+        "name": "",
+        "x": 1170,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "866150bc137d93c0",
+        "type": "websocket out",
+        "z": "c4285970.3276d8",
+        "name": "/sensor/websocket",
+        "server": "6df0514375410c8c",
+        "client": "",
+        "x": 1080,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "43d923ea21d08a4a",
+        "type": "websocket in",
+        "z": "c4285970.3276d8",
+        "name": "/sensor/websocket",
+        "server": "6df0514375410c8c",
+        "client": "",
+        "x": 150,
+        "y": 860,
+        "wires": [
+            [
+                "0ea325d0584f821d"
+            ]
+        ]
+    },
+    {
+        "id": "0ea325d0584f821d",
+        "type": "link out",
+        "z": "c4285970.3276d8",
+        "name": "sensor websocket out",
+        "mode": "link",
+        "links": [
+            "73d8249e883fd432"
+        ],
+        "x": 315,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "caded6c2adfad00f",
+        "type": "link in",
+        "z": "c4285970.3276d8",
+        "name": "sensor web socket in",
+        "links": [
+            "9104571421cb5872"
+        ],
+        "x": 915,
+        "y": 860,
+        "wires": [
+            [
+                "866150bc137d93c0"
+            ]
+        ]
+    },
+    {
+        "id": "1482e22f.57fa2e",
+        "type": "http in",
+        "z": "c4285970.3276d8",
+        "name": "/sensor",
+        "url": "/sensor",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 500,
+        "wires": [
+            [
+                "71ce0943.81bf18"
+            ]
+        ]
+    },
+    {
+        "id": "71ce0943.81bf18",
+        "type": "function",
+        "z": "c4285970.3276d8",
+        "name": "Set Name And Device Type",
+        "func": "msg.payload['script'] = {};\nmsg.payload['script']['name'] = global.get('deviceNameA')\nmsg.payload['script']['deviceType'] = global.get('deviceTypeA');\nmsg.payload['script']['project'] = global.get('project');\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 500,
+        "wires": [
+            [
+                "6533b535.454c4c"
+            ]
+        ]
+    },
+    {
+        "id": "c76a9544.852e88",
+        "type": "template",
+        "z": "c4285970.3276d8",
+        "name": "Set Title",
+        "field": "payload.title",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "SbirTem {{{payload.script.name}}} Sensor",
+        "output": "str",
+        "x": 260,
+        "y": 580,
+        "wires": [
+            [
+                "7bb92ce8.d547e4"
+            ]
+        ]
+    },
+    {
+        "id": "450b0136.7ccbd",
+        "type": "template",
+        "z": "c4285970.3276d8",
+        "name": "body",
+        "field": "payload.body",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "    <div width=\"100%\">\n        <div class='row' style='padding-bottom: 10px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.spectrogram}}}\n            </div>\n        </div>\n        <div class='row' style='padding-bottom: 10px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.history}}}\n            </div>\n        </div>\n        <div class='row' style='padding-bottom: 10px;'>\n            <div class='col-md-12' align='center'>\n{{{payload.html.controls}}}\n            </div>\n        </div>\n    </div>\n",
+        "output": "str",
+        "x": 930,
+        "y": 700,
+        "wires": [
+            [
+                "251eb3d859cd5d9c"
+            ]
+        ]
+    },
+    {
+        "id": "6533b535.454c4c",
+        "type": "template",
+        "z": "c4285970.3276d8",
+        "name": "navBarIcon",
+        "field": "payload.navBarIcon",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "thermoYellow.png",
+        "output": "str",
+        "x": 270,
+        "y": 540,
+        "wires": [
+            [
+                "c76a9544.852e88"
+            ]
+        ]
+    },
+    {
+        "id": "7bb92ce8.d547e4",
+        "type": "template",
+        "z": "c4285970.3276d8",
+        "name": "script.global",
+        "field": "payload.script.global",
+        "fieldType": "msg",
+        "format": "javascript",
+        "syntax": "mustache",
+        "template": "// Global Javascript\n        var plotConfig = \n        {\n            trace1Title : 'Temp (C)',\n            trace1Color : '#557a95',\n            trace1GridColor : '#beceda',\n            trace2Title : 'Distance (cm)',\n            trace2Color : '#f2a31f',\n            plotLength  : 600000,\n            width   : '',\n            height  :   '500',\n            htmlId  :   'historyStripChart'\n        };\n        let historyStripChart = new StripChart(plotConfig);\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var colorScale = true;\n        var enhancementLevel = 0;\n        var pgm = null;\n        var imageArray = null;\n        var programStarted = false;\n        var audioAlarm = new Audio('/audio/hold-your-horses.ogg');\n        var audioAlarmOn = false;\n        var imageDelayChanged = false;\n        var offsetTempChanged = false;\n        var archiveMinTempChanged = false;\n        var archivePixelPercentChanged = false;\n        var faceRegionWidthChanged = false;\n        var faceRegionHeightChanged = false;\n        var keepAliveTimeChanged = false;\n        \n        var pingInterval = 5000;\n        var lastPing = new Date().getTime();\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n            $('#imageDelayButtonId').hide();\n            $('#offsetTempButtonId').hide();\n            $('#archiveMinTempButtonId').hide();\n            $('#archivePixelPercentButtonId').hide();\n            $('#faceRegionWidthButtonId').hide();\n            $('#faceRegionHeightButtonId').hide();\n            $('#keepAliveTimeButtonId').hide();\n            setInterval(function()\n            {\n                var now = new Date().getTime();\n                if ((now - lastPing) > pingInterval)\n                {\n                    lastPing = now;\n                    sendWebSocketMessageObject({topic : 'ping', userID : userID, 'restfulDevice': restfulDevice});\n                }\n            }, 1000);\n        }\n        function onWebSocketOpen()\n        {\n            if (!programStarted)\n            {\n                programStarted = true;\n                sendWebSocketMessageObject({topic : 'getLastImage', userID : userID, 'restfulDevice': restfulDevice});\n            }\n        }\n        function onWebSocketClose()\n        {\n//            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        lastPing = new Date().getTime();\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                    }\n                    break;\n                case 'lastImage':\n                    if (msg.userID == userID)\n                    {\n                        device = msg.payload;\n                        if (device.imageData.value != null)\n                        {\n                            $('#snapshotTimeStamp').text(new Date(device.timeStamp).toLocaleString('en-SE', { timeZone: 'Europe/Stockholm' }));\n                            pgm = JSON.parse(JSON.stringify(device.imageData.value));\n                            imageArray = pgm.imageArray;\n                            $('#sensorName').text('Sensor ' + device.name + ' @ ' + device.pixelMax.value.toString() + ' C');\n                            if (device.transpose.value == 0)\n                            {\n                                $('#flirCanvas').attr('width', '800');\n                            }\n                            else\n                            {\n                                $('#flirCanvas').attr('width', '450');\n                            }\n                            plotImage();\n                        }\n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            if (!imageDelayChanged)$('#imageDelayInputId').val(device.imageDelay.value);\n            if (!archiveMinTempChanged)$('#archiveMinTempInputId').val(device.archiveMinTemp.value);\n            if (!offsetTempChanged)$('#offsetTempInputId').val(device.offsetTemp.value);\n            if (!archivePixelPercentChanged)$('#archivePixelPercentInputId').val(device.archivePixelPercent.value);\n            if (!faceRegionWidthChanged)$('#faceRegionWidthInputId').val(device.faceRegionWidth.value);\n            if (!faceRegionHeightChanged)$('#faceRegionHeightInputId').val(device.faceRegionHeight.value);\n            if (!keepAliveTimeChanged)$('#keepAliveTimeInputId').val(device.keepAliveTime.value);\n            $('#ultraSoundRangeId').text(device.ultraSoundRange.value);\n            $('#bodyTempId').text(device.bodyTemp.value);\n\n            $('#transposeInputId').val(device.transpose.value);\n            $('#languageModeInputId').val(device.language.value);\n            $('#linkQualityId').text(device.linkQuality.value);\n            $('#signalLevelId').text(device.signalLevel.value);\n            if (device.resMode.value == 1)\n            {\n                $('#chipResolutionId').text('80x60');\n            }\n            else\n            {\n                $('#chipResolutionId').text('160x120');\n            }\n            \n            if (device.imageData.value != null)\n            {\n                historyStripChart.add3TracePoints(device.pixelMax.value, device.pixelMin.value, device.ultraSoundDistance.value);\n                $('#snapshotTimeStamp').text(new Date(device.timeStamp).toLocaleString('en-SE', { timeZone: 'Europe/Stockholm' }));\n                $('#sensorName').text('Sensor ' + device.name + ' @ ' + device.pixelMax.value.toString() + ' C');\n                pgm = JSON.parse(JSON.stringify(device.imageData.value));\n                imageArray = pgm.imageArray;\n                if (device.transpose.value == 0)\n                {\n                    $('#flirCanvas').attr('width', '800');\n                }\n                else\n                {\n                    $('#flirCanvas').attr('width', '450');\n                }\n                plotImage();\n                var image1dArray = [];\n                var ipixel = 0;\n                var plow = (pgm.minval - 27315) / 100;\n                var phigh = (pgm.maxval - 27315) / 100;\n                if ((device.pixelMax.alarm.value == 2) || (device.pixelMax.alarm.value == 4))\n                {\n                    if (audioAlarmOn)\n                    {\n                        var playPromise = audioAlarm.play();\n                        if (playPromise !== undefined) \n                        {\n                            playPromise.then(_ => \n                            {\n                            // Automatic playback started!\n                            // Show playing UI.\n                            }).catch(error => \n                            {\n                            // Auto-play was prevented\n                            // Show paused UI.\n                            });\n                         }\n                    }\n                }\n            }\n            else\n            {\n                historyStripChart.add1TracePoints(device.ultraSoundDistance.value);\n             }\n            \n            var buttonColor = 'green';\n            var buttonTextColor = 'black';\n            var buttonText = \"Off\";\n            if (device.flipHorizontal.value > 0) \n            {\n                buttonColor = 'red';\n                buttonText = 'On';\n            }\n            $('#flipHorizontalId').css('color', buttonTextColor); \n            $('#flipHorizontalId').css('background-color', buttonColor); \n            $('#flipHorizontalId').text(buttonText); \n\n            buttonColor = 'green';\n            buttonTextColor = 'black';\n            buttonText = \"Off\";\n            if (device.flipVertical.value > 0) \n            {\n                buttonColor = 'red';\n                buttonText = 'On';\n            }\n            $('#flipVerticalId').css('color', buttonTextColor); \n            $('#flipVerticalId').css('background-color', buttonColor); \n            $('#flipVerticalId').text(buttonText); \n        }\n        function plotImage()\n        {\n            var rgb = [];\n            var plow = (pgm.minval - 27315) / 100;\n            var phigh = (pgm.maxval - 27315) / 100;\n            var pdelta = phigh - plow;\n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var intensity = ibox / 8.0;\n                var pbox = Math.round(((phigh - plow) * intensity + plow) * 10.0) / 10.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(pbox.toString());\n                if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                if (colorScale)\n                {\n                    rgb = getRGB(intensity);\n                }\n                else\n                {\n                    rgb[0] = Math.floor(255 * intensity);\n                    rgb[1] = Math.floor(255 * intensity);\n                    rgb[2] = Math.floor(255 * intensity);\n                }\n                var style='width:88px;height:50px;background-color:' + 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                $('#box' + (ibox + 1).toString()).attr('style',style);\n            }\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var tipPointer = document.getElementById(\"tipPointer\");\n            var tipPointerContext = tipPointer.getContext(\"2d\");\n            var tip = document.getElementById(\"tip\");\n            var tipContext = tip.getContext(\"2d\");\n            tipContext.font = \"30px Arial\";\n            tipContext.fillStyle = \"cyan\";\n            tipPointerContext.fillStyle = \"cyan\";\n            if (colorScale) tipContext.fillStyle = \"black\";\n            if (colorScale) tipPointerContext.fillStyle = \"black\";\n            tipContext.textAlign = \"left\";\n\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var wrapperWidth = Number($('#wrapper').attr('width'));\n            var xOffsetKluge = Math.round((wrapperWidth - canvasWidth) / 2);\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            var rectWidth  = Math.round(canvasWidth  / pgm.ncols);\n            var rectHeight = Math.round(canvasHeight / pgm.nrows);\n            canvas.onmousemove = function (e) \n            {\n                var icol = Math.floor(e.layerX / rectWidth);\n                if (icol < 0) icol = 0;\n                if (icol >= pgm.ncols) icol = pgm.ncols - 1;\n                var irow = Math.floor((canvasHeight - e.layerY) / rectHeight);\n                if (irow < 0) irow = 0;\n                if (irow >= pgm.nrows) irow = pgm.nrows - 1;\n                var temp = Math.floor(100.0 * (pdelta * imageArray[irow][icol] / 256.0 + plow)) / 100;\n\n                tipPointer.style.top = (e.layerY  - tipPointer.height / 2).toString()  + \"px\";\n                tipPointer.style.left = (xOffsetKluge + e.layerX - tipPointer.width / 2).toString() + \"px\";\n                tipPointerContext.clearRect(0, 0, tipPointer.width, tipPointer.height);\n                tipPointerContext.fillRect( 0, 0, tipPointer.width, tipPointer.height);\n\n                tip.style.top = (e.layerY - tip.height - tipPointer.height).toString()  + \"px\";\n                tip.style.left = (xOffsetKluge + e.layerX).toString() + \"px\";\n                tipContext.clearRect(0, 0, tip.width, tip.height);\n                tipContext.fillText(temp.toString() + ' C', 0, 30);\n            };\n\n            for (var irow = 0; irow < pgm.nrows; ++irow)\n            {\n                for (var icol = 0; icol < pgm.ncols; ++icol)\n                {\n                    var intensity = imageArray[irow][icol] / 256.0;\n                    if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                    if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                    if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                    if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                    if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                    if (colorScale)\n                    {\n                        rgb = getRGB(intensity);\n                        rgb[0] = Math.floor(rgb[0]);\n                        rgb[1] = Math.floor(rgb[1]);\n                        rgb[2] = Math.floor(rgb[2]);\n                    }\n                    else\n                    {\n                        rgb[0] = Math.floor(255 * intensity);\n                        rgb[1] = Math.floor(255 * intensity);\n                        rgb[2] = Math.floor(255 * intensity);\n                    }\n                    canvasContext.fillStyle = 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                    if (intensity > 0.98) \n                    {\n                        canvasContext.fillStyle='magenta';\n                        if (colorScale) canvasContext.fillStyle='white';\n                    }\n\n                    canvasContext.fillRect(icol * rectWidth, canvasHeight - rectHeight - irow * rectHeight, rectWidth, rectHeight);\n                }    \n            }\n        }\n        function convolve(inputImage,kernalType)\n        {\n            var kernal = [\n                [[ 0,   0,    0  ], [ 0,   1,   0  ], [ 0,   0,    0  ]],\n                [[ 1,   2,    1  ], [ 2,   4,   2  ], [ 1,   2,    1  ]],\n                [[ 0,  -1,    0  ], [-1,   9,  -1  ], [ 0,  -1,    0  ]]\n                ];\n            var kernalNormal = [1.0, 16.0, 5];\n            var convolveImage = [];\n            var nrows = inputImage.length;\n            var ncols = inputImage[0].length;\n            for (var irow = 0; irow < nrows; ++irow)\n            {\n                convolveImage[irow] = [];\n                for (var icol = 0; icol < ncols; ++icol)\n                {\n                    if ((irow == 0) || (irow == (nrows - 1)))\n                    {\n                        convolveImage[irow][icol] =  inputImage[irow][icol];\n                    }\n                    else\n                    {\n                        if ((icol == 0) || (icol == (ncols - 1)))\n                        {\n                            convolveImage[irow][icol] =  inputImage[irow][icol];\n                        }\n                        else\n                        {\n                            convolveImage[irow][icol] = 0;\n                            for (var ikrow = 0; ikrow < 3; ++ikrow)\n                            {\n                                for (var ikcol = 0; ikcol < 3; ++ikcol)\n                                {\n                                    convolveImage[irow][icol] = convolveImage[irow][icol] + inputImage[irow + ikrow - 1][icol + ikcol - 1] * kernal[kernalType][ikrow][ikcol];\n                                }\n                            }\n                            convolveImage[irow][icol] = Math.round(convolveImage[irow][icol] / kernalNormal[kernalType]);\n                            if (convolveImage[irow][icol] < 0)   convolveImage[irow][icol] = 0;\n                            if (convolveImage[irow][icol] > 255) convolveImage[irow][icol] = 255;\n                        }\n                    }\n                }\n            }\n            return convolveImage;\n        }\n        function mouseLeftCanvas()\n        {\n            var tip = document.getElementById(\"tip\");\n            var tipContext = tip.getContext(\"2d\");\n            tipContext.clearRect(0, 0, tip.width, tip.height);\n            var tipPointer = document.getElementById(\"tipPointer\");\n            var tipPointerContext = tipPointer.getContext(\"2d\");\n            tipPointerContext.clearRect(0, 0, tipPointer.width, tipPointer.height);\n        }\n        function getRGB(intensity)\n        {\n          var rgb = [0,0,0];\n          var rgbCoeff = [\n              [  48.6, 349.0,    5.72, -172.0],\n              [-164.0, 705.0, -667.0 ,  379.0],\n              [ 135.0, 332.0, -976.0,   536.0]];\n          var intensityStart = [0.0, 0.3176, 0.0];\n          var power = [1.0, 0.0, 0.0, 0.0];\n          for (var ii = 1; ii < 4; ++ii) power[ii] = power[ii - 1] * intensity;\n          for (var irgb = 0; irgb < 3; ++irgb)\n          {\n              if (intensity >= intensityStart[irgb])\n              {\n                  for (var ipow = 0; ipow < 4; ++ipow)\n                  {\n                      rgb[irgb] = rgb[irgb] + rgbCoeff[irgb][ipow] * power[ipow];\n                  }\n              }\n          }\n          return rgb;\n        }\n        function getRGBRainbow(intensity)\n        {\n          var rgb = [0,0,0];\n          if ( (0 <= intensity) && (intensity <= 0.25) )\n          {\n            rgb[0] = 0;\n            rgb[1] = Math.floor(255 * intensity * 4);    \n            rgb[2] = 255;\n          }\n          if ( (0.25 < intensity) && (intensity <= 0.50) )\n          {\n            rgb[0] = 0;\n            rgb[1] = 255;    \n            rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n          }\n          if ( (0.50 < intensity) && (intensity <= 0.75) )\n          {\n            rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n            rgb[1] = 255;    \n            rgb[2] = 0;\n          }\n          if ( (0.75 < intensity) && (intensity <= 1.0) )\n          {\n            rgb[0] = 255;\n            rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n            rgb[2] = 0;\n          }\n          return rgb;\n        }\n        function toggleColorScale()\n        {\n            colorScale = !colorScale;\n            if (colorScale)\n            {\n                $('#colorScaleButton').text('Color');\n            }\n            else\n            {\n                $('#colorScaleButton').text('Gray');\n            }\n            plotImage();\n        }\n        function toggleEnhancedScale(deltaEnhanced)\n        {\n            enhancementLevel = enhancementLevel + deltaEnhanced;\n            if (enhancementLevel >  2) enhancementLevel = 2;\n            if (enhancementLevel < -2) enhancementLevel = -2;\n            $('#enhancementLevel').text(enhancementLevel.toString());\n            plotImage();\n        }\n        function clearImage()\n        {\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);        \n            $('#snapshotTimeStamp').text('-');\n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var intensity = ibox / 8.0;\n                var pbox = 0.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(pbox.toString());\n            } \n            $('#pixelMaxBarPlot').hide();\n        }\n        function toggleSound()\n        {\n            audioAlarmOn = !audioAlarmOn;\n            if(audioAlarmOn)\n            {\n                $('#soundButtonId').css('color', 'black'); \n                $('#soundButtonId').css('background-color', 'green'); \n                $('#soundButtonId').text('On'); \n            }\n            else\n            {\n                $('#soundButtonId').css('color', 'black'); \n                $('#soundButtonId').css('background-color', 'grey'); \n                $('#soundButtonId').text('Off'); \n            }\n\n        }\n        function flipHorizontal()\n        {\n            if (device.flipHorizontal.value > 0)\n            {\n                device.flipHorizontal.value = 0;\n            }\n            else\n            {\n                device.flipHorizontal.value = 1;\n                \n            }\n            $('#flipHorizontalId').css('color', 'black'); \n            $('#flipHorizontalId').css('background-color', 'grey'); \n            $('#flipHorizontalId').text('?'); \n            var mqttMessage = \n            {\n                topic   : mqttDevice.project + '/' +  mqttDevice.deviceType + '/' +  mqttDevice.name + '/setting',\n                payload :  device\n            };\n            sendSettingToMqtt(mqttMessage);\n        }\n        function flipVertical()\n        {\n            if (device.flipVertical.value > 0)\n            {\n                device.flipVertical.value = 0;\n            }\n            else\n            {\n                device.flipVertical.value = 1;\n                \n            }\n            $('#flipVerticalId').css('color', 'black'); \n            $('#flipVerticalId').css('background-color', 'grey'); \n            $('#flipVerticalId').text('?'); \n            var mqttMessage = \n            {\n                topic   : mqttDevice.project + '/' +  mqttDevice.deviceType + '/' +  mqttDevice.name + '/setting',\n                payload :  device\n            };\n            sendSettingToMqtt(mqttMessage);\n        }\n        function setScalarValue(settingValue, attrName)\n        {\n            var settingAttr = device[attrName];\n            if ( (settingAttr.alarm.limits.lolo <= settingValue) && (settingValue <= settingAttr.alarm.limits.hihi) )\n            {\n                settingAttr.value = settingValue;\n                var mqttMessage = \n                {\n                    topic   : mqttDevice.project + '/' +  mqttDevice.deviceType + '/' +  mqttDevice.name + '/setting',\n                    payload :  device\n                };\n                sendSettingToMqtt(mqttMessage);\n            } \n            else\n            {\n                acknowledgeDialog('Acknowledge', 'Error', 'Entry outside range! (' + settingAttr.alarm.limits.lolo.toString() + '-' + settingAttr.alarm.limits.hihi.toString() + ' ' + settingAttr.unit);\n            }\n        }\n        function imageDelayChange()\n        {\n            imageDelayChanged = true;\n            $('#imageDelayButtonId').show();\n        }\n        function archiveMinTempChange()\n        {\n            archiveMinTempChanged = true;\n            $('#archiveMinTempButtonId').show();\n        }\n        function offsetTempChange()\n        {\n            offsetTempChanged = true;\n            $('#offsetTempButtonId').show();\n        }\n        function archivePixelPercentChange()\n        {\n            archivePixelPercentChanged = true;\n            $('#archivePixelPercentButtonId').show();\n        }\n        function faceRegionWidthChange()\n        {\n            faceRegionWidthChanged = true;\n            $('#faceRegionWidthButtonId').show();\n        }\n        function faceRegionHeightChange()\n        {\n            faceRegionHeightChanged = true;\n            $('#faceRegionHeightButtonId').show();\n        }\n        function keepAliveTimeChange()\n        {\n            keepAliveTimeChanged = true;\n            $('#keepAliveTimeButtonId').show();\n        }\n        function imageDelay()\n        {\n            $('#imageDelayButtonId').hide();\n            if (isNaN($('#imageDelayInputId').val()))\n            {\n                imageDelayChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#imageDelayInputId').val()), 'imageDelay');\n            imageDelayChanged = false;\n        }\n        function archiveMinTemp()\n        {\n            $('#archiveMinTempButtonId').hide();\n            if (isNaN($('#archiveMinTempInputId').val()))\n            {\n                archiveMinTempChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#archiveMinTempInputId').val()), 'archiveMinTemp');\n            archiveMinTempChanged = false;\n        }\n        function offsetTemp()\n        {\n            $('#offsetTempButtonId').hide();\n            if (isNaN($('#offsetTempInputId').val()))\n            {\n                offsetTempChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#offsetTempInputId').val()), 'offsetTemp');\n            offsetTempChanged = false;\n        }\n        function archivePixelPercent()\n        {\n            $('#archivePixelPercentButtonId').hide();\n            if (isNaN($('#archivePixelPercentInputId').val()))\n            {\n                archivePixelPercentChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#archivePixelPercentInputId').val()), 'archivePixelPercent');\n            archivePixelPercentChanged = false;\n        }\n        function faceRegionWidth()\n        {\n            $('#faceRegionWidthButtonId').hide();\n            if (isNaN($('#faceRegionWidthInputId').val()))\n            {\n                faceRegionWidthChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#faceRegionWidthInputId').val()), 'faceRegionWidth');\n            faceRegionWidthChanged = false;\n        }\n        function faceRegionHeight()\n        {\n            $('#faceRegionHeightButtonId').hide();\n            if (isNaN($('#faceRegionHeightInputId').val()))\n            {\n                faceRegionHeightChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#faceRegionHeightInputId').val()), 'faceRegionHeight');\n            faceRegionHeightChanged = false;\n        }\n        function keepAliveTime()\n        {\n            $('#keepAliveTimeButtonId').hide();\n            if (isNaN($('#keepAliveTimeInputId').val()))\n            {\n                keepAliveTimeChanged = false;\n                return;\n            }\n            setScalarValue(Number($('#keepAliveTimeInputId').val()), 'keepAliveTime');\n            keepAliveTimeChanged = false;\n        }\n\n       function transpose()\n        {\n            if (isNaN($('#transposeInputId').val()))\n            {\n                 return;\n            }\n            setScalarValue(Number($('#transposeInputId').val()), 'transpose');\n        }\n        function languageMode()\n        {\n            if (isNaN($('#languageModeInputId').val()))\n            {\n                 return;\n            }\n            setScalarValue(Number($('#languageModeInputId').val()), 'language');\n        }\n",
+        "output": "str",
+        "x": 630,
+        "y": 500,
+        "wires": [
+            [
+                "51e6893d.3db098"
+            ]
+        ]
+    },
+    {
+        "id": "cf60059e.7e53a8",
+        "type": "template",
+        "z": "c4285970.3276d8",
+        "name": "javascript",
+        "field": "payload.javascript",
+        "fieldType": "msg",
+        "format": "javascript",
+        "syntax": "mustache",
+        "template": "{{{payload.script.stripChartWidget}}}\n{{{payload.script.global}}}\n{{{payload.script.horzbarWidget}}}\n{{{payload.script.editDevice}}}\n{{{payload.script.dangerZone}}}\n",
+        "output": "str",
+        "x": 620,
+        "y": 660,
+        "wires": [
+            [
+                "fd846092.bca31"
+            ]
+        ]
+    },
+    {
+        "id": "fd846092.bca31",
+        "type": "template",
+        "z": "c4285970.3276d8",
+        "name": "html.spectrogram",
+        "field": "payload.html.spectrogram",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "<!-- Dashboard HTML -->\n                <div class='card'>\n                    <p class='card-title'>Temperature</p>\n                    <div class='card-body' align=\"center\">\n                        <div class='row' style='padding-bottom: 25px;'>\n                            <div class=\"container-fluid \" align=\"center\">\n                                <table width='800px'>\n                                    <tr>\n                                        <td align=\"center\">\n                                            <div id=\"wrapper\" width=\"800\" height=\"600\" style=\"position:relative;\"  onmouseleave=\"mouseLeftCanvas()\">\n                                                <canvas id=\"flirCanvas\" width=\"800\" height=\"600\" style=\"border:1px solid #000000;\"></canvas>\n                                                <canvas id=\"tip\" width=125 height=30 style=\"position:absolute;\"></canvas>\n                                                <canvas id=\"tipPointer\" width=10 height=10 style=\"position:absolute;\"></canvas>\n                                            </div>\n                                        </td>\n                                    </tr>\n                                </table>\n                            </div>\n                            <div class=\"container-fluid \" align=\"center\" style='padding-top: 0px;'>\n                                <table  width='792'>\n                                    <tr>\n                                        <td width=\"88px\">\n                                            <div id='box1' style=\"width:88px;height:50px;background-color:#0000ff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box2' style=\"width:88px;height:50px;background-color:#0088ff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box3' style=\"width:88px;height:50px;background-color:#00ffff\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box4' style=\"width:88px;height:50px;background-color:#00ff88\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box5' style=\"width:88px;height:50px;background-color:#00ff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box6' style=\"width:88px;height:50px;background-color:#88ff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box7' style=\"width:88px;height:50px;background-color:#ffff00\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box8' style=\"width:88px;height:50px;background-color:#ff8800\"></div>\n                                        </td>\n                                        <td width=\"88px\">\n                                            <div id='box9' style=\"width:88px;height:50px;background-color:#ff0000\"></div>\n                                        </td>\n                                    </tr>\n                                    <tr>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box1Label'>1</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box2Label'>2</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box3Label'>3</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box4Label'>4</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box5Label'>5</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box6Label'>6</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box7Label'>7</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box8Label'>8</span>\n                                        </td>\n                                        <td align='center' width=\"88px\">\n                                            <span style='font-size: 200%;' id='box9Label'>9</span>\n                                        </td>\n                                    </tr>\n                                </table>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                           <tr>\n                                                <td width='40%' align='left'>\n                                                    <span  class='card-text' id='sensorName'>Sensor xx</span>\n                                                </td>\n                                                <td width='60%' align='right'>\n                                                    <span  class='card-text' id='snapshotTimeStamp'></span>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width=\"60%\" align='left'>\n                                                    <span  class='card-text'>Color Mode</span>\n                                                </td>\n                                                <td width=\"40%\">\n                                                    <button class='btn btn-block card-button big-text' id=\"colorScaleButton\" onclick=\"toggleColorScale()\" >Color</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width=\"60%\" align='left'>\n                                                    <span  class='card-text'>Enhancement Level</span>\n                                                </td>\n                                                <td width=\"14%\" >\n                                                    <button class='btn btn-block card-button big-text' onclick=\"toggleEnhancedScale(-1)\">-</button>\n                                                </td>\n                                                <td width=\"12%px\" align='center'>\n                                                    <span  class='card-text' id=\"enhancementLevel\" >0</span>\n                                                </td>\n                                                <td width=\"14%\">\n                                                    <button class='btn btn-block card-button big-text' onclick=\"toggleEnhancedScale(1)\">+</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                   </div>\n                </div>\n",
+        "output": "str",
+        "x": 970,
+        "y": 500,
+        "wires": [
+            [
+                "63f10e7d.89f75"
+            ]
+        ]
+    },
+    {
+        "id": "1c06ea5e.a92546",
+        "type": "template",
+        "z": "c4285970.3276d8",
+        "name": "script.dangerZone",
+        "field": "payload.script.dangerZone",
+        "fieldType": "msg",
+        "format": "javascript",
+        "syntax": "mustache",
+        "template": "// dangerZone JavaScript\n        function restartTray()\n        {\n            optionDialog('Danger! Will Robinson, Danger!', 'Restart Tray', 'This should not be done lightly', ['Reset Tray','Cancel'], [function (){restartTrayButtonPress();}, function (){$( \"#optionDialog\" ).dialog( \"close\" );}]);\n        }\n        function restartTrayButtonPress()\n        {\n            $( \"#optionDialog\" ).dialog( \"close\" );\n            var mqttMessage = \n            {\n                topic   : restfulDevice.project + '/' +  restfulDevice.deviceType + '/' +  restfulDevice.name + '/restartTray',\n                payload :  1\n            };\n            sendSettingToMqtt(mqttMessage);\n        }\n",
+        "output": "str",
+        "x": 650,
+        "y": 620,
+        "wires": [
+            [
+                "cf60059e.7e53a8"
+            ]
+        ]
+    },
+    {
+        "id": "b37ca0a6.4938b",
+        "type": "template",
+        "z": "c4285970.3276d8",
+        "name": "html.dangerZone",
+        "field": "payload.html.dangerZone",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "                <div class='danger-card'>\n                    <div class='row'>\n                        <div class='col-md-2'>\n                        </div>\n                        <div class='col-md-8'>\n                            <p class='danger-card-title'>Danger Zone</p>\n                         </div>\n                        <div class='col-md-2'>\n                        </div>\n                    </div>\n                    <div class='danger-card-body' align=\"center\">\n                        <div class='row'>\n                            <table width='100%'>\n                                <tr>\n                                    <td width='100%' align=\"center\">\n                                        <button class='btn danger-card-button big-text' id=\"restartTrayButton\" onclick=\"restartTray()\" >Restart Tray</button>\n                                    </td>\n                                </tr>\n                            </table>\n                        </div>\n                    </div>\n                </div>\n",
+        "output": "str",
+        "x": 970,
+        "y": 660,
+        "wires": [
+            [
+                "450b0136.7ccbd"
+            ]
+        ]
+    },
+    {
+        "id": "74981fb8.4f6d9",
+        "type": "template",
+        "z": "c4285970.3276d8",
+        "name": "html.wifimon",
+        "field": "payload.html.wifimon",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "<!-- Dashboard HTML -->\n                <div class='card'>\n                    <p class='card-title'>WiFi Connection</p>\n                    <div class='card-body' align=\"center\">\n                        <div class='row'  style='padding-top: 0px;'>\n                            <table width='100%'>\n                                <tr>\n                                    <td width='60%' >\n                                        <span class='card-text' >Device Update</span>\n                                    </td>\n                                    <td width='20%' align='center'></td>\n                                    <td width='20%' align='center'>\n                                        <img src='/img/heartRed.png' id='heartBeatID' width='100px' height='100px'/>\n                                    </td>\n                                </tr>\n                                <tr>\n                                    <td width='60%' >\n                                        <span class='card-text' >Signal Level (dBm)</span>\n                                    </td>\n                                    <td width='20%' align='center'></td>\n                                    <td width='20%' align='center'>\n                                        <span class='card-text' id='signalLevelId' >-100</span>\n                                    </td>\n                                </tr>\n                                <tr>\n                                    <td width='60%' >\n                                        <span class='card-text' >Link Quality (/70)</span>\n                                    </td>\n                                    <td width='20%' align='center'></td>\n                                    <td width='20%' align='center'>\n                                        <span class='card-text' id='linkQualityId' >-1</span>\n                                    </td>\n                                </tr>\n                            </table>\n                        </div>\n                    </div>\n                </div>\n",
+        "output": "str",
+        "x": 950,
+        "y": 620,
+        "wires": [
+            [
+                "b37ca0a6.4938b"
+            ]
+        ]
+    },
+    {
+        "id": "d34771f6.a55f6",
+        "type": "template",
+        "z": "c4285970.3276d8",
+        "name": "script.editDevice",
+        "field": "payload.script.editDevice",
+        "fieldType": "msg",
+        "format": "javascript",
+        "syntax": "mustache",
+        "template": "// Edit Temp JavaScript\n       $( function() \n        {\n            $( \"#editDeviceDialog\" ).dialog(\n                {\n//                    closeOnEscape: false,\n//                    open: function(event, ui) {$(\".ui-dialog-titlebar-close\", ui.dialog | ui).hide();},\n                    width:    640,\n                    autoOpen: false,\n                    buttons:\n                    [\n                        {\n                            text: \"Set\",\n                            click: function() {setDevice(); $( this ).dialog( \"close\" );},\n                            showText: false\n                        },\n                        {\n                            text: \"Cancel\",\n                            click: function() \n                            {\n                                $( this ).dialog( \"close\" ); \n                            },\n                            showText: false\n                        }\n                    ]\n                });\n        } );\n        function editDevice(attrName)\n        {\n            $( \"#editDeviceDialog\" ).dialog( \"option\", \"title\", \"Edit\"); \n            editedAttribute = attrName;\n            $( \"#editDeviceDialogAttribute\").html(attrName);\n\n            var attr = device[attrName];\n            $( \"#loloAlarm\").val(attr.alarm.limits.lolo);\n            $( \"#lowAlarm\").val(attr.alarm.limits.low);\n            $( \"#highAlarm\").val(attr.alarm.limits.high);\n            $( \"#hihiAlarm\").val(attr.alarm.limits.hihi);\n            $( \"#notifyName\").val(attr.alarm.notify.name);\n            $( \"#notifyNumber\").val(attr.alarm.notify.number);\n\n            $( \"#editDeviceDialog\" ).dialog( \"open\" );\n        }\n        function setDevice()\n        {\n            var attr = device[editedAttribute];\n            if (isNaN($('#loloAlarm').val()) \n                || isNaN($('#lowAlarm').val()) \n                || isNaN($('#highAlarm').val()) \n                || isNaN($('#hihiAlarm').val()))\n            {\n                acknowledgeDialog('Error', 'Entry not a number!', editedAttribute);\n                editedAttribute = '';\n                return;\n            }\n            editedAttribute = '';\n\n            attr.alarm.limits.lolo = Number($( \"#loloAlarm\").val());\n            attr.alarm.limits.low = Number($( \"#lowAlarm\").val());\n            attr.alarm.limits.high = Number($( \"#highAlarm\").val());\n            attr.alarm.limits.hihi = Number($( \"#hihiAlarm\").val());\n            attr.alarm.notify.number =  $( \"#notifyNumber\").val();\n            attr.alarm.notify.name = $( \"#notifyName\").val();\n            var mqttMessage = \n            {\n                topic   : mqttDevice.project + '/' +  mqttDevice.deviceType + '/' +  mqttDevice.name + '/setting',\n                payload :  device\n            };\n            sendSettingToMqtt(mqttMessage);\n        }\n",
+        "output": "str",
+        "x": 640,
+        "y": 580,
+        "wires": [
+            [
+                "1c06ea5e.a92546"
+            ]
+        ]
+    },
+    {
+        "id": "ac502b1d.d51818",
+        "type": "template",
+        "z": "c4285970.3276d8",
+        "name": "html.controls",
+        "field": "payload.html.controls",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "<!-- Dashboard HTML -->\n                <div class='card'>\n                    <p class='card-title'>Controls</p>\n                    <div class='card-body' align=\"center\">\n                        <div class='row' style='padding-bottom: 25px;'>\n                            <div class=\"container-fluid \" align=\"center\" style='padding-top: 0px;'>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%' >\n                                                    <span class='card-text' >Alarm Sound</span>\n                                                </td>\n                                                <td width='40%' align='center'>\n                                                    <button class='btn btn-block big-text' style='background-color:green;color:black' id='soundButtonId' onclick=\"toggleSound()\" >On</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%' >\n                                                    <span class='card-text' >Flip Horizontal</span>\n                                                </td>\n                                                <td width='40%' align='center'>\n                                                    <button class='btn btn-block big-text' style='background-color:grey;color:black' id='flipHorizontalId' onclick=\"flipHorizontal()\" >?</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%' >\n                                                    <span class='card-text' >Flip Vertical</span>\n                                                </td>\n                                                <td width='40%' align='center'>\n                                                    <button class='btn btn-block big-text' style='background-color:grey;color:black' id='flipVerticalId' onclick=\"flipVertical()\" >?</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Image Delay (mS)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"imageDelayInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"imageDelayChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"imageDelayButtonId\" onclick=\"imageDelay()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Keep Alive (mS)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"keepAliveTimeInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"keepAliveTimeChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"keepAliveTimeButtonId\" onclick=\"keepAliveTime()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >UltraSound Range (cm)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <span class='card-text' id=\"ultraSoundRangeId\" ></span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"ultraSoundRangeButtonId\" onclick=\"editDevice('ultraSoundRange')\" >Edit</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Body Temp (C)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <span class='card-text' id=\"bodyTempId\" ></span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"bodyTempButtonId\" onclick=\"editDevice('bodyTemp')\" >Edit</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Offset Temp (C)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"offsetTempInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"offsetTempChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"offsetTempButtonId\" onclick=\"offsetTemp()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Archive Temp (C)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"archiveMinTempInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"archiveMinTempChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"archiveMinTempButtonId\" onclick=\"archiveMinTemp()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Archive Pixel (%)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"archivePixelPercentInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"archivePixelPercentChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"archivePixelPercentButtonId\" onclick=\"archivePixelPercent()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Face Region Width (px)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"faceRegionWidthInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"faceRegionWidthChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"faceRegionWidthButtonId\" onclick=\"faceRegionWidth()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Face Region Height (px)</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <input id=\"faceRegionHeightInputId\" type=\"text\" value=\"0\" class=\"big-text\"  size=\"8\" oninput=\"faceRegionHeightChange()\"/>\n                                                </td>\n                                                <td width='20%'>\n                                                    <button class='btn btn-block card-button big-text' id=\"faceRegionHeightButtonId\" onclick=\"faceRegionHeight()\" >&#10003;</button>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Display Mode</span>\n                                                </td>\n                                                <td width='40%'>\n                                                    <select class=\"custom-select big-text\"  id=\"transposeInputId\" onchange=\"transpose()\">\n                                                        <option value=\"0\">Landscape</option>\n                                                        <option value=\"1\">Portrait</option>\n                                                    </select>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Language</span>\n                                                </td>\n                                                <td width='40%'>\n                                                    <select class=\"custom-select big-text\"  id=\"languageModeInputId\" onchange=\"languageMode()\" >\n                                                        <option value=\"0\">English</option>\n                                                        <option value=\"1\">Swedish</option>\n                                                        <option value=\"2\">Greek</option>\n                                                        <option value=\"3\">Spanish</option>\n                                                        <option value=\"4\">Italian</option>\n                                                        <option value=\"5\">German</option>\n                                                        <option value=\"6\">French</option>\n                                                    </select>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                                <div class='row' style='padding-bottom: 15px;'>\n                                    <div class=\"container-fluid \" align=\"center\">\n                                        <table  width='100%'>\n                                            <tr>\n                                                <td width='60%'>\n                                                    <span class='card-text' >Chip Resolution</span>\n                                                </td>\n                                                <td width='20%'>\n                                                    <span class='card-text' id=\"chipResolutionId\" >80x60</span>\n                                                </td>\n                                                <td width='20%'>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                   </div>\n                </div>\n                <div id=\"editDeviceDialog\" title=\"Edit Device\" class='card'>\n                    <p class='card-title' id='editDeviceDialogAttribute'>Attribute</p>\n                    <div class='card-body'>\n                        <table>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">LoLo</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"loloAlarm\" type=\"text\" value=\"0\" /></td>\n                            </tr>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">LOW</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"lowAlarm\" type=\"text\" value=\"0\" /></td>\n                            </tr>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">HIGH</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"highAlarm\" type=\"text\" value=\"0\" /></td>\n                            </tr>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">HiHi</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"hihiAlarm\" type=\"text\" value=\"0\" /></td>\n                            </tr>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">Notify Name</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"notifyName\" type=\"text\" value=\"\" /></td>\n                            </tr>\n                            <tr>\n                                <td width=\"70%\" align=\"left\">  <span class=\"tableHeading tableText\">Notify Number</span></td>\n                                <td width=\"30%\" align=\"right\"><input class=\"form-control tableText\" id=\"notifyNumber\" type=\"text\" value=\"\" /></td>\n                            </tr>\n                        </table>\n                    </div>\n                </div>",
+        "output": "str",
+        "x": 950,
+        "y": 580,
+        "wires": [
+            [
+                "74981fb8.4f6d9"
+            ]
+        ]
+    },
+    {
+        "id": "63f10e7d.89f75",
+        "type": "template",
+        "z": "c4285970.3276d8",
+        "name": "html.history",
+        "field": "payload.html.history",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "<!-- History HTML -->\n                <div class='card'>\n                    <p class='card-title'>History</p>\n                    <div class='card-body' align=\"center\">\n                        <div id=\"historyStripChart\" width=\"100%\" ></div>\n                    </div>\n                </div>\n",
+        "output": "str",
+        "x": 950,
+        "y": 540,
+        "wires": [
+            [
+                "ac502b1d.d51818"
+            ]
+        ]
+    },
+    {
+        "id": "51e6893d.3db098",
+        "type": "template",
+        "z": "c4285970.3276d8",
+        "name": "script.stripChartWidget",
+        "field": "payload.script.stripChartWidget",
+        "fieldType": "msg",
+        "format": "javascript",
+        "syntax": "mustache",
+        "template": "// StripChart Widget\n        class StripChart\n        {\n           constructor(plotConfig) \n            {\n                this.plotConfig = plotConfig;\n                this.plotStartTime = new Date().getTime();\n                this.layout =\n                {\n                    showlegend  : true,\n                    legend      : { x: 0, y: 1.15},\n                    height      : plotConfig.height,\n                    width       : plotConfig.width,\n                    xaxis       :\n                    {\n//                        title: 'Seconds since ' + new Date(this.plotStartTime).toLocaleString(),\n                        type: 'date'\n                    },\n                    yaxis:\n                    {\n                        title           : plotConfig.trace1Title,\n                        titlefont       : {color: plotConfig.trace1Color},\n                        tickfont        : {color:plotConfig.trace1Color},\n                        gridcolor       : plotConfig.trace1GridColor,\n                        zerolinecolor   : plotConfig.trace1GridColor,\n                        linecolor       : plotConfig.trace1GridColor,\n//                        range: [0, 2]\n        \n                    },\n                    yaxis2:\n                    {\n                        title           : plotConfig.trace2Title,\n                        titlefont       : {color: plotConfig.trace2Color},\n                        tickfont        : {color:plotConfig.trace2Color},\n                        gridcolor       : plotConfig.trace2GridColor,\n                        zerolinecolor   : plotConfig.trace2GridColor,\n                        linecolor       : plotConfig.trace2GridColor,\n                        overlaying: 'y',\n                        side: 'right',\n//                        range: [0, 2]\n                    },\n                    margin: \n                        {\n                            t: 30, //top margin\n        //                    l: 0, //left margin\n        //                    r: 0, //right margin\n        //                    b: 20 //bottom margin\n                        },\n                };\n                this.trace1 = \n                {\n                    x: [],\n                    y: [],\n                    name: 'Max Temp',\n                    yaxis: 'y1',\n                    type: 'scatter',\n                    mode: 'markers',\n                    marker: {\n                        color: 'red',\n                        size: 10,\n                        symbol: 'circle'\n                    }\n                };\n                this.trace2 = \n                {\n                    x: [],\n                    y: [],\n                    name: 'Min Temp',\n                    yaxis: 'y1',\n                    type: 'scatter',\n                    mode: 'markers',\n                    marker: {\n                        color: 'green',\n                        size: 10,\n                        symbol: 'square'\n                    }\n                };\n                this.trace3 = \n                {\n                    x: [],\n                    y: [],\n                    name: 'Distance',\n                    yaxis: 'y2',\n                    type: 'scatter',\n                    mode: 'markers',\n                    marker: {\n                        color: this.plotConfig.trace2Color,\n                        size: 5,\n                        symbol: 'diamond'\n                    }\n                };\n            }\n            add1TracePoints(trace3Pt)\n            {\n                var now = new Date().getTime();\n                var plotBeginning = now - this.plotConfig.plotLength;\n                var removeDone = false;\n                while(!removeDone)\n                {\n                    if (this.trace1.x[0] < plotBeginning)\n                    {\n                        this.trace1.x.shift();\n                        this.trace1.y.shift();\n                    }\n                    else\n                    {\n                        removeDone = true;\n                    }\n                }\n                removeDone = false;\n                while(!removeDone)\n                {\n                    if (this.trace2.x[0] < plotBeginning)\n                    {\n                        this.trace2.x.shift();\n                        this.trace2.y.shift();\n                    }\n                    else\n                    {\n                        removeDone = true;\n                    }\n                }\n                removeDone = false;\n                while(!removeDone)\n                {\n                    if (this.trace3.x[0] < plotBeginning)\n                    {\n                        this.trace3.x.shift();\n                        this.trace3.y.shift();\n                    }\n                    else\n                    {\n                        removeDone = true;\n                    }\n                }\n        \n                this.trace3.x.push(now);\n                this.trace3.y.push(trace3Pt);\n                Plotly.newPlot(this.plotConfig.htmlId, [this.trace1, this.trace2, this.trace3], this.layout);\n            }\n            add3TracePoints(trace1Pt, trace2Pt, trace3Pt)\n            {\n                var now = new Date().getTime();\n                var plotBeginning = now - this.plotConfig.plotLength;\n                var removeDone = false;\n                while(!removeDone)\n                {\n                    if (this.trace1.x[0] < plotBeginning)\n                    {\n                        this.trace1.x.shift();\n                        this.trace1.y.shift();\n                    }\n                    else\n                    {\n                        removeDone = true;\n                    }\n                }\n                removeDone = false;\n                while(!removeDone)\n                {\n                    if (this.trace2.x[0] < plotBeginning)\n                    {\n                        this.trace2.x.shift();\n                        this.trace2.y.shift();\n                    }\n                    else\n                    {\n                        removeDone = true;\n                    }\n                }\n                removeDone = false;\n                while(!removeDone)\n                {\n                    if (this.trace3.x[0] < plotBeginning)\n                    {\n                        this.trace3.x.shift();\n                        this.trace3.y.shift();\n                    }\n                    else\n                    {\n                        removeDone = true;\n                    }\n                }\n        \n                this.trace1.x.push(now);\n                this.trace1.y.push(trace1Pt);\n                this.trace2.x.push(now);\n                this.trace2.y.push(trace2Pt);\n                this.trace3.x.push(now);\n                this.trace3.y.push(trace3Pt);\n                Plotly.newPlot(this.plotConfig.htmlId, [this.trace1, this.trace2, this.trace3], this.layout);\n            }\n        }\n",
+        "output": "str",
+        "x": 660,
+        "y": 540,
+        "wires": [
+            [
+                "d34771f6.a55f6"
             ]
         ]
     },

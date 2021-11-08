@@ -7,7 +7,7 @@
   "linkQuality": {
     "action": "reading",
     "type": "scalar",
-    "value": 58,
+    "value": 70,
     "unit": "/70",
     "alarm": {
       "value": 0,
@@ -27,7 +27,7 @@
   "signalLevel": {
     "action": "reading",
     "type": "scalar",
-    "value": -52,
+    "value": -27,
     "unit": "dBm",
     "alarm": {
       "value": 0,
@@ -87,7 +87,7 @@
   "ultraSoundDistance": {
     "action": "reading",
     "type": "scalar",
-    "value": 191,
+    "value": 155,
     "unit": "cm",
     "alarm": {
       "value": 0,
@@ -287,7 +287,7 @@
   "language": {
     "action": "setting",
     "type": "scalar",
-    "value": 0,
+    "value": 1,
     "unit": "unit",
     "alarm": {
       "value": 0,
