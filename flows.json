@@ -634,7 +634,7 @@
         "createDir": false,
         "overwriteFile": "true",
         "encoding": "none",
-        "x": 1090,
+        "x": 1110,
         "y": 80,
         "wires": [
             []
@@ -709,7 +709,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Save initSettings in Memory",
-        "func": "msg.payload.ultraSoundRange.value = msg.payload.ultraSoundRange.alarm.limits.low;\nflow.set('device', msg.payload);\nflow.set('newSetting', 1);\nflow.set('pgm',null);\nreturn null;",
+        "func": "msg.payload.ultraSoundRange.value = msg.payload.ultraSoundRange.alarm.limits.low;\nmsg.payload.autoModeAction.value = 0;\nflow.set('device', msg.payload);\nflow.set('pgm',null);\nreturn null;",
         "outputs": 0,
         "noerr": 0,
         "initialize": "",
@@ -740,9 +740,12 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Settings Alarm Scan",
-        "func": "scalarAlarmScan(msg.payload, 'setting');\nflow.set('device', msg.payload); \nflow.set('newSetting', 1); \nreturn msg;\n\nfunction getActionArray(device, type, actionType)\n{\n    var actionArray = [];\n    var keys = Object.keys(device);\n    for (var ii = 0; ii < keys.length; ++ii)\n    {\n        if (device[keys[ii]].hasOwnProperty('type'))\n        {\n            if (device[keys[ii]].type == type)\n            {\n                if (device[keys[ii]].action == actionType)\n                {\n                    actionArray.push(device[keys[ii]]);\n                }\n            }\n        }\n    }\n    return actionArray;\n}\nfunction scalarAlarmScan(device, actionType)\n{\n    var actionArray = getActionArray(device, 'scalar', actionType);\n    if (actionArray.length > 0)\n    {\n        for (var ii = 0; ii < actionArray.length; ++ii)\n        {\n            actionArray[ii].alarm.value = 0;\n            if (!isNaN(actionArray[ii].value))\n            {\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.low)  actionArray[ii].alarm.value = 1;\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.lolo) actionArray[ii].alarm.value = 3;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.high) actionArray[ii].alarm.value = 2;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.hihi) actionArray[ii].alarm.value = 4;\n            }\n        }\n    }\n}\n",
+        "func": "scalarAlarmScan(msg.payload, 'setting');\nflow.set('device', msg.payload); \nreturn msg;\n\nfunction getActionArray(device, type, actionType)\n{\n    var actionArray = [];\n    var keys = Object.keys(device);\n    for (var ii = 0; ii < keys.length; ++ii)\n    {\n        if (device[keys[ii]].hasOwnProperty('type'))\n        {\n            if (device[keys[ii]].type == type)\n            {\n                if (device[keys[ii]].action == actionType)\n                {\n                    actionArray.push(device[keys[ii]]);\n                }\n            }\n        }\n    }\n    return actionArray;\n}\nfunction scalarAlarmScan(device, actionType)\n{\n    var actionArray = getActionArray(device, 'scalar', actionType);\n    if (actionArray.length > 0)\n    {\n        for (var ii = 0; ii < actionArray.length; ++ii)\n        {\n            actionArray[ii].alarm.value = 0;\n            if (!isNaN(actionArray[ii].value))\n            {\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.low)  actionArray[ii].alarm.value = 1;\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.lolo) actionArray[ii].alarm.value = 3;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.high) actionArray[ii].alarm.value = 2;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.hihi) actionArray[ii].alarm.value = 4;\n            }\n        }\n    }\n}\n",
         "outputs": 1,
         "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
         "x": 720,
         "y": 80,
         "wires": [
@@ -756,7 +759,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Scan Ellipse",
-        "func": "device = msg.payload;\nvar toppy = global.get('project') + '/' + global.get('deviceTypeA') + '/' + global.get('deviceNameA') + '/reading';\nvar actionMsg = null;\ndevice.archiveData.value = 1;\n\nvar imageAnal = imageAnalysis(JSON.parse(JSON.stringify(device.imageData.value)), device.faceRegionHeight.value, device.faceRegionWidth.value, device.archiveMinTemp.value);\n//    var imageAnal = imageAnalysis(device.imageData.value, device.faceRegionHeight.value, device.faceRegionWidth.value, device.archiveMinTemp.value);\n\ndevice.pixelMin.value = Math.round(10 *imageAnal.minPix ) / 10;\ndevice.pixelMax.value  = Math.round(10 *imageAnal.maxPix ) / 10;\ndevice.bodyTemp.value = 0;\nif(imageAnal.boxPercent > device.archivePixelPercent.value) device.autoModeAction.value = 1;\n\nreturn {topic:toppy, payload:device};\n\nfunction imageAnalysis(imagePgm, ellipseHeight,ellipseWidth, boxThresholdC)\n{\n    var imageArray = imagePgm.imageArray;\n    var nrows = imageArray.length;\n    var ncols = imageArray[0].length;\n    var minPix = 500.0;\n    var maxPix = -273.0;\n    var nrows = imageArray.length;\n    var ncols = imageArray[0].length;\n    var boxPercent = 0;\n    var maxBoxTempC = -273.0;\n    var boxCnt = 0;\n    var rad2 = ellipseHeight * ellipseWidth / 2.0;\n    rad2 = rad2 * rad2;\n    var xc = (ncols - 1.0) / 2.0;\n    var yc = (nrows - 1.0) / 2.0;\n    for (var irow = 0; irow < nrows; ++irow)\n    {\n        var testH = ellipseWidth * (irow - yc);\n        testH = testH * testH;\n        for (var icol = 0; icol < ncols; ++icol)\n        {\n            var tempC = (((imagePgm.maxval - imagePgm.minval) * imageArray[irow][icol] / 255.0) + imagePgm.minval  - 27315) / 100;\n            if (minPix > tempC) minPix = tempC;\n            if (maxPix < tempC) maxPix = tempC;\n            var testW = ellipseHeight * (icol - xc);\n            testW = testW * testW;\n            if ((testH +  testW) <= rad2)\n            {\n                    if (tempC > boxThresholdC) ++boxPercent;\n                    if (tempC > maxBoxTempC) maxBoxTempC = tempC;\n                    ++boxCnt\n//                    imageArray[irow][icol] = 255;\n            }\n        }\n    }\n    if (boxCnt > 0)\n    {\n        boxPercent = Math.round(1000 * boxPercent / boxCnt) / 10;\n    }\n    return {'minPix': minPix, 'maxPix' : maxPix, 'boxPercent' : boxPercent, 'maxBoxTempC': maxBoxTempC};\n}\n",
+        "func": "device = msg.payload;\nvar toppy = global.get('project') + '/' + global.get('deviceTypeA') + '/' + global.get('deviceNameA') + '/reading';\nvar actionMsg = null;\ndevice.archiveData.value = 1;\n\nvar imageAnal = imageAnalysis(JSON.parse(JSON.stringify(device.imageData.value)), device.faceRegionHeight.value, device.faceRegionWidth.value, device.archiveMinTemp.value);\n//    var imageAnal = imageAnalysis(device.imageData.value, device.faceRegionHeight.value, device.faceRegionWidth.value, device.archiveMinTemp.value);\n\ndevice.pixelMin.value = Math.round(10 *imageAnal.minPix ) / 10;\ndevice.pixelMax.value  = Math.round(10 *imageAnal.maxPix ) / 10;\ndevice.bodyTemp.value = 0;\nif(device.autoModeAction.value == 2)\n{\n    if(imageAnal.boxPercent > device.archivePixelPercent.value) device.autoModeAction.value = 3;\n}\n\nreturn {topic:toppy, payload:device};\n\nfunction imageAnalysis(imagePgm, ellipseHeight,ellipseWidth, boxThresholdC)\n{\n    var imageArray = imagePgm.imageArray;\n    var nrows = imageArray.length;\n    var ncols = imageArray[0].length;\n    var minPix = 500.0;\n    var maxPix = -273.0;\n    var nrows = imageArray.length;\n    var ncols = imageArray[0].length;\n    var boxPercent = 0;\n    var maxBoxTempC = -273.0;\n    var boxCnt = 0;\n    var rad2 = ellipseHeight * ellipseWidth / 2.0;\n    rad2 = rad2 * rad2;\n    var xc = (ncols - 1.0) / 2.0;\n    var yc = (nrows - 1.0) / 2.0;\n    for (var irow = 0; irow < nrows; ++irow)\n    {\n        var testH = ellipseWidth * (irow - yc);\n        testH = testH * testH;\n        for (var icol = 0; icol < ncols; ++icol)\n        {\n            var tempC = (((imagePgm.maxval - imagePgm.minval) * imageArray[irow][icol] / 255.0) + imagePgm.minval  - 27315) / 100;\n            if (minPix > tempC) minPix = tempC;\n            if (maxPix < tempC) maxPix = tempC;\n            var testW = ellipseHeight * (icol - xc);\n            testW = testW * testW;\n            if ((testH +  testW) <= rad2)\n            {\n                    if (tempC > boxThresholdC) ++boxPercent;\n                    if (tempC > maxBoxTempC) maxBoxTempC = tempC;\n                    ++boxCnt\n//                    imageArray[irow][icol] = 255;\n            }\n        }\n    }\n    if (boxCnt > 0)\n    {\n        boxPercent = Math.round(1000 * boxPercent / boxCnt) / 10;\n    }\n    return {'minPix': minPix, 'maxPix' : maxPix, 'boxPercent' : boxPercent, 'maxBoxTempC': maxBoxTempC};\n}\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -794,6 +797,9 @@
         "func": "var mqttArray = msg.topic.split('/');\nvar device = \n{\n    project     : mqttArray[0],\n    deviceType  : mqttArray[1],\n    name        : mqttArray[2],\n    prop        : mqttArray[3],\n};\nreturn {topic : msg.topic, payload:{topic:'readings', mqttDevice : device, payload:msg.payload}};",
         "outputs": 1,
         "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
         "x": 1890,
         "y": 940,
         "wires": [
@@ -910,10 +916,10 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Process Data",
-        "func": "device = flow.get('device');\ndevice.imageData.value = null;\ndevice.archiveData.value = 0;\ndevice.bodyTemp.value = 0;\ndevice.autoModeAction.value = 0;\n\nif (msg.payload.length < 1)\n{\n    var errCount = context.get('errCount');\n    if (errCount == undefined) errCount = 0;\n    ++errCount\n    if (errCount < 3)\n    {\n        context.set('errCount',errCount);\n        return [null, null,null];\n    }\n    else\n    {\n        context.set('errCount',0);\n        node.warn(\"Resetting Camera\");\n        flow.set('resettingCamera',true);\n        return [null, {topic:'resetCamera',payload:true},null];\n    }\n}\nelse\n{\n    context.set('errCount',0);\n}\nvar imgArray = [];\nvar dataView     = new DataView(new ArrayBuffer(2));\nvar ndataPts = 4800 * device.resMode.value * device.resMode.value;\nvar nrows = 60 * device.resMode.value;\nvar ncols = 80 * device.resMode.value;\nfor (var irow = 0; irow < ndataPts; ++irow)\n{\n        dataView.setUint8(0, msg.payload[irow * 2]);\n        dataView.setUint8(1, msg.payload[irow * 2 + 1]);\n        imgArray[irow] = dataView.getUint16(0);\n}\nvar minval = imgArray[0];\nvar maxval = imgArray[0];\nfor (var irow = 0; irow < ndataPts; ++irow)\n{\n        if ( minval > imgArray[irow]) minval = imgArray[irow];\n        if ( maxval < imgArray[irow]) maxval = imgArray[irow];\n}\nif (minval == 0) return [null, null];\nvar deltatTcal = (new Date().getTime() - flow.get('calTime')) / 1000.0;\nvar tCorr = 0.0;\nvar trise = 4.0;\nvar tdecay = 12.0;\nif ((0.0 < deltatTcal) &&(deltatTcal < 60.0))\n{\n    tCorr = Math.round(-100.0 * (deltatTcal / trise) * Math.exp(-deltatTcal / tdecay));\n    for (var irow = 0; irow < ndataPts; ++irow)\n    {\n        imgArray[irow] = imgArray[irow] + tCorr;\n    }\n    minval = minval + tCorr;\n    maxval = maxval + tCorr;\n}\n\nvar imgArray2D = [];\nvar deltaVal = maxval - minval;\nif (deltaVal == 0) deltaVal = 1;\nvar numPix = 0;\nvar tempThreshold = device.archiveMinTemp.value * 100 + 27315;\nfor (var irow = 0; irow < nrows; ++irow)\n{\n    imgArray2D[irow] = [];\n    for (var icol = 0; icol < ncols; ++icol)\n    {\n        imgArray2D[irow][icol] = Math.floor(256.0 * (imgArray[irow * ncols + icol] - minval) / deltaVal);\n        if (imgArray[irow * ncols + icol] >= tempThreshold) ++numPix;\n    }    \n}\nvar imgArray2DT = [];\nif (device.transpose.value == 1)\n{\n    for (var icol = 0; icol < ncols; ++icol)\n    {\n        imgArray2DT[icol] = [];\n        for (var irow = 0; irow < nrows; ++irow)\n        {\n            imgArray2DT[icol][irow] = imgArray2D[irow][icol];\n        }\n    }\n    imgArray2D = imgArray2DT;\n    var tempNrows = nrows;\n    nrows = ncols;\n    ncols = tempNrows; \n}\nvar imgArray2DFV = [];\nif (device.flipVertical.value == 1)\n{\n    for (var irow = 0; irow < nrows; ++irow)\n    {\n        imgArray2DFV[irow] = [];\n        for (var icol = 0; icol < ncols; ++icol)\n        {\n            imgArray2DFV[irow][icol] = imgArray2D[nrows - irow - 1][icol];\n        }    \n    }\n    imgArray2D = imgArray2DFV;\n}\nvar imgArray2DFH = [];\nif (device.flipHorizontal.value == 1)\n{\n    for (var irow = 0; irow < nrows; ++irow)\n    {\n        imgArray2DFH[irow] = [];\n        for (var icol = 0; icol < ncols; ++icol)\n        {\n            imgArray2DFH[irow][icol] = imgArray2D[irow][ncols - icol - 1];\n        }    \n    }\n    imgArray2D = imgArray2DFH;\n}\nvar pgm = \n{\n    'type'      : 'P2',\n    'timeStamp' : new Date().getTime(),\n    'nrows'     : nrows,\n    'ncols'     : ncols,\n    'minval'    : minval,\n    'maxval'    : maxval,\n    'imageArray': imgArray2D\n};\nvar nobodyThereMsg = null;\nif (numPix < 10)\n{\n    nobodyThereMsg = {topic:'nobodyThere',payload:true};\n}\nelse\n{\n//    flow.set('lastObjectDetectedTime',new Date().getTime());\n}\ndevice.imageData.value = pgm;\ndevice.archiveData.value = 1;\ndevice.pixelMin.value = Math.round(0.1 *  (pgm.minval - 27315) ) / 10;\ndevice.pixelMax.value  = Math.round(0.1 *  (pgm.maxval - 27315) ) / 10;\ndevice.timeStamp = pgm.timeStamp;\ndevice.autoModeAction.value = 0;\n\nreturn [{topic:'takeImage',payload:device}, null,nobodyThereMsg];",
-        "outputs": 3,
+        "func": "device = flow.get('device');\ndevice.imageData.value = null;\ndevice.archiveData.value = 0;\ndevice.bodyTemp.value = 0;\n\nif (msg.payload.length < 1)\n{\n    var errCount = context.get('errCount');\n    if (errCount == undefined) errCount = 0;\n    ++errCount\n    if (errCount < 3)\n    {\n        context.set('errCount',errCount);\n        return [null, null];\n    }\n    else\n    {\n        context.set('errCount',0);\n        node.warn(\"Resetting Camera\");\n        flow.set('resettingCamera',true);\n        return [null, {topic:'resetCamera',payload:true}];\n    }\n}\nelse\n{\n    context.set('errCount',0);\n}\nvar imgArray = [];\nvar dataView     = new DataView(new ArrayBuffer(2));\nvar ndataPts = 4800 * device.resMode.value * device.resMode.value;\nvar nrows = 60 * device.resMode.value;\nvar ncols = 80 * device.resMode.value;\nfor (var irow = 0; irow < ndataPts; ++irow)\n{\n        dataView.setUint8(0, msg.payload[irow * 2]);\n        dataView.setUint8(1, msg.payload[irow * 2 + 1]);\n        imgArray[irow] = dataView.getUint16(0);\n}\nvar minval = imgArray[0];\nvar maxval = imgArray[0];\nfor (var irow = 0; irow < ndataPts; ++irow)\n{\n        if ( minval > imgArray[irow]) minval = imgArray[irow];\n        if ( maxval < imgArray[irow]) maxval = imgArray[irow];\n}\nif (minval == 0) return [null, null];\nvar deltatTcal = (new Date().getTime() - flow.get('calTime')) / 1000.0;\nvar tCorr = 0.0;\nvar trise = 4.0;\nvar tdecay = 12.0;\nif ((0.0 < deltatTcal) &&(deltatTcal < 60.0))\n{\n    tCorr = Math.round(-100.0 * (deltatTcal / trise) * Math.exp(-deltatTcal / tdecay));\n    for (var irow = 0; irow < ndataPts; ++irow)\n    {\n        imgArray[irow] = imgArray[irow] + tCorr;\n    }\n    minval = minval + tCorr;\n    maxval = maxval + tCorr;\n}\n\nvar imgArray2D = [];\nvar deltaVal = maxval - minval;\nif (deltaVal == 0) deltaVal = 1;\nvar numPix = 0;\nvar tempThreshold = device.archiveMinTemp.value * 100 + 27315;\nfor (var irow = 0; irow < nrows; ++irow)\n{\n    imgArray2D[irow] = [];\n    for (var icol = 0; icol < ncols; ++icol)\n    {\n        imgArray2D[irow][icol] = Math.floor(256.0 * (imgArray[irow * ncols + icol] - minval) / deltaVal);\n        if (imgArray[irow * ncols + icol] >= tempThreshold) ++numPix;\n    }    \n}\nvar imgArray2DT = [];\nif (device.transpose.value == 1)\n{\n    for (var icol = 0; icol < ncols; ++icol)\n    {\n        imgArray2DT[icol] = [];\n        for (var irow = 0; irow < nrows; ++irow)\n        {\n            imgArray2DT[icol][irow] = imgArray2D[irow][icol];\n        }\n    }\n    imgArray2D = imgArray2DT;\n    var tempNrows = nrows;\n    nrows = ncols;\n    ncols = tempNrows; \n}\nvar imgArray2DFV = [];\nif (device.flipVertical.value == 1)\n{\n    for (var irow = 0; irow < nrows; ++irow)\n    {\n        imgArray2DFV[irow] = [];\n        for (var icol = 0; icol < ncols; ++icol)\n        {\n            imgArray2DFV[irow][icol] = imgArray2D[nrows - irow - 1][icol];\n        }    \n    }\n    imgArray2D = imgArray2DFV;\n}\nvar imgArray2DFH = [];\nif (device.flipHorizontal.value == 1)\n{\n    for (var irow = 0; irow < nrows; ++irow)\n    {\n        imgArray2DFH[irow] = [];\n        for (var icol = 0; icol < ncols; ++icol)\n        {\n            imgArray2DFH[irow][icol] = imgArray2D[irow][ncols - icol - 1];\n        }    \n    }\n    imgArray2D = imgArray2DFH;\n}\nvar pgm = \n{\n    'type'      : 'P2',\n    'timeStamp' : new Date().getTime(),\n    'nrows'     : nrows,\n    'ncols'     : ncols,\n    'minval'    : minval,\n    'maxval'    : maxval,\n    'imageArray': imgArray2D\n};\nif (numPix > 10)\n{\n    if (device.autoModeAction.value == 1)\n    {\n        var autoModeAction1Count = context.get('autoModeAction1Count') + 1;\n        if (autoModeAction1Count > 1)\n        {\n            autoModeAction1Count = 0;\n            device.autoModeAction.value = 2;\n        }\n        context.set('autoModeAction1Count',autoModeAction1Count);\n    }\n}\ndevice.imageData.value = pgm;\ndevice.pixelMin.value = Math.round(0.1 *  (pgm.minval - 27315) ) / 10;\ndevice.pixelMax.value  = Math.round(0.1 *  (pgm.maxval - 27315) ) / 10;\ndevice.timeStamp = pgm.timeStamp;\n\nreturn [{topic:'takeImage',payload:device}, null];",
+        "outputs": 2,
         "noerr": 0,
-        "initialize": "",
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\ncontext.set('autoModeAction1Count',0);",
         "finalize": "",
         "libs": [],
         "x": 880,
@@ -924,9 +930,6 @@
             ],
             [
                 "7079fa00.acfb14"
-            ],
-            [
-                "a5c36241f4a04b73"
             ]
         ]
     },
@@ -1059,7 +1062,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Check if Process hung",
-        "func": "var process = flow.get('cameraProcess');\nvar killMsg = null;\nvar restartMsg = null;\nvar hangCount = context.get('hangCount');\nif (process.pid != undefined)\n{\n    var pid = Number(process.pid.substring(4)) + 1;\n    killMsg = {topic:'killProcess',payload:pid}\n    node.warn('Camera Hang');\n    hangCount = hangCount + 1;\n    if (hangCount > 2)\n    {\n        restartMsg = {topic:'reInitProcess',payload:1}\n        hangCount = 0;\n        node.warn(\"Reinitializing system\");\n    }\n}\nelse\n{\n    hangCount = 0;\n}\ncontext.set('hangCount',hangCount);\nreturn [restartMsg, killMsg];\n",
+        "func": "var process = flow.get('cameraProcess');\nvar killMsg = null;\nvar restartMsg = null;\nvar hangCount = context.get('hangCount');\nif (process.pid != undefined)\n{\n    var pid = Number(process.pid.substring(4)) + 1;\n    killMsg = {topic:'killProcess',payload:pid}\n    node.warn('Camera Hang');\n    hangCount = hangCount + 1;\n    if (hangCount > 3)\n    {\n        restartMsg = {topic:'reInitProcess',payload:1}\n        hangCount = 0;\n        node.warn(\"Reinitializing system\");\n    }\n}\nelse\n{\n    hangCount = 0;\n}\ncontext.set('hangCount',hangCount);\nreturn [restartMsg, killMsg];\n",
         "outputs": 2,
         "noerr": 0,
         "initialize": "// Code added here will be run once\n// whenever the node is started.\ncontext.set('hangCount',0);",
@@ -1263,7 +1266,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "HC04 Distance",
-        "func": "var device = flow.get('device');\nif (device == undefined) return null;\nif (flow.get('lastObjectDetectedTime') == undefined) return null;\ndevice.ultraSoundDistance.value = Number(msg.payload);\nif (device.ultraSoundDistance.value < device.ultraSoundRange.value)\n{\n    flow.set('lastObjectDetectedTime',new Date().getTime());\n    if (device.ultraSoundRange.value == device.ultraSoundRange.alarm.limits.low)\n    {\n        device.ultraSoundRange.value = device.ultraSoundRange.alarm.limits.high;\n        return {topic:'ultra',payload:device.ultraSoundDistance.value}\n    }\n}\nreturn null",
+        "func": "var device = flow.get('device');\nif (device == undefined) return null;\nif (flow.get('lastObjectDetectedTime') == undefined) return null;\ndevice.ultraSoundDistance.value = Number(msg.payload);\nif (device.ultraSoundDistance.value < device.ultraSoundRange.value)\n{\n    flow.set('lastObjectDetectedTime',new Date().getTime());\n    if (device.ultraSoundRange.value == device.ultraSoundRange.alarm.limits.low)\n    {\n        device.ultraSoundRange.value = device.ultraSoundRange.alarm.limits.high;\n        device.autoModeAction.value = 1;\n        return {topic:'ultra',payload:device.ultraSoundDistance.value,}\n    }\n}\nreturn null",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -1273,7 +1276,8 @@
         "y": 1380,
         "wires": [
             [
-                "4d60a129aa4ad860"
+                "7979ee40b7559f9c",
+                "a9c90d40f89558ed"
             ]
         ]
     },
@@ -1713,7 +1717,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 420,
-        "y": 2300,
+        "y": 2160,
         "wires": [
             [
                 "30a567e5.1d7ed8"
@@ -1738,7 +1742,7 @@
         "allowrate": false,
         "outputs": 1,
         "x": 280,
-        "y": 2300,
+        "y": 2160,
         "wires": [
             [
                 "939d3b6e.eb78b8"
@@ -1770,7 +1774,7 @@
         "payload": "1",
         "payloadType": "num",
         "x": 150,
-        "y": 2260,
+        "y": 2120,
         "wires": [
             [
                 "1f98b300.d5ce3d",
@@ -1787,7 +1791,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 340,
-        "y": 2260,
+        "y": 2120,
         "wires": [
             [
                 "30a567e5.1d7ed8"
@@ -1874,7 +1878,7 @@
         "name": "/monitor/websocket",
         "server": "e8ef1dd0.f4c9a",
         "client": "",
-        "x": 2310,
+        "x": 2390,
         "y": 940,
         "wires": []
     },
@@ -1899,7 +1903,9 @@
         "type": "link out",
         "z": "5f562f66.a301e",
         "name": "Hung Process Toggle out",
-        "links": [],
+        "links": [
+            "7af84ca8.ba5584"
+        ],
         "x": 735,
         "y": 2380,
         "wires": []
@@ -1915,7 +1921,7 @@
             "fa4c03a8.f4ffe",
             "7ff0de00.271384"
         ],
-        "x": 1035,
+        "x": 1015,
         "y": 680,
         "wires": []
     },
@@ -1928,7 +1934,7 @@
             "316e94c2.271bec"
         ],
         "x": 515,
-        "y": 2260,
+        "y": 2120,
         "wires": []
     },
     {
@@ -1964,8 +1970,8 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Check for camera reset",
-        "func": "if (flow.get('resettingCamera')) return null;\nif (flow.get('cameraInUse')) return null;\nif ((new Date().getTime()) > (flow.get('lastObjectDetectedTime') + flow.get('device').keepAliveTime.value))\n{\n    flow.get('device').ultraSoundRange.value = flow.get('device').ultraSoundRange.alarm.limits.low;\n    return null;\n}\nflow.set('cameraInUse',true);\n\nflow.get('device').archiveData.value = 0;\nmsg.payload = \"\"\nif (flow.get('device').resMode.value == 1) msg.payload = \"flirLepton25capture/flirLepton25capture.exe\"\nif (flow.get('device').resMode.value == 2) msg.payload = \"flirLepton35capture/flirLepton35capture.exe\"\nreturn msg;",
-        "outputs": 1,
+        "func": "if (flow.get('resettingCamera')) return null;\nif (flow.get('cameraInUse')) return null;\nvar device = flow.get('device');\nif ((new Date().getTime()) > (flow.get('lastObjectDetectedTime') + flow.get('device').keepAliveTime.value))\n{\n    device.ultraSoundRange.value = device.ultraSoundRange.alarm.limits.low;\n    var stopSeqMsg = null;\n    if (device.autoModeAction.value  > 0)\n    {\n        device.autoModeAction.value == 0;\n        stopSeqMsg = {topic:\"stopSeq\",payload:true};\n    }\n    return [null,stopSeqMsg];\n}\nif (device.autoModeAction.value == 3)\n{\n    device.autoModeAction.value == 0;\n    device.ultraSoundRange.value = device.ultraSoundRange.alarm.limits.low;\n    return [null,{topic:\"stopSeq\",payload:true}];\n}\nflow.set('cameraInUse',true);\n\ndevice.archiveData.value = 0;\nmsg.payload = \"\"\nif (device.resMode.value == 1) msg.payload = \"flirLepton25capture/flirLepton25capture.exe\"\nif (device.resMode.value == 2) msg.payload = \"flirLepton35capture/flirLepton35capture.exe\"\nreturn [msg,null];",
+        "outputs": 2,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -1977,6 +1983,9 @@
                 "de65ab7c.eced98",
                 "756aff3b.081cc",
                 "64edca1f.282284"
+            ],
+            [
+                "2dcd234ae84d0698"
             ]
         ]
     },
@@ -2050,56 +2059,13 @@
         ]
     },
     {
-        "id": "90a53647.669d68",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "set to 1",
-        "func": "msg.payload = 1;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 440,
-        "y": 2760,
-        "wires": [
-            [
-                "852a59a8.761b68"
-            ]
-        ]
-    },
-    {
-        "id": "852a59a8.761b68",
-        "type": "link out",
-        "z": "5f562f66.a301e",
-        "name": "Gate Open to 1",
-        "links": [
-            "c9d85cd7.b10c5"
-        ],
-        "x": 575,
-        "y": 2760,
-        "wires": []
-    },
-    {
-        "id": "e904ee06.b15af",
-        "type": "link in",
-        "z": "5f562f66.a301e",
-        "name": "Speak Out",
-        "links": [
-            "863d7a9.ab20888"
-        ],
-        "x": 95,
-        "y": 2780,
-        "wires": [
-            [
-                "514d03ca.0eae7c"
-            ]
-        ]
-    },
-    {
         "id": "863d7a9.ab20888",
         "type": "link out",
         "z": "5f562f66.a301e",
         "name": "Alarm Action out",
         "links": [
-            "e904ee06.b15af"
+            "e904ee06.b15af",
+            "8db6b3fc187100c4"
         ],
         "x": 1595,
         "y": 920,
@@ -2120,104 +2086,6 @@
         "wires": []
     },
     {
-        "id": "15e0e620.bb96fa",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Set alarm burst",
-        "func": "var burstCount = context.get('burstCount');\nif (burstCount == undefined) burstCount = 0;\nif (msg.topic == 'tooHotAlarm') burstCount = 0;\n++burstCount;\ncontext.set('burstCount',burstCount)\nif (burstCount < 20) return msg;\nreturn null;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 460,
-        "y": 2820,
-        "wires": [
-            [
-                "5649f4af.4a03bc",
-                "b70b66ec.44cdf8"
-            ]
-        ]
-    },
-    {
-        "id": "14f934e6.ded55b",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "set to 1",
-        "func": "msg.payload = 1;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 820,
-        "y": 2820,
-        "wires": [
-            [
-                "f4c1fc1.3b91"
-            ]
-        ]
-    },
-    {
-        "id": "5649f4af.4a03bc",
-        "type": "delay",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "200",
-        "timeoutUnits": "milliseconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "outputs": 1,
-        "x": 650,
-        "y": 2860,
-        "wires": [
-            [
-                "94bf1fac.8b3e3"
-            ]
-        ]
-    },
-    {
-        "id": "94bf1fac.8b3e3",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "set to 0",
-        "func": "return {topic:'redLed',payload:0};",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 820,
-        "y": 2860,
-        "wires": [
-            [
-                "15e0e620.bb96fa",
-                "f4c1fc1.3b91"
-            ]
-        ]
-    },
-    {
-        "id": "b70b66ec.44cdf8",
-        "type": "delay",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "100",
-        "timeoutUnits": "milliseconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "outputs": 1,
-        "x": 650,
-        "y": 2820,
-        "wires": [
-            [
-                "14f934e6.ded55b"
-            ]
-        ]
-    },
-    {
         "id": "19963a75.2b0f46",
         "type": "rpi-gpio out",
         "z": "5f562f66.a301e",
@@ -2232,16 +2100,6 @@
         "wires": []
     },
     {
-        "id": "f4c1fc1.3b91",
-        "type": "link out",
-        "z": "5f562f66.a301e",
-        "name": "Red alarm Burst Out",
-        "links": [],
-        "x": 975,
-        "y": 2820,
-        "wires": []
-    },
-    {
         "id": "7af84ca8.ba5584",
         "type": "link in",
         "z": "5f562f66.a301e",
@@ -2250,7 +2108,8 @@
             "d9b1bb3f.ca7528",
             "e7beb734.ed9628",
             "7667b964.83dff8",
-            "beb057382ceeaf0b"
+            "beb057382ceeaf0b",
+            "81c528f.cc489d8"
         ],
         "x": 1215,
         "y": 2320,
@@ -2276,123 +2135,6 @@
                 "19963a75.2b0f46"
             ]
         ]
-    },
-    {
-        "id": "514d03ca.0eae7c",
-        "type": "switch",
-        "z": "5f562f66.a301e",
-        "name": "Alarm Action",
-        "property": "payload",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "eq",
-                "v": "0",
-                "vt": "num"
-            },
-            {
-                "t": "eq",
-                "v": "1",
-                "vt": "num"
-            },
-            {
-                "t": "eq",
-                "v": "2",
-                "vt": "num"
-            },
-            {
-                "t": "eq",
-                "v": "3",
-                "vt": "num"
-            }
-        ],
-        "checkall": "true",
-        "repair": false,
-        "outputs": 4,
-        "x": 210,
-        "y": 2780,
-        "wires": [
-            [
-                "1f55c9e4.6259b6"
-            ],
-            [
-                "90a53647.669d68",
-                "3d858b79.d58bd4"
-            ],
-            [
-                "15e0e620.bb96fa"
-            ],
-            [
-                "1f55c9e4.6259b6"
-            ]
-        ]
-    },
-    {
-        "id": "89ab897e.bf7b28",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "set to 0",
-        "func": "msg.payload = 0;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 740,
-        "y": 2940,
-        "wires": [
-            [
-                "d242b085.fde9e"
-            ]
-        ]
-    },
-    {
-        "id": "1f55c9e4.6259b6",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "set to 1",
-        "func": "msg.payload = 1;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 440,
-        "y": 2920,
-        "wires": [
-            [
-                "165fcf02.2d29f1",
-                "d242b085.fde9e"
-            ]
-        ]
-    },
-    {
-        "id": "165fcf02.2d29f1",
-        "type": "delay",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "500",
-        "timeoutUnits": "milliseconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "outputs": 1,
-        "x": 590,
-        "y": 2940,
-        "wires": [
-            [
-                "89ab897e.bf7b28"
-            ]
-        ]
-    },
-    {
-        "id": "d242b085.fde9e",
-        "type": "link out",
-        "z": "5f562f66.a301e",
-        "name": "notInRangeBlink",
-        "links": [],
-        "x": 835,
-        "y": 2920,
-        "wires": []
     },
     {
         "id": "cb2332f8.29c65",
@@ -2447,46 +2189,6 @@
         "x": 595,
         "y": 880,
         "wires": []
-    },
-    {
-        "id": "3d858b79.d58bd4",
-        "type": "delay",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "500",
-        "timeoutUnits": "milliseconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "outputs": 1,
-        "x": 450,
-        "y": 2720,
-        "wires": [
-            [
-                "a193f30.a33811"
-            ]
-        ]
-    },
-    {
-        "id": "a193f30.a33811",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "set to 0",
-        "func": "msg.payload = 0;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 600,
-        "y": 2720,
-        "wires": [
-            [
-                "852a59a8.761b68"
-            ]
-        ]
     },
     {
         "id": "72aa34e4.5cf97c",
@@ -2661,9 +2363,12 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Readings Alarm Scan",
-        "func": "scalarAlarmScan(msg.payload, 'reading');\nflow.set('lastHeartbeatTime',new Date().getTime());\nflow.set('device',msg.payload)\nreturn msg;\n\nfunction getActionArray(device, type, actionType)\n{\n    var actionArray = [];\n    var keys = Object.keys(device);\n    for (var ii = 0; ii < keys.length; ++ii)\n    {\n        if (device[keys[ii]].hasOwnProperty('type'))\n        {\n            if (device[keys[ii]].type == type)\n            {\n                if (device[keys[ii]].action == actionType)\n                {\n                    actionArray.push(device[keys[ii]]);\n                }\n            }\n        }\n    }\n    return actionArray;\n}\nfunction scalarAlarmScan(device, actionType)\n{\n    var actionArray = getActionArray(device, 'scalar', actionType);\n    if (actionArray.length > 0)\n    {\n        for (var ii = 0; ii < actionArray.length; ++ii)\n        {\n            actionArray[ii].alarm.value = 0;\n            if (!isNaN(actionArray[ii].value))\n            {\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.low)  actionArray[ii].alarm.value = 1;\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.lolo) actionArray[ii].alarm.value = 3;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.high) actionArray[ii].alarm.value = 2;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.hihi) actionArray[ii].alarm.value = 4;\n            }\n        }\n    }\n}\n",
+        "func": "scalarAlarmScan(msg.payload, 'reading');\nflow.set('lastHeartbeatTime',new Date().getTime());\nflow.set('device',msg.payload);\nreturn msg;\n\nfunction getActionArray(device, type, actionType)\n{\n    var actionArray = [];\n    var keys = Object.keys(device);\n    for (var ii = 0; ii < keys.length; ++ii)\n    {\n        if (device[keys[ii]].hasOwnProperty('type'))\n        {\n            if (device[keys[ii]].type == type)\n            {\n                if (device[keys[ii]].action == actionType)\n                {\n                    actionArray.push(device[keys[ii]]);\n                }\n            }\n        }\n    }\n    return actionArray;\n}\nfunction scalarAlarmScan(device, actionType)\n{\n    var actionArray = getActionArray(device, 'scalar', actionType);\n    if (actionArray.length > 0)\n    {\n        for (var ii = 0; ii < actionArray.length; ++ii)\n        {\n            actionArray[ii].alarm.value = 0;\n            if (!isNaN(actionArray[ii].value))\n            {\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.low)  actionArray[ii].alarm.value = 1;\n                if (actionArray[ii].value < actionArray[ii].alarm.limits.lolo) actionArray[ii].alarm.value = 3;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.high) actionArray[ii].alarm.value = 2;\n                if (actionArray[ii].value > actionArray[ii].alarm.limits.hihi) actionArray[ii].alarm.value = 4;\n            }\n        }\n    }\n}\n",
         "outputs": 1,
         "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
         "x": 1680,
         "y": 880,
         "wires": [
@@ -2678,7 +2383,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Find Face",
-        "func": "device = msg.payload;\ndevice.faceVertSlice.value = [[],[]];\nvar toppy = global.get('project') + '/' + global.get('deviceTypeA') + '/' + global.get('deviceNameA') + '/reading';\ndevice.archiveData.value = 0;\nif (device.autoModeAction.value == 0) return {topic:toppy, payload:device};\n\nvar slopeThreshold = 300;\nvar tempThreshold = 2600;\nvar thermalImage = convertByteImageToThermalImage();\n\nvar nrows = thermalImage.length;\nvar ncols = thermalImage[0].length;\n\nvar xedge = convolve(thermalImage,3);\nvar yedge = convolve(thermalImage,4);\nvar ileft = ncols - 1;\nvar iright = 0;\nvar rowStart = Math.round(nrows / 2 - 10);\nvar rowStop = nrows;\nfor (var irow = rowStart; irow < rowStop; ++irow)\n{\n    var isearch = 1;\n    var ipeakFound = false;\n    while (!ipeakFound && (isearch < (ncols - 1)) )\n    {\n        if ( (xedge[irow][isearch - 1] >= xedge[irow][isearch]) && (xedge[irow][isearch] <= xedge[irow][isearch + 1]) && (xedge[irow][isearch] < -slopeThreshold) && (thermalImage[irow][isearch] > tempThreshold) )\n        {        \n            ipeakFound = true;\n        }\n        else\n        {\n            isearch = isearch + 1;\n        }\n    }\n    if (isearch < ileft) ileft = isearch;\n    isearch = ncols - 2\n    ipeakFound = false;\n    while (!ipeakFound && (isearch > 0) )\n    {\n        if ( (xedge[irow][isearch - 1] <= xedge[irow][isearch]) && (xedge[irow][isearch] >= xedge[irow][isearch + 1]) && (xedge[irow][isearch] > slopeThreshold) && (thermalImage[irow][isearch] > tempThreshold) )\n        {\n            ipeakFound = true;\n        }\n        else\n        {\n            isearch = isearch - 1;\n        }\n    }\n    if (iright < isearch) iright = isearch;\n}\nif (iright < ileft) return {topic:toppy, payload:device};\n \nvar itop = 0;\nvar colStart = Math.round((ncols - device.faceRegionWidth.value) /2);\nvar colStop = colStart + device.faceRegionWidth.value;\nfor (var icol = colStart; icol < colStop; ++icol)\n{\n    var isearch = nrows - 2\n    var ipeakFound = false\n    while (!ipeakFound && (isearch > 0) )\n    {\n        if ( (yedge[isearch - 1][icol] <= yedge[isearch][icol]) && (yedge[isearch][icol] >= yedge[isearch + 1][icol]) && (yedge[isearch][icol] > slopeThreshold) && (thermalImage[isearch][icol] > tempThreshold) )\n        {        \n            ipeakFound = true;\n        }\n        else\n        {\n            isearch = isearch - 1;\n        }\n    }\n    if (itop < isearch) itop = isearch;\n}\nif (itop < rowStart) return {topic:toppy, payload:device};\nitop = itop + 1;\nif (itop > (nrows - 1)) itop = (nrows - 1);\nibot = Math.round(itop - (iright - ileft) * 1.4);\nif (ibot < 0) ibot = 0;\n\ndevice.faceLocation.value = [[ibot,ileft],[itop,iright]];\n\nvar icenterCol = intAvg(ileft,iright); \nvar icenterRow = intAvg(itop,ibot);\n\nif (ibot   < ((nrows - device.faceRegionHeight.value) / 2) ) device.autoModeAction.value = 0;\nif (itop   > ((nrows + device.faceRegionHeight.value) / 2) ) device.autoModeAction.value = 0;\nif (ileft  < ((ncols - device.faceRegionWidth.value) / 2 ) ) device.autoModeAction.value = 0;\nif (iright > ((ncols + device.faceRegionWidth.value) / 2 ) ) device.autoModeAction.value = 0;\n\nif (device.autoModeAction.value == 0) return {topic:toppy, payload:device};\nvar ifaceWidth = iright - ileft;\nvar ivband = Math.round(ifaceWidth * 0.20)\nvar ihband = Math.round(ifaceWidth * 0.20);\n\nileft = icenterCol - ivband;\niright = icenterCol + ivband;\nibot = icenterRow;\nitop = icenterRow + ihband;\n\nvar maxCol = [0,0];\nvar maxRow = [0,0];\nvar tmax = [0,0];\nvar xdir = [[-1,1],[1,-1]];\nvar xderiv = [[0,0],[0,0]];\nvar ydir = [[-1,1],[-1,1]];\nvar yderiv = [[0,0],[0,0]];\nvar avgRad = [0,0];\nvar colLimits = [[ileft,icenterCol],[icenterCol,iright]];\nfor (var ipt = 0; ipt < 2; ++ipt)\n{\n    for (var irow = ibot; irow <= itop; ++irow)\n    {\n        for (var icol = colLimits[ipt][0]; icol <= colLimits[ipt][1]; ++icol)\n        {\n            if (tmax[ipt] < thermalImage[irow][icol])\n            {\n                tmax[ipt] = thermalImage[irow][icol];\n                maxCol[ipt] = icol;\n                maxRow[ipt] = irow;\n            }\n        }\n    }\n}\ndevice.rawLeftEyeTemp.value  = tmax[0];\ndevice.rawRightEyeTemp.value = tmax[1];\ndevice.eyeLocation.value = [[maxRow[0],maxCol[0]],[maxRow[1],maxCol[1]]];\n\nvar bridgeCol = intAvg(maxCol[0],maxCol[1]);\n// Bridge temp\ndevice.rawSpareTemp1.value = thermalImage[intAvg(maxRow[0],maxRow[1])][bridgeCol];\n// forehead temp\ndevice.rawSpareTemp2.value = thermalImage[intAvg(maxRow[0],maxRow[1]) + maxCol[1]- maxCol[0]][bridgeCol];\n\nfor (var irow = 0; irow < nrows; ++irow)\n{\n    device.faceVertSlice.value[0][irow] = irow;\n    device.faceVertSlice.value[1][irow] = thermalImage[irow][bridgeCol];\n}\n\n\ndevice.archiveData.value = 1;\ndevice.bodyTemp.value = intAvg(tmax[0], tmax[1]) * 0.01 + device.offsetTemp.value;\ndevice.bodyTemp.value = Math.round(10 * device.bodyTemp.value) / 10;\nreturn {topic:toppy, payload:device};\n\nfunction intAvg(i1,i2)\n{\n    return Math.round((i1 + i2) / 2);\n}\n\nfunction convertByteImageToThermalImage()\n{\n    var ti = [];\n    \n    var deltat = device.imageData.value.maxval - device.imageData.value.minval;\n    for (var irow = 0; irow < device.imageData.value.nrows; ++irow)\n    {\n        ti[irow] = [];\n        for (var icol = 0; icol < device.imageData.value.ncols; ++icol)\n        {\n            ti[irow][icol] = device.imageData.value.imageArray[irow][icol] / 255.0\n            ti[irow][icol] = deltat * ti[irow][icol]; \n            ti[irow][icol] = Math.round(ti[irow][icol] + device.imageData.value.minval - 27315); \n        }\n    }\n    return ti;\n}\nfunction tempAtPoint(inputImage, irow, icol, kernalType)\n{\n    var nrows = inputImage.length;\n    var ncols = inputImage[0].length;\n    var kernal = [\n        [[ 0,   0,    0  ], [ 0,   1,   0  ], [ 0,   0,    0  ]],\n        [[ 1,   2,    1  ], [ 2,   4,   2  ], [ 1,   2,    1  ]],\n        [[ 0,  -1,    0  ], [-1,   9,  -1  ], [ 0,  -1,    0  ]],\n        ];\n    if( (irow == 0) || (irow == (nrows - 1)) ) return inputImage[irow][icol];\n    if( (icol == 0) || (icol == (ncols - 1)) ) return inputImage[irow][icol];\n    var kernalNormal = [1.0, 16.0, 5];\n    convolveTemp = 0;\n    for (var ikrow = 0; ikrow < 3; ++ikrow)\n    {\n        for (var ikcol = 0; ikcol < 3; ++ikcol)\n        {\n            convolveTemp = convolveTemp + inputImage[irow + ikrow - 1][icol + ikcol - 1] * kernal[kernalType][ikrow][ikcol];\n        }\n    }\n    convolveTemp = convolveTemp / kernalNormal[kernalType];\n    return convolveTemp;\n}\nfunction convolve(inputImage,kernalType)\n{\n    var kernal = [\n        [[ 0,   0,    0  ], [ 0,   1,   0  ], [ 0,   0,    0  ]],\n        [[ 1,   2,    1  ], [ 2,   4,   2  ], [ 1,   2,    1  ]],\n        [[ 0,  -1,    0  ], [-1,   9,  -1  ], [ 0,  -1,    0  ]],\n        [[ 1,   0,   -1  ], [ 2,   0,  -2  ], [ 1,   0,   -1  ]],\n        [[ 1,   2,    1  ], [ 0,   0,   0  ], [-1,  -2,   -1  ]]\n        ];\n    var kernalNormal = [1.0, 16.0, 5, 1, 1];\n    var convolveImage = [];\n    var nrows = inputImage.length;\n    var ncols = inputImage[0].length;\n    for (var irow = 0; irow < nrows; ++irow)\n    {\n        convolveImage[irow] = [];\n        for (var icol = 0; icol < ncols; ++icol)\n        {\n            if ((irow == 0) || (irow == (nrows - 1)))\n            {\n                convolveImage[irow][icol] =  inputImage[irow][icol];\n                if ((kernalType == 3) || (kernalType == 4)) convolveImage[irow][icol]  = 0.0;\n            }\n            else\n            {\n                if ((icol == 0) || (icol == (ncols - 1)))\n                {\n                    convolveImage[irow][icol] =  inputImage[irow][icol];\n                    if ((kernalType == 3) || (kernalType == 4)) convolveImage[irow][icol]  = 0.0;\n                }\n                else\n                {\n                    convolveImage[irow][icol] = 0;\n                    for (var ikrow = 0; ikrow < 3; ++ikrow)\n                    {\n                        for (var ikcol = 0; ikcol < 3; ++ikcol)\n                        {\n                            convolveImage[irow][icol] = convolveImage[irow][icol] + inputImage[irow + ikrow - 1][icol + ikcol - 1] * kernal[kernalType][ikrow][ikcol];\n                        }\n                    }\n                    convolveImage[irow][icol] = convolveImage[irow][icol] / kernalNormal[kernalType];\n                }\n            }\n        }\n    }\n    return convolveImage;\n}\n",
+        "func": "device = msg.payload;\ndevice.faceVertSlice.value = [[],[]];\nvar toppy = global.get('project') + '/' + global.get('deviceTypeA') + '/' + global.get('deviceNameA') + '/reading';\ndevice.archiveData.value = 0;\nif (device.autoModeAction.value < 3) return {topic:toppy, payload:device};\n\nvar slopeThreshold = 300;\nvar tempThreshold = 2600;\nvar thermalImage = convertByteImageToThermalImage();\n\nvar nrows = thermalImage.length;\nvar ncols = thermalImage[0].length;\n\nvar xedge = convolve(thermalImage,3);\nvar yedge = convolve(thermalImage,4);\nvar ileft = ncols - 1;\nvar iright = 0;\nvar rowStart = Math.round(nrows / 2 - 10);\nvar rowStop = nrows;\nfor (var irow = rowStart; irow < rowStop; ++irow)\n{\n    var isearch = 1;\n    var ipeakFound = false;\n    while (!ipeakFound && (isearch < (ncols - 1)) )\n    {\n        if ( (xedge[irow][isearch - 1] >= xedge[irow][isearch]) && (xedge[irow][isearch] <= xedge[irow][isearch + 1]) && (xedge[irow][isearch] < -slopeThreshold) && (thermalImage[irow][isearch] > tempThreshold) )\n        {        \n            ipeakFound = true;\n        }\n        else\n        {\n            isearch = isearch + 1;\n        }\n    }\n    if (isearch < ileft) ileft = isearch;\n    isearch = ncols - 2\n    ipeakFound = false;\n    while (!ipeakFound && (isearch > 0) )\n    {\n        if ( (xedge[irow][isearch - 1] <= xedge[irow][isearch]) && (xedge[irow][isearch] >= xedge[irow][isearch + 1]) && (xedge[irow][isearch] > slopeThreshold) && (thermalImage[irow][isearch] > tempThreshold) )\n        {\n            ipeakFound = true;\n        }\n        else\n        {\n            isearch = isearch - 1;\n        }\n    }\n    if (iright < isearch) iright = isearch;\n}\nif (iright < ileft) return {topic:toppy, payload:device};\n \nvar itop = 0;\nvar colStart = Math.round((ncols - device.faceRegionWidth.value) /2);\nvar colStop = colStart + device.faceRegionWidth.value;\nfor (var icol = colStart; icol < colStop; ++icol)\n{\n    var isearch = nrows - 2\n    var ipeakFound = false\n    while (!ipeakFound && (isearch > 0) )\n    {\n        if ( (yedge[isearch - 1][icol] <= yedge[isearch][icol]) && (yedge[isearch][icol] >= yedge[isearch + 1][icol]) && (yedge[isearch][icol] > slopeThreshold) && (thermalImage[isearch][icol] > tempThreshold) )\n        {        \n            ipeakFound = true;\n        }\n        else\n        {\n            isearch = isearch - 1;\n        }\n    }\n    if (itop < isearch) itop = isearch;\n}\nif (itop < rowStart) return {topic:toppy, payload:device};\nitop = itop + 1;\nif (itop > (nrows - 1)) itop = (nrows - 1);\nibot = Math.round(itop - (iright - ileft) * 1.4);\nif (ibot < 0) ibot = 0;\n\ndevice.faceLocation.value = [[ibot,ileft],[itop,iright]];\n\nvar icenterCol = intAvg(ileft,iright); \nvar icenterRow = intAvg(itop,ibot);\n\nif (ibot   < ((nrows - device.faceRegionHeight.value) / 2) ) device.autoModeAction.value = 2;\nif (itop   > ((nrows + device.faceRegionHeight.value) / 2) ) device.autoModeAction.value = 2;\nif (ileft  < ((ncols - device.faceRegionWidth.value) / 2 ) ) device.autoModeAction.value = 2;\nif (iright > ((ncols + device.faceRegionWidth.value) / 2 ) ) device.autoModeAction.value = 2;\n\nif (device.autoModeAction.value == 2) return {topic:toppy, payload:device};\nvar ifaceWidth = iright - ileft;\nvar ivband = Math.round(ifaceWidth * 0.20)\nvar ihband = Math.round(ifaceWidth * 0.20);\n\nileft = icenterCol - ivband;\niright = icenterCol + ivband;\nibot = icenterRow;\nitop = icenterRow + ihband;\n\nvar maxCol = [0,0];\nvar maxRow = [0,0];\nvar tmax = [0,0];\nvar xdir = [[-1,1],[1,-1]];\nvar xderiv = [[0,0],[0,0]];\nvar ydir = [[-1,1],[-1,1]];\nvar yderiv = [[0,0],[0,0]];\nvar avgRad = [0,0];\nvar colLimits = [[ileft,icenterCol],[icenterCol,iright]];\nfor (var ipt = 0; ipt < 2; ++ipt)\n{\n    for (var irow = ibot; irow <= itop; ++irow)\n    {\n        for (var icol = colLimits[ipt][0]; icol <= colLimits[ipt][1]; ++icol)\n        {\n            if (tmax[ipt] < thermalImage[irow][icol])\n            {\n                tmax[ipt] = thermalImage[irow][icol];\n                maxCol[ipt] = icol;\n                maxRow[ipt] = irow;\n            }\n        }\n    }\n}\ndevice.rawLeftEyeTemp.value  = tmax[0];\ndevice.rawRightEyeTemp.value = tmax[1];\ndevice.eyeLocation.value = [[maxRow[0],maxCol[0]],[maxRow[1],maxCol[1]]];\n\nvar bridgeCol = intAvg(maxCol[0],maxCol[1]);\n// Bridge temp\ndevice.rawSpareTemp1.value = thermalImage[intAvg(maxRow[0],maxRow[1])][bridgeCol];\n// forehead temp\ndevice.rawSpareTemp2.value = thermalImage[intAvg(maxRow[0],maxRow[1]) + maxCol[1]- maxCol[0]][bridgeCol];\n\nfor (var irow = 0; irow < nrows; ++irow)\n{\n    device.faceVertSlice.value[0][irow] = irow;\n    device.faceVertSlice.value[1][irow] = thermalImage[irow][bridgeCol];\n}\n\n\ndevice.archiveData.value = 1;\ndevice.bodyTemp.value = intAvg(tmax[0], tmax[1]) * 0.01 + device.offsetTemp.value;\ndevice.bodyTemp.value = Math.round(10 * device.bodyTemp.value) / 10;\nreturn {topic:toppy, payload:device};\n\nfunction intAvg(i1,i2)\n{\n    return Math.round((i1 + i2) / 2);\n}\n\nfunction convertByteImageToThermalImage()\n{\n    var ti = [];\n    \n    var deltat = device.imageData.value.maxval - device.imageData.value.minval;\n    for (var irow = 0; irow < device.imageData.value.nrows; ++irow)\n    {\n        ti[irow] = [];\n        for (var icol = 0; icol < device.imageData.value.ncols; ++icol)\n        {\n            ti[irow][icol] = device.imageData.value.imageArray[irow][icol] / 255.0\n            ti[irow][icol] = deltat * ti[irow][icol]; \n            ti[irow][icol] = Math.round(ti[irow][icol] + device.imageData.value.minval - 27315); \n        }\n    }\n    return ti;\n}\nfunction tempAtPoint(inputImage, irow, icol, kernalType)\n{\n    var nrows = inputImage.length;\n    var ncols = inputImage[0].length;\n    var kernal = [\n        [[ 0,   0,    0  ], [ 0,   1,   0  ], [ 0,   0,    0  ]],\n        [[ 1,   2,    1  ], [ 2,   4,   2  ], [ 1,   2,    1  ]],\n        [[ 0,  -1,    0  ], [-1,   9,  -1  ], [ 0,  -1,    0  ]],\n        ];\n    if( (irow == 0) || (irow == (nrows - 1)) ) return inputImage[irow][icol];\n    if( (icol == 0) || (icol == (ncols - 1)) ) return inputImage[irow][icol];\n    var kernalNormal = [1.0, 16.0, 5];\n    convolveTemp = 0;\n    for (var ikrow = 0; ikrow < 3; ++ikrow)\n    {\n        for (var ikcol = 0; ikcol < 3; ++ikcol)\n        {\n            convolveTemp = convolveTemp + inputImage[irow + ikrow - 1][icol + ikcol - 1] * kernal[kernalType][ikrow][ikcol];\n        }\n    }\n    convolveTemp = convolveTemp / kernalNormal[kernalType];\n    return convolveTemp;\n}\nfunction convolve(inputImage,kernalType)\n{\n    var kernal = [\n        [[ 0,   0,    0  ], [ 0,   1,   0  ], [ 0,   0,    0  ]],\n        [[ 1,   2,    1  ], [ 2,   4,   2  ], [ 1,   2,    1  ]],\n        [[ 0,  -1,    0  ], [-1,   9,  -1  ], [ 0,  -1,    0  ]],\n        [[ 1,   0,   -1  ], [ 2,   0,  -2  ], [ 1,   0,   -1  ]],\n        [[ 1,   2,    1  ], [ 0,   0,   0  ], [-1,  -2,   -1  ]]\n        ];\n    var kernalNormal = [1.0, 16.0, 5, 1, 1];\n    var convolveImage = [];\n    var nrows = inputImage.length;\n    var ncols = inputImage[0].length;\n    for (var irow = 0; irow < nrows; ++irow)\n    {\n        convolveImage[irow] = [];\n        for (var icol = 0; icol < ncols; ++icol)\n        {\n            if ((irow == 0) || (irow == (nrows - 1)))\n            {\n                convolveImage[irow][icol] =  inputImage[irow][icol];\n                if ((kernalType == 3) || (kernalType == 4)) convolveImage[irow][icol]  = 0.0;\n            }\n            else\n            {\n                if ((icol == 0) || (icol == (ncols - 1)))\n                {\n                    convolveImage[irow][icol] =  inputImage[irow][icol];\n                    if ((kernalType == 3) || (kernalType == 4)) convolveImage[irow][icol]  = 0.0;\n                }\n                else\n                {\n                    convolveImage[irow][icol] = 0;\n                    for (var ikrow = 0; ikrow < 3; ++ikrow)\n                    {\n                        for (var ikcol = 0; ikcol < 3; ++ikcol)\n                        {\n                            convolveImage[irow][icol] = convolveImage[irow][icol] + inputImage[irow + ikrow - 1][icol + ikcol - 1] * kernal[kernalType][ikrow][ikcol];\n                        }\n                    }\n                    convolveImage[irow][icol] = convolveImage[irow][icol] / kernalNormal[kernalType];\n                }\n            }\n        }\n    }\n    return convolveImage;\n}\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -2697,9 +2402,12 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Check Action Alarm",
-        "func": "var actionMsg = null;\nvar device = msg.payload;\nif (device.bodyTemp.value < 1) device.autoModeAction.value = 0;\nif (device.autoModeAction.value == 0)\n{\n    actionMsg = {topic:'actionMsg', payload:0};\n    device.bodyTemp.value = 0;\n    device.archiveData.value = 0;\n}\nelse\n{\n    if ((device.bodyTemp.alarm.limits.low < device.bodyTemp.value) && (device.bodyTemp.value < device.bodyTemp.alarm.limits.high))\n    {\n        actionMsg = {topic:'actionMsg', payload:1};\n        device.autoModeAction.value = 1;\n    }\n    if ((device.bodyTemp.alarm.limits.high < device.bodyTemp.value) && (device.bodyTemp.value < device.bodyTemp.alarm.limits.hihi))\n    {\n        actionMsg = {topic:'actionMsg', payload:2};\n        device.autoModeAction.value = 2;\n    }\n    if ((device.bodyTemp.alarm.limits.low > device.bodyTemp.value) || (device.bodyTemp.value > device.bodyTemp.alarm.limits.hihi))\n    {\n        actionMsg = {topic:'actionMsg', payload:3};\n        device.autoModeAction.value = 3;\n    }\n}\nreturn [msg,actionMsg];\n",
+        "func": "var actionMsg = null;\nvar device = msg.payload;\n//if (device.bodyTemp.value < 1) device.autoModeAction.value = 0;\nif (device.autoModeAction.value < 3)\n{\n    device.bodyTemp.value = 0;\n    device.archiveData.value = 0;\n}\nelse\n{\n    if ((device.bodyTemp.alarm.limits.lolo < device.bodyTemp.value) && (device.bodyTemp.value < device.bodyTemp.alarm.limits.high))\n    {\n        if ((device.bodyTemp.alarm.limits.low < device.bodyTemp.value) && (device.bodyTemp.value < device.bodyTemp.alarm.limits.high))\n        {\n            actionMsg = {topic:'actionMsg', payload:1};\n        }\n        if ((device.bodyTemp.alarm.limits.high < device.bodyTemp.value) && (device.bodyTemp.value < device.bodyTemp.alarm.limits.hihi))\n        {\n            actionMsg = {topic:'actionMsg', payload:2};\n        }\n        if ((device.bodyTemp.alarm.limits.low > device.bodyTemp.value) || (device.bodyTemp.value > device.bodyTemp.alarm.limits.hihi))\n        {\n            actionMsg = {topic:'actionMsg', payload:3};\n        }\n        device.archiveData.value = 1;\n    }\n    else\n    {\n        device.autoModeAction.value = 4;\n        actionMsg = {topic:'actionMsg', payload:4};\n        device.archiveData.value = 0;\n    }\n}\nreturn [msg,actionMsg];\n",
         "outputs": 2,
         "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
         "x": 1430,
         "y": 880,
         "wires": [
@@ -2716,7 +2424,7 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "turn screen off after 2 minutes",
-        "func": "if ((msg.payload - flow.get('displayTurnedOnTime')) < 120000) return null;\nvar device = flow.get('device');\ndevice.ultraSoundRange.value = device.ultraSoundRange.alarm.limits.low;\nflow.set('lastObjectDetectedTime',0);\nreturn msg;",
+        "func": "if ((msg.payload - flow.get('displayTurnedOnTime')) < 120000) return null;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -2726,51 +2434,8 @@
         "y": 1260,
         "wires": [
             [
-                "e28da7f3.279d48"
+                "5f3ea4f9715c424f"
             ]
-        ]
-    },
-    {
-        "id": "e28da7f3.279d48",
-        "type": "delay",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "pauseType": "rate",
-        "timeout": "5",
-        "timeoutUnits": "seconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "minute",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": true,
-        "outputs": 1,
-        "x": 870,
-        "y": 1260,
-        "wires": [
-            [
-                "891d862.faed978"
-            ]
-        ]
-    },
-    {
-        "id": "891d862.faed978",
-        "type": "exec",
-        "z": "5f562f66.a301e",
-        "command": "vcgencmd display_power 0",
-        "addpay": false,
-        "append": "",
-        "useSpawn": "false",
-        "timer": "",
-        "oldrc": false,
-        "name": "Turn off Display",
-        "x": 1060,
-        "y": 1260,
-        "wires": [
-            [],
-            [],
-            []
         ]
     },
     {
@@ -2830,49 +2495,16 @@
         "rules": [
             {
                 "t": "eq",
-                "v": "flashLEDs",
-                "vt": "str"
-            },
-            {
-                "t": "eq",
-                "v": "flashBlueLED",
-                "vt": "str"
-            },
-            {
-                "t": "eq",
-                "v": "flashRedLED",
-                "vt": "str"
-            },
-            {
-                "t": "eq",
-                "v": "resetUltrasound",
-                "vt": "str"
-            },
-            {
-                "t": "eq",
                 "v": "screenTap",
                 "vt": "str"
             }
         ],
         "checkall": "true",
         "repair": false,
-        "outputs": 5,
+        "outputs": 1,
         "x": 600,
         "y": 1520,
         "wires": [
-            [
-                "b35cdd85.26118"
-            ],
-            [
-                "bd8ec1f1.1aba4"
-            ],
-            [
-                "392fd20.6e70b2e"
-            ],
-            [
-                "4ef8c97cb9a82599",
-                "d74a3de816788384"
-            ],
             [
                 "739a5b5d270d5a75"
             ]
@@ -2886,8 +2518,8 @@
         "func": "msg.payload = 0;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 1100,
-        "y": 1540,
+        "x": 500,
+        "y": 1900,
         "wires": [
             [
                 "d9b1bb3f.ca7528"
@@ -2902,8 +2534,8 @@
         "func": "msg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 800,
-        "y": 1520,
+        "x": 200,
+        "y": 1880,
         "wires": [
             [
                 "a1c4e4d5.4a9e78",
@@ -2927,8 +2559,8 @@
         "randomUnits": "seconds",
         "drop": false,
         "outputs": 1,
-        "x": 940,
-        "y": 1540,
+        "x": 340,
+        "y": 1900,
         "wires": [
             [
                 "78ee6d16.b79b54"
@@ -2945,8 +2577,8 @@
             "7af84ca8.ba5584",
             "cb51837e.00842"
         ],
-        "x": 1195,
-        "y": 1520,
+        "x": 595,
+        "y": 1880,
         "wires": []
     },
     {
@@ -2957,8 +2589,8 @@
         "func": "msg.payload = 0;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 1100,
-        "y": 1620,
+        "x": 500,
+        "y": 2020,
         "wires": [
             [
                 "69b81e64.314a7"
@@ -2973,8 +2605,8 @@
         "func": "msg.payload = 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 800,
-        "y": 1600,
+        "x": 200,
+        "y": 2000,
         "wires": [
             [
                 "e5fb72de.e2068",
@@ -2988,7 +2620,7 @@
         "z": "5f562f66.a301e",
         "name": "",
         "pauseType": "delay",
-        "timeout": "7",
+        "timeout": "5",
         "timeoutUnits": "seconds",
         "rate": "1",
         "nbRateUnits": "1",
@@ -2997,9 +2629,10 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
+        "allowrate": false,
         "outputs": 1,
-        "x": 940,
-        "y": 1620,
+        "x": 340,
+        "y": 2020,
         "wires": [
             [
                 "3711f6b7.f3591a"
@@ -3014,173 +2647,9 @@
         "links": [
             "cb51837e.00842"
         ],
-        "x": 1195,
-        "y": 1600,
+        "x": 595,
+        "y": 2000,
         "wires": []
-    },
-    {
-        "id": "7667b964.83dff8",
-        "type": "link out",
-        "z": "5f562f66.a301e",
-        "name": "FlashRedLED out",
-        "links": [
-            "7af84ca8.ba5584"
-        ],
-        "x": 1275,
-        "y": 1700,
-        "wires": []
-    },
-    {
-        "id": "392fd20.6e70b2e",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Set alarm burst",
-        "func": "var burstCount = context.get('burstCount');\nif (burstCount == undefined) burstCount = 0;\nif (msg.topic == 'flashRedLED') burstCount = 0;\n++burstCount;\ncontext.set('burstCount',burstCount)\nif (burstCount < 10) return msg;\nreturn null;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 780,
-        "y": 1700,
-        "wires": [
-            [
-                "e02169ba.e8afc8",
-                "a7df9719.5bba88"
-            ]
-        ]
-    },
-    {
-        "id": "3ed7e297.06603e",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "set to 1",
-        "func": "msg.payload = 1;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 1140,
-        "y": 1700,
-        "wires": [
-            [
-                "7667b964.83dff8"
-            ]
-        ]
-    },
-    {
-        "id": "e02169ba.e8afc8",
-        "type": "delay",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "400",
-        "timeoutUnits": "milliseconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "outputs": 1,
-        "x": 970,
-        "y": 1740,
-        "wires": [
-            [
-                "cb7f262b.480558"
-            ]
-        ]
-    },
-    {
-        "id": "cb7f262b.480558",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "set to 0",
-        "func": "return {topic:'redLed',payload:0};",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 1140,
-        "y": 1740,
-        "wires": [
-            [
-                "7667b964.83dff8",
-                "392fd20.6e70b2e"
-            ]
-        ]
-    },
-    {
-        "id": "a7df9719.5bba88",
-        "type": "delay",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "200",
-        "timeoutUnits": "milliseconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "outputs": 1,
-        "x": 970,
-        "y": 1700,
-        "wires": [
-            [
-                "3ed7e297.06603e"
-            ]
-        ]
-    },
-    {
-        "id": "4ef8c97cb9a82599",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "reset Ultrasound range",
-        "func": "var device = flow.get('device');\ndevice.ultraSoundRange.value = device.ultraSoundRange.alarm.limits.low;\nflow.set('lastObjectDetectedTime',0)\n",
-        "outputs": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 780,
-        "y": 1800,
-        "wires": []
-    },
-    {
-        "id": "28562dac19170990",
-        "type": "exec",
-        "z": "5f562f66.a301e",
-        "command": "vcgencmd display_power 1",
-        "addpay": false,
-        "append": "",
-        "useSpawn": "false",
-        "timer": "",
-        "winHide": false,
-        "oldrc": false,
-        "name": "Turn on Display",
-        "x": 760,
-        "y": 1380,
-        "wires": [
-            [],
-            [],
-            []
-        ]
-    },
-    {
-        "id": "4d60a129aa4ad860",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Set Display Turned On Time",
-        "func": "flow.set('displayTurnedOnTime', new Date().getTime());\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 520,
-        "y": 1380,
-        "wires": [
-            [
-                "28562dac19170990"
-            ]
-        ]
     },
     {
         "id": "76f63e2eb32b8aea",
@@ -3222,97 +2691,23 @@
         "wires": []
     },
     {
-        "id": "19036a35f60e5c28",
-        "type": "exec",
-        "z": "5f562f66.a301e",
-        "command": "vcgencmd display_power 0",
-        "addpay": false,
-        "append": "",
-        "useSpawn": "false",
-        "timer": "",
-        "winHide": false,
-        "oldrc": false,
-        "name": "Turn off Display",
-        "x": 907,
-        "y": 1854,
-        "wires": [
-            [],
-            [],
-            []
-        ]
-    },
-    {
-        "id": "d74a3de816788384",
-        "type": "delay",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "7",
-        "timeoutUnits": "seconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "allowrate": false,
-        "outputs": 1,
-        "x": 747,
-        "y": 1854,
-        "wires": [
-            [
-                "19036a35f60e5c28"
-            ]
-        ]
-    },
-    {
-        "id": "a5c36241f4a04b73",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Nobody there",
-        "func": "var nobodyThereCount = context.get('nobodyThereCount');\nnobodyThereCount = nobodyThereCount + 1;\n//node.warn('nobody there ' + nobodyThereCount.toString())\nif (nobodyThereCount >= 10)\n{\n    context.set('nobodyThereCount',0);\n    var device = flow.get('device');\n    device.ultraSoundRange.value = device.ultraSoundRange.alarm.limits.low;\n    flow.set('lastObjectDetectedTime',0)\n    node.warn('Nobody there');\n    return msg;\n}\nelse\n{\n    context.set('nobodyThereCount',nobodyThereCount);\n    return null;\n}\n",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "// Code added here will be run once\n// whenever the node is started.\ncontext.set('nobodyThereCount',0);",
-        "finalize": "",
-        "libs": [],
-        "x": 1100,
-        "y": 960,
-        "wires": [
-            [
-                "dbf5cf0ea2ede39f"
-            ]
-        ]
-    },
-    {
         "id": "8db6b3fc187100c4",
         "type": "link in",
         "z": "5f562f66.a301e",
         "name": "Turn off display in",
         "links": [
-            "dbf5cf0ea2ede39f"
+            "dbf5cf0ea2ede39f",
+            "863d7a9.ab20888",
+            "2dcd234ae84d0698",
+            "5be03d650c493d71"
         ],
-        "x": 915,
-        "y": 1200,
+        "x": 95,
+        "y": 1040,
         "wires": [
             [
-                "891d862.faed978"
+                "03b2e50bf2737755"
             ]
         ]
-    },
-    {
-        "id": "dbf5cf0ea2ede39f",
-        "type": "link out",
-        "z": "5f562f66.a301e",
-        "name": "Nobody there out",
-        "mode": "link",
-        "links": [
-            "8db6b3fc187100c4"
-        ],
-        "x": 1215,
-        "y": 960,
-        "wires": []
     },
     {
         "id": "9104571421cb5872",
@@ -3336,7 +2731,7 @@
             "6c15c07a.68169"
         ],
         "x": 695,
-        "y": 2020,
+        "y": 1660,
         "wires": []
     },
     {
@@ -3348,7 +2743,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 530,
-        "y": 2020,
+        "y": 1660,
         "wires": [
             [
                 "58aa550c.06cb4c"
@@ -3364,7 +2759,7 @@
         "action": "",
         "pretty": false,
         "x": 190,
-        "y": 2040,
+        "y": 1680,
         "wires": [
             [
                 "f167b45d.9136c8"
@@ -3399,7 +2794,7 @@
         "repair": false,
         "outputs": 3,
         "x": 310,
-        "y": 2040,
+        "y": 1680,
         "wires": [
             [
                 "3a1fb97e.c10786"
@@ -3419,7 +2814,7 @@
         "outputs": 1,
         "noerr": 0,
         "x": 520,
-        "y": 2060,
+        "y": 1700,
         "wires": [
             [
                 "76f8176c.8bfcf8"
@@ -3436,7 +2831,7 @@
             "0a0d6febbbe8041a"
         ],
         "x": 695,
-        "y": 2060,
+        "y": 1700,
         "wires": []
     },
     {
@@ -3448,7 +2843,7 @@
         "action": "",
         "pretty": false,
         "x": 310,
-        "y": 2100,
+        "y": 1740,
         "wires": [
             [
                 "1a4abfdc.2fb1b"
@@ -3464,7 +2859,7 @@
             "0ea325d0584f821d"
         ],
         "x": 95,
-        "y": 2040,
+        "y": 1680,
         "wires": [
             [
                 "75bcac45.dd63c4"
@@ -3485,7 +2880,7 @@
         "rh": 0,
         "inputs": 0,
         "x": 160,
-        "y": 2100,
+        "y": 1740,
         "wires": [
             [
                 "9b6cce5d.a32f9"
@@ -3513,17 +2908,18 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Screen Tap",
-        "func": "var device = flow.get('device');\nif (device == undefined) return null;\nif (flow.get('lastObjectDetectedTime') == undefined) return null;\nflow.set('lastObjectDetectedTime',new Date().getTime());\nif (device.ultraSoundRange.value == device.ultraSoundRange.alarm.limits.low)\n{\n    device.ultraSoundRange.value = device.ultraSoundRange.alarm.limits.high;\n    return {topic:'screenTap',payload:true}\n}\nreturn null",
+        "func": "var device = flow.get('device');\nif (device == undefined) return null;\nif (flow.get('lastObjectDetectedTime') == undefined) return null;\nflow.set('lastObjectDetectedTime',new Date().getTime());\nif (device.ultraSoundRange.value == device.ultraSoundRange.alarm.limits.low)\n{\n    device.ultraSoundRange.value = device.ultraSoundRange.alarm.limits.high;\n    device.autoModeAction.value = 1;\n    return {topic:'screenTap',payload:true}\n}\nreturn null",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
         "x": 750,
-        "y": 1920,
+        "y": 1520,
         "wires": [
             [
-                "a9c90d40f89558ed"
+                "a9c90d40f89558ed",
+                "dd35f26befe6edff"
             ]
         ]
     },
@@ -3538,8 +2934,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1000,
-        "y": 1920,
+        "x": 920,
+        "y": 1440,
         "wires": [
             [
                 "3a3f8f8a507eda86"
@@ -3558,8 +2954,8 @@
         "winHide": false,
         "oldrc": false,
         "name": "Turn on Display",
-        "x": 1240,
-        "y": 1920,
+        "x": 1160,
+        "y": 1440,
         "wires": [
             [],
             [],
@@ -3687,9 +3083,253 @@
         "name": "/external-monitor/websocket",
         "server": "c94f2fa49f448e37",
         "client": "",
-        "x": 2340,
+        "x": 2420,
         "y": 880,
         "wires": []
+    },
+    {
+        "id": "ab574bc8fec521f9",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "reset Ultrasound range",
+        "func": "var device = flow.get('device');\ndevice.ultraSoundRange.value = device.ultraSoundRange.alarm.limits.low;\nflow.set('lastObjectDetectedTime',0)\ndevice.autoModeAction.value = 0;",
+        "outputs": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 440,
+        "y": 1020,
+        "wires": []
+    },
+    {
+        "id": "a7d5eeedd86f84f0",
+        "type": "exec",
+        "z": "5f562f66.a301e",
+        "command": "vcgencmd display_power 0",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "Turn off Display",
+        "x": 567,
+        "y": 1074,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "991263dc9c646a14",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "4",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 407,
+        "y": 1074,
+        "wires": [
+            [
+                "a7d5eeedd86f84f0",
+                "0d2259bfc998d9e2"
+            ]
+        ]
+    },
+    {
+        "id": "03b2e50bf2737755",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 240,
+        "y": 1040,
+        "wires": [
+            [
+                "ab574bc8fec521f9",
+                "991263dc9c646a14"
+            ]
+        ]
+    },
+    {
+        "id": "a225b41a68a75b17",
+        "type": "link in",
+        "z": "5f562f66.a301e",
+        "name": "Blink All  lights once in",
+        "links": [
+            "dd35f26befe6edff",
+            "7979ee40b7559f9c"
+        ],
+        "x": 95,
+        "y": 1880,
+        "wires": [
+            [
+                "b35cdd85.26118"
+            ]
+        ]
+    },
+    {
+        "id": "dd35f26befe6edff",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "Screen Tap out",
+        "mode": "link",
+        "links": [
+            "a225b41a68a75b17"
+        ],
+        "x": 895,
+        "y": 1580,
+        "wires": []
+    },
+    {
+        "id": "7979ee40b7559f9c",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "HC04 Distance out",
+        "mode": "link",
+        "links": [
+            "a225b41a68a75b17"
+        ],
+        "x": 495,
+        "y": 1380,
+        "wires": []
+    },
+    {
+        "id": "4946ee0b119fb749",
+        "type": "link in",
+        "z": "5f562f66.a301e",
+        "name": "Pulse Blue Led 5 sec in",
+        "links": [],
+        "x": 95,
+        "y": 2000,
+        "wires": [
+            [
+                "bd8ec1f1.1aba4"
+            ]
+        ]
+    },
+    {
+        "id": "2dcd234ae84d0698",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "Check Camera out",
+        "mode": "link",
+        "links": [
+            "8db6b3fc187100c4"
+        ],
+        "x": 455,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "5be03d650c493d71",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "Turn off screen after 2 minutes",
+        "mode": "link",
+        "links": [
+            "8db6b3fc187100c4"
+        ],
+        "x": 995,
+        "y": 1260,
+        "wires": []
+    },
+    {
+        "id": "0d2259bfc998d9e2",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Send StopSeq",
+        "func": "return {topic : 'stopSeq', payload:{topic:'stopSeq', payload:true}};",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
+        "y": 1140,
+        "wires": [
+            [
+                "20f85419132bcf00"
+            ]
+        ]
+    },
+    {
+        "id": "20f85419132bcf00",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "Send Stop Seq",
+        "mode": "link",
+        "links": [
+            "c8b70f0c73d3fbc6"
+        ],
+        "x": 695,
+        "y": 1140,
+        "wires": []
+    },
+    {
+        "id": "c8b70f0c73d3fbc6",
+        "type": "link in",
+        "z": "5f562f66.a301e",
+        "name": "Monitor Websocket in",
+        "links": [
+            "20f85419132bcf00"
+        ],
+        "x": 2205,
+        "y": 800,
+        "wires": [
+            [
+                "7ec429811d44bbbf",
+                "cf5e2ba4.3a2458"
+            ]
+        ]
+    },
+    {
+        "id": "5f3ea4f9715c424f",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "2",
+        "rateUnits": "minute",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 880,
+        "y": 1260,
+        "wires": [
+            [
+                "5be03d650c493d71"
+            ]
+        ]
     },
     {
         "id": "dd643202.3b06d",
@@ -3827,7 +3467,7 @@
         "fieldType": "msg",
         "format": "javascript",
         "syntax": "mustache",
-        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var colorScale = true;\n        var enhancementLevel = 0;\n        var pgm = null;\n        var lastUpdate = new Date().getTime();\n        var maxDisplayTime = 10000;\n        var peakHoldTemp = 0;\n        var imageArray =  null;\n        var language = 0;\n        var imeasurementCount = 0;\n        var ioutsideCount = 0;\n        var maxMeasurments = 2;\n        var warnings = [\n            [\"Person outside range\"     ,\"Person utanför räckhåll\"    ,\"Άτομο εκτός εμβέλειας\"   ,\"Persona fuera del alcance\"  ,\"Persona fuori portata\"  ,\"Person außerhalb der Reichweite\"  ,\"Personne hors de portée\"],\n            [\"Normal Temperature\"       ,\"Normal temperatur\"          ,\"Κανονική θερμοκρασία\"    ,\"Temperatura normal\"         ,\"Temperatura normale\"    ,\"Normale Temperatur\"               ,\"Température normale\"],\n            [\"High Temperature\"         ,\"Hög temperatur\"             ,\"Υψηλή θερμοκρασία\"       ,\"Alta temperatura\"           ,\"Alta temperatura\"       ,\"Hohe Temperatur\"                  ,\"Haute température\"],\n            [\"Temperature outside range\",\"Temperatur utanför räckhåll\",\"Θερμοκρασία εκτός εύρους\",\"Temperatura fuera del rango\",\"Temperatura fuori range\",\"Temperatur außerhalb des Bereichs\",\"Température hors plage\"] ];\n        var instructions = [\n            [\"Take off your glasses.\",  \"Please stand straight.\",     \"Align face in the circle.\"],\n            [\"Ta av dig dina glasögon.\",\"Vänligen stå rakt.\",         \"Rikta in ansiktet i cirkeln.\"],\n            [\"Βγάλτε τα γυαλιά σας.\",   \"Παρακαλώ σταθείτε ευθεία.\",  \"Ευθυγραμμίστε το πρόσωπο στον κύκλο.\"],\n            [\"Quítate las gafas.\",      \"Por favor, párese derecho.\", \"Alinear la cara en el círculo.\"],\n            [\"Togliti gli occhiali.\",   \"Per favore, stai dritto.\",   \"Allinea la faccia nel cerchio.\"],\n            [\"Nimm deine Brille ab.\",   \"Bitte stehen Sie gerade.\",   \"Richten Sie das Gesicht im Kreis aus.\"],\n            [\"Enlève tes lunettes.\",    \"Veuillez vous tenir droit.\", \"Alignez le visage dans le cercle.\"]];    \n        var aquireDataInfo = [\"Wait! Measuring...\",\"Vänta! Mätning...\",\"Περίμενε! Μέτρημα...\",\"¡Espere! Medición...\",\"Aspettare! Misurazione ...\",\"Warten! Messung...\",\"Attendez! Mesure...\"];\n        var warningStartTime = 0;\n        var warningOn = false;\n        var warniningDuration = 5000;\n        var holdOn = false;\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n            $('#instructionId').hide();\n            $('#tempBarId').hide();\n            $('#imageId').hide();\n            $('#logoId').show();\n            \n            warningStartTime = 0;\n            warningOn = false;\n            holdOn = false;\n            colorScale = false;\n            setInterval(function() {initProcess();}, 1000);\n            document.onclick= function(event) \n            {\n                if (event===undefined) event= window.event;\n                var target= 'target' in event? event.target : event.srcElement;\n                sendWebSocketMessageObject({topic : 'screenTap', userID : userID, payload:true});\n            };\n        }\n        function initProcess()\n        {\n            if ((new Date().getTime() - lastUpdate) < maxDisplayTime) return;\n            $('#instructionId').hide();\n            $('#tempBarId').hide();\n            $('#imageId').hide();\n            $('#logoId').show();\n            clearImage();\n            peakHoldTemp = 0;\n            imeasurementCount = 0;\n            ioutsideCount = 0;\n            warningStartTime = 0;\n            warningOn = false;\n            holdOn = false;\n            colorScale = false;\n        }\n        function onWebSocketOpen()\n        {\n        }\n        function onWebSocketClose()\n        {\n            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        \n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            if (device.imageData.value == null) return;\n            if (holdOn) return;\n            lastUpdate = new Date().getTime();\n\n            var style = 'font-size:225%; font-weight:200; color:#ffff00;';\n            if (warningStartTime < 1)\n            {\n                $('#imageId').show();\n                $('#logoId').hide();\n                warningStartTime = lastUpdate;\n                warningOn = true;\n                sendWebSocketMessageObject({topic : 'flashLEDs', userID : userID, payload:true});\n            }\n            else\n            {\n                if ((lastUpdate - warningStartTime) > warniningDuration)\n                {\n                    warningOn = false;\n                }\n            }\n            if (warningOn)\n            {\n                $('#instructionId').show();\n                $('#instruction1Id').text(instructions[device.language.value][0]);\n                $('#instruction2Id').text(instructions[device.language.value][1]);\n                $('#instruction3Id').text(instructions[device.language.value][2]);\n            }\n            else\n            {\n                $('#instructionId').hide();\n                $('#tempBarId').show();\n            }\n            $('#imageId').show();\n            var tempBarConfig = \n                {\n                    lolo            : device.bodyTemp.alarm.limits.lolo, \n                    low             : device.bodyTemp.alarm.limits.low, \n                    high            : device.bodyTemp.alarm.limits.high, \n                    hihi            : device.bodyTemp.alarm.limits.hihi, \n                    value           : device.bodyTemp.value, \n                    unit            : device.bodyTemp.unit, \n                    title           : '',\n                    textsize        : 20,\n                    label           : 'temp', \n                    lowColor        : '#0000ff', \n                    mediumColor     : '#00ff00',\n                    highColor       : '#ff0000', \n                    backgroundColor : '#000000', \n                    labelColor      : '#ffffff', \n                    gridColor       : '#000000',\n                    titleColor      : '#000000',\n                    height          : 125, \n                    width           : 440,\n                    htmlId          : 'tempBarPlot'\n                };\n            if ((device.autoModeAction.value > 0) && !warningOn)\n            {\n                if ((device.bodyTemp.alarm.limits.lolo <=  device.bodyTemp.value) && ( device.bodyTemp.value <= device.bodyTemp.alarm.limits.hihi))\n                {\n                    if (peakHoldTemp < device.bodyTemp.value) peakHoldTemp = device.bodyTemp.value;\n                    imeasurementCount = imeasurementCount + 1;\n                    ioutsideCount = 0;\n                }\n                if ((device.bodyTemp.alarm.limits.lolo <= peakHoldTemp) && (peakHoldTemp <= device.bodyTemp.alarm.limits.hihi))\n                {\n                    var infoText = aquireDataInfo[device.language.value];\n                    if (peakHoldTemp < device.bodyTemp.alarm.limits.low)\n                    {\n                        tempBarConfig.titleColor = '#0000ff';\n                        if (imeasurementCount >= maxMeasurments)\n                        {\n                            style = 'font-size:225%; font-weight:200; background-color:#0000ff;color:black;';\n                            infoText = warnings[1][device.language.value];\n                            sendWebSocketMessageObject({topic : 'resetUltrasound', userID : userID, payload:true});\n                            sendWebSocketMessageObject({topic : 'flashBlueLED', userID : userID, payload:true});\n                        }\n                    }\n                    else\n                    {\n                        if (peakHoldTemp < device.bodyTemp.alarm.limits.high)\n                        {\n                            tempBarConfig.titleColor = '#00ff00';\n                            if (imeasurementCount >= maxMeasurments)\n                            {\n                                style = 'font-size:225%; font-weight:200; background-color:#00ff00;color:black;';\n                                infoText = warnings[1][device.language.value];\n                                holdOn = true;\n                                colorScale = true;\n                                sendWebSocketMessageObject({topic : 'resetUltrasound', userID : userID, payload:true});\n                                sendWebSocketMessageObject({topic : 'flashBlueLED', userID : userID, payload:true});\n                            }\n                        }\n                        else\n                        {\n                            tempBarConfig.titleColor = '#ff0000';\n                            if (imeasurementCount >= maxMeasurments)\n                            {\n                                style = 'font-size:225%; font-weight:200; background-color:#ff0000;color:black;';\n                                infoText = warnings[2][device.language.value];\n                                holdOn = true;\n                                colorScale = true;\n                                sendWebSocketMessageObject({topic : 'resetUltrasound', userID : userID, payload:true});\n                                sendWebSocketMessageObject({topic : 'flashRedLED', userID : userID, payload:true});\n                            }\n                        }\n                    }\n                    $('#tempComment').attr(\"style\", style);\n                    $('#tempComment').text(infoText);\n                    \n                }\n                else\n                {\n                    peakHoldTemp = 0;\n                    imeasurementCount = 0;\n                    ioutsideCount = ioutsideCount + 1;\n                    if (ioutsideCount >= maxMeasurments)\n                    {\n//                        lastUpdate = 0;\n//                        initProcess();\n//                        return;\n                    }\n                    style = 'font-size:225%; font-weight:200; color:#ff00ff;';\n                    $('#tempComment').attr(\"style\", style);\n                    $('#tempComment').text(warnings[3][device.language.value]);\n                    tempBarConfig.titleColor = '#000000';\n                }\n            }\n            else\n            {\n                style = 'font-size:225%; font-weight:200; color:#ff00ff;';\n                 $('#tempComment').attr(\"style\", style);\n                $('#tempComment').text(warnings[0][device.language.value]);\n                peakHoldTemp = 0;\n                imeasurementCount = 0;\n                if (!warningOn)\n                {\n                    ioutsideCount = ioutsideCount + 1;\n                    if (ioutsideCount >= maxMeasurments)\n                    {\n//                        lastUpdate = 0;\n//                        initProcess();\n//                        return;\n                    }\n                }\n                tempBarConfig.lowColor = '#000000';\n                tempBarConfig.mediumColor = '#000000';\n                tempBarConfig.highColor = '#000000';\n                tempBarConfig.labelColor = '#000000';\n                tempBarConfig.titleColor = '#000000';\n            }\n            tempBarConfig.title = peakHoldTemp.toString();\n            setHorzBarWidget(tempBarConfig);\n            pgm = JSON.parse(JSON.stringify(device.imageData.value));\n            imageArray = pgm.imageArray;\n            plotImage();\n        }\n        function plotImage()\n        {\n            var rgb = [];\n            var plow = (pgm.minval - 27315) / 100;\n            var phigh = (pgm.maxval - 27315) / 100;\n            var pdelta = phigh - plow;\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            var rectWidth  = canvasWidth / pgm.ncols;\n            var rectHeight =  canvasHeight / pgm.nrows;\n\n            for (var irow = 0; irow < pgm.nrows; ++irow)\n            {\n                for (var icol = 0; icol < pgm.ncols; ++icol)\n                {\n                    var intensity = imageArray[irow][icol] / 256.0;\n                    if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                    if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                    if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                    if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                    if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                    if (colorScale)\n                    {\n                        rgb = getRGB(intensity);\n                        rgb[0] = Math.floor(rgb[0]);\n                        rgb[1] = Math.floor(rgb[1]);\n                        rgb[2] = Math.floor(rgb[2]);\n                    }\n                    else\n                    {\n                        rgb[0] = Math.floor(255 * intensity);\n                        rgb[1] = Math.floor(255 * intensity);\n                        rgb[2] = Math.floor(255 * intensity);\n                    }\n                    canvasContext.fillStyle = 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                    var wx = icol * canvasWidth / pgm.ncols;\n                    var hy =  canvasHeight - (1 + irow) * canvasHeight / pgm.nrows ;\n                    canvasContext.fillRect(wx, hy, rectWidth, rectHeight);\n                }    \n            }\n            if (!holdOn) \n            {\n                \n                canvasContext.lineWidth = 6;\n                canvasContext.strokeStyle = '#ffff00';\n                var ellipseWidth =  device.faceRegionWidth.value * canvasWidth / pgm.ncols;\n                var ellipseHeight =  device.faceRegionHeight.value * canvasHeight / pgm.nrows;\n                \n                drawEllipse(canvasContext, (canvasWidth - ellipseWidth) / 2, (canvasHeight -  ellipseHeight)/ 2, ellipseWidth, ellipseHeight);\n\n                canvasContext.beginPath();\n                canvasContext.moveTo((canvasWidth - 0.3 * ellipseWidth) / 2, canvasHeight / 2);\n                canvasContext.lineTo((canvasWidth + 0.3 * ellipseWidth) / 2, canvasHeight / 2);\n                canvasContext.stroke();\n                canvasContext.beginPath();\n                canvasContext.moveTo(canvasWidth / 2, (canvasHeight -  0.3 * ellipseHeight) / 2);\n                canvasContext.lineTo(canvasWidth / 2, (canvasHeight +  0.3 * ellipseHeight) / 2);\n                canvasContext.stroke();\n\n               \n                canvasContext.strokeStyle = '#00ff00'\n                if (device.autoModeAction.value == 0) canvasContext.strokeStyle = '#ff0000';\n                var faceEllipseWidth  =  device.faceLocation.value[1][1] -  device.faceLocation.value[0][1];\n                var faceEllipseHeight =  device.faceLocation.value[1][0] -  device.faceLocation.value[0][0] ;\n                var faceEllipseCol    = (device.faceLocation.value[1][1] +  device.faceLocation.value[0][1]) / 2 ;\n                var faceEllipseRow    = (device.faceLocation.value[1][0] +  device.faceLocation.value[0][0]) / 2 ;\n                faceEllipseCol = faceEllipseCol - faceEllipseWidth  / 2.0;\n                faceEllipseRow = pgm.nrows - (faceEllipseRow + faceEllipseHeight / 2.0);\n                faceEllipseWidth  =  faceEllipseWidth  * canvasWidth  / pgm.ncols;\n                faceEllipseHeight =  faceEllipseHeight * canvasHeight / pgm.nrows;\n                faceEllipseCol    =  faceEllipseCol    * canvasWidth  / pgm.ncols;\n                faceEllipseRow    =  faceEllipseRow    * canvasHeight / pgm.nrows;\n                drawEllipse(canvasContext, faceEllipseCol, faceEllipseRow, faceEllipseWidth, faceEllipseHeight);\n\n                canvasContext.beginPath();\n                canvasContext.moveTo(faceEllipseCol + (faceEllipseWidth / 2) - 0.15 * faceEllipseWidth, faceEllipseRow + faceEllipseHeight / 2);\n                canvasContext.lineTo(faceEllipseCol + (faceEllipseWidth / 2) + 0.15 * faceEllipseWidth, faceEllipseRow + faceEllipseHeight / 2);\n                canvasContext.stroke();\n                canvasContext.beginPath();\n                canvasContext.moveTo(faceEllipseCol + faceEllipseWidth / 2, faceEllipseRow + (faceEllipseHeight / 2) - 0.15 * faceEllipseHeight);\n                canvasContext.lineTo(faceEllipseCol + faceEllipseWidth / 2, faceEllipseRow + (faceEllipseHeight / 2) + 0.15 * faceEllipseHeight);\n                canvasContext.stroke();\n\n/*\n                if (device.autoModeAction.value > 0)\n                {\n                    canvasContext.fillStyle = '#000000';\n                    for (var ipt = 0; ipt < 2; ++ipt)\n                    {\n                        var wx =  Math.round(device.eyeLocation.value[ipt][1] * canvasWidth / pgm.ncols);\n                        var hy =  Math.round(canvasHeight - (1 + device.eyeLocation.value[ipt][0]) * canvasHeight / pgm.nrows) ;\n//                        canvasContext.fillRect(wx - rectWidth, hy - rectHeight, 3 * rectWidth, 3 * rectHeight);\n                        canvasContext.strokeStyle = '#000000'\n                        canvasContext.lineWidth = 3;\n                        canvasContext.beginPath();\n                        canvasContext.arc(wx + 0.5 * rectWidth, hy + 0.5 * rectHeight,  rectWidth, 0, 6.2831854);\n                        canvasContext.stroke();\n                    }\n                }\n*/\n            }\n        }\n        function getRGB(intensity)\n        {\n          var rgb = [0,0,0];\n//plasma\n          var rgbCoeff = [\n              [  48.6, 349.0,    5.72, -172.0],\n              [-164.0, 705.0, -667.0 ,  379.0],\n              [ 135.0, 332.0, -976.0,   536.0]];\n          var intensityStart = [0.0, 0.3176, 0.0];\n//viridis\n/*\n          var rgbCoeff = [\n              [  72.7, 161.0, -928.0,  962.0],\n              [-0.316, 334.0,  -62.8 , -35.3],\n              [  89.3, 296.0, -379.0,  -11.5]];\n          var intensityStart = [0.0, 0.0117, 0.0];\n*/\n//inferno\n/* \n          var rgbCoeff = [\n              [   0,0,  343.0,  264.0, -376.0],\n              [   5.0,  -69.7,  320.0,   -1.1],\n              [   0.0, 1193.0,-2957.0, 1939.0]];\n          var intensityStart = [0.0, 0.0, 0.0];\n*/\n          var power = [1.0, 0.0, 0.0, 0.0];\n          for (var ii = 1; ii < 4; ++ii) power[ii] = power[ii - 1] * intensity;\n          for (var irgb = 0; irgb < 3; ++irgb)\n          {\n              if (intensity >= intensityStart[irgb])\n              {\n                  for (var ipow = 0; ipow < 4; ++ipow)\n                  {\n                      rgb[irgb] = rgb[irgb] + rgbCoeff[irgb][ipow] * power[ipow];\n                  }\n              }\n              if (rgb[irgb] <   0) rgb[irgb] =   0;\n              if (rgb[irgb] > 255) rgb[irgb] = 255;\n         }\n          return rgb;\n        }\n        function getRGBRainBow(intensity)\n        {\n          var rgb = [0,0,0];\n          if ( (0 <= intensity) && (intensity <= 0.25) )\n          {\n            rgb[0] = 0;\n            rgb[1] = Math.floor(255 * intensity * 4);    \n            rgb[2] = 255;\n          }\n          if ( (0.25 < intensity) && (intensity <= 0.50) )\n          {\n            rgb[0] = 0;\n            rgb[1] = 255;    \n            rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n          }\n          if ( (0.50 < intensity) && (intensity <= 0.75) )\n          {\n            rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n            rgb[1] = 255;    \n            rgb[2] = 0;\n          }\n          if ( (0.75 < intensity) && (intensity <= 1.0) )\n          {\n            rgb[0] = 255;\n            rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n            rgb[2] = 0;\n          }\n          return rgb;\n        }\n        function clearImage()\n        {\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);        \n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var pbox = 0.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(' ');\n            } \n        }\n        function drawEllipse(ctx, x, y, w, h) \n        {\n            var kappa = .5522848,\n              ox = (w / 2) * kappa, // control point offset horizontal\n              oy = (h / 2) * kappa, // control point offset vertical\n              xe = x + w,           // x-end\n              ye = y + h,           // y-end\n              xm = x + w / 2,       // x-middle\n              ym = y + h / 2;       // y-middle\n            \n            ctx.beginPath();\n            ctx.moveTo(x, ym);\n            ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);\n            ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);\n            ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);\n            ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);\n            //ctx.closePath(); // not used correctly, see comments (use to close off open path)\n            ctx.stroke();\n        }\n",
+        "template": "// Global Javascript\n        var sbirtemConfig = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var colorScale = true;\n        var enhancementLevel = 0;\n        var pgm = null;\n        var imageArray =  null;\n        var language = 0;\n        var warnings = [\n            [\"Person outside range\"     ,\"Person utanför räckhåll\"    ,\"Άτομο εκτός εμβέλειας\"   ,\"Persona fuera del alcance\"  ,\"Persona fuori portata\"  ,\"Person außerhalb der Reichweite\"  ,\"Personne hors de portée\"],\n            [\"Normal Temperature\"       ,\"Normal temperatur\"          ,\"Κανονική θερμοκρασία\"    ,\"Temperatura normal\"         ,\"Temperatura normale\"    ,\"Normale Temperatur\"               ,\"Température normale\"],\n            [\"High Temperature\"         ,\"Hög temperatur\"             ,\"Υψηλή θερμοκρασία\"       ,\"Alta temperatura\"           ,\"Alta temperatura\"       ,\"Hohe Temperatur\"                  ,\"Haute température\"],\n            [\"Temperature outside range\",\"Temperatur utanför räckhåll\",\"Θερμοκρασία εκτός εύρους\",\"Temperatura fuera del rango\",\"Temperatura fuori range\",\"Temperatur außerhalb des Bereichs\",\"Température hors plage\"] ];\n        var instructions = [\n            [\"Take off your glasses.\",  \"Please stand straight.\",     \"Align face in the circle.\"],\n            [\"Ta av dig dina glasögon.\",\"Vänligen stå rakt.\",         \"Rikta in ansiktet i cirkeln.\"],\n            [\"Βγάλτε τα γυαλιά σας.\",   \"Παρακαλώ σταθείτε ευθεία.\",  \"Ευθυγραμμίστε το πρόσωπο στον κύκλο.\"],\n            [\"Quítate las gafas.\",      \"Por favor, párese derecho.\", \"Alinear la cara en el círculo.\"],\n            [\"Togliti gli occhiali.\",   \"Per favore, stai dritto.\",   \"Allinea la faccia nel cerchio.\"],\n            [\"Nimm deine Brille ab.\",   \"Bitte stehen Sie gerade.\",   \"Richten Sie das Gesicht im Kreis aus.\"],\n            [\"Enlève tes lunettes.\",    \"Veuillez vous tenir droit.\", \"Alignez le visage dans le cercle.\"]];    \n        var aquireDataInfo = [\"Wait! Measuring...\",\"Vänta! Mätning...\",\"Περίμενε! Μέτρημα...\",\"¡Espere! Medición...\",\"Aspettare! Misurazione ...\",\"Warten! Messung...\",\"Attendez! Mesure...\"];\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n            $('#instructionId').hide();\n            $('#tempBarId').hide();\n            $('#imageId').hide();\n            $('#logoId').show();\n            \n            colorScale = false;\n            document.onclick= function(event) \n            {\n                if (event===undefined) event= window.event;\n                var target= 'target' in event? event.target : event.srcElement;\n                sendWebSocketMessageObject({topic : 'screenTap', userID : userID, payload:true});\n            };\n        }\n        function clearScreen()\n        {\n            $('#instructionId').hide();\n            $('#tempBarId').hide();\n            $('#imageId').hide();\n            $('#logoId').show();\n            clearImage();\n            colorScale = false;\n        }\n        function onWebSocketOpen()\n        {\n        }\n        function onWebSocketClose()\n        {\n            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == sbirtemConfig.name)\n                    {\n                        heartbeat();\n                        updateDmaReadings(msg.payload);\n                    }\n                    break;\n                case 'stopSeq':\n                    {\n                        clearScreen();\n                    }\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings(device)\n        {\n            if (device.imageData.value == null) return;\n            var tempBarConfig = \n            {\n                lolo            : device.bodyTemp.alarm.limits.lolo, \n                low             : device.bodyTemp.alarm.limits.low, \n                high            : device.bodyTemp.alarm.limits.high, \n                hihi            : device.bodyTemp.alarm.limits.hihi, \n                value           : device.bodyTemp.value, \n                unit            : device.bodyTemp.unit, \n                title           : '',\n                textsize        : 20,\n                label           : 'temp', \n                lowColor        : '#0000ff', \n                mediumColor     : '#00ff00',\n                highColor       : '#ff0000', \n                backgroundColor : '#000000', \n                labelColor      : '#ffffff', \n                gridColor       : '#000000',\n                titleColor      : '#000000',\n                height          : 125, \n                width           : 440,\n                htmlId          : 'tempBarPlot'\n            };\n            $('#imageId').show();\n            $('#logoId').hide();\n\n            var style = 'font-size:225%; font-weight:200; color:#ffff00;';\n            if (device.autoModeAction.value == 1)\n            {\n                $('#instructionId').show();\n                $('#tempBarId').hide();\n                $('#instruction1Id').text(instructions[device.language.value][0]);\n                $('#instruction2Id').text(instructions[device.language.value][1]);\n                $('#instruction3Id').text(instructions[device.language.value][2]);\n            }\n            if (device.autoModeAction.value == 2)\n            {\n                $('#instructionId').hide();\n                $('#tempBarId').show();\n                style = 'font-size:225%; font-weight:200; color:#ff00ff;';\n                $('#tempComment').attr(\"style\", style);\n                $('#tempComment').text(warnings[0][device.language.value]);\n                tempBarConfig.lowColor = '#000000';\n                tempBarConfig.mediumColor = '#000000';\n                tempBarConfig.highColor = '#000000';\n                tempBarConfig.labelColor = '#000000';\n                tempBarConfig.titleColor = '#000000';\n            }\n            if (device.autoModeAction.value == 3)\n            {\n                $('#instructionId').hide();\n                $('#tempBarId').show();\n                $('#tempBarPlot').show();\n                if ((device.bodyTemp.alarm.limits.lolo <= device.bodyTemp.value) && (device.bodyTemp.value <= device.bodyTemp.alarm.limits.hihi))\n                {\n                    var infoText = aquireDataInfo[device.language.value];\n                    if (device.bodyTemp.value < device.bodyTemp.alarm.limits.low)\n                    {\n                        tempBarConfig.titleColor = '#0000ff';\n                        style = 'font-size:225%; font-weight:200; background-color:#0000ff;color:black;';\n                        infoText = warnings[1][device.language.value];\n                    }\n                    else\n                    {\n                        if (device.bodyTemp.value < device.bodyTemp.alarm.limits.high)\n                        {\n                            tempBarConfig.titleColor = '#00ff00';\n                            style = 'font-size:225%; font-weight:200; background-color:#00ff00;color:black;';\n                            infoText = warnings[1][device.language.value];\n                            colorScale = true;\n                        }\n                        else\n                        {\n                            tempBarConfig.titleColor = '#ff0000';\n                            style = 'font-size:225%; font-weight:200; background-color:#ff0000;color:black;';\n                            infoText = warnings[2][device.language.value];\n                            colorScale = true;\n                        }\n                    }\n                    $('#tempComment').attr(\"style\", style);\n                    $('#tempComment').text(infoText);\n                    \n                }\n            }\n            if (device.autoModeAction.value == 4)\n            {\n                $('#instructionId').hide();\n                $('#tempBarId').show();\n                $('#tempBarPlot').hide();\n                style = 'font-size:225%; font-weight:200; background-color:#ffff00;color:black;';\n                var infoText = warnings[3][device.language.value];\n                colorScale = false;\n                tempBarConfig.lowColor = '#000000';\n                tempBarConfig.mediumColor = '#000000';\n                tempBarConfig.highColor = '#000000';\n                tempBarConfig.labelColor = '#000000';\n                tempBarConfig.titleColor = '#000000';\n            }\n            tempBarConfig.title = device.bodyTemp.value.toString();\n            setHorzBarWidget(tempBarConfig);\n            pgm = JSON.parse(JSON.stringify(device.imageData.value));\n            imageArray = pgm.imageArray;\n            plotImage(device);\n        }\n        function plotImage(device)\n        {\n            var rgb = [];\n            var plow = (pgm.minval - 27315) / 100;\n            var phigh = (pgm.maxval - 27315) / 100;\n            var pdelta = phigh - plow;\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            var rectWidth  = canvasWidth / pgm.ncols;\n            var rectHeight =  canvasHeight / pgm.nrows;\n\n            for (var irow = 0; irow < pgm.nrows; ++irow)\n            {\n                for (var icol = 0; icol < pgm.ncols; ++icol)\n                {\n                    var intensity = imageArray[irow][icol] / 256.0;\n                    if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                    if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                    if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                    if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                    if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                    if (colorScale)\n                    {\n                        rgb = getRGB(intensity);\n                        rgb[0] = Math.floor(rgb[0]);\n                        rgb[1] = Math.floor(rgb[1]);\n                        rgb[2] = Math.floor(rgb[2]);\n                    }\n                    else\n                    {\n                        rgb[0] = Math.floor(255 * intensity);\n                        rgb[1] = Math.floor(255 * intensity);\n                        rgb[2] = Math.floor(255 * intensity);\n                    }\n                    canvasContext.fillStyle = 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                    var wx = icol * canvasWidth / pgm.ncols;\n                    var hy =  canvasHeight - (1 + irow) * canvasHeight / pgm.nrows ;\n                    canvasContext.fillRect(wx, hy, rectWidth, rectHeight);\n                }    \n            }\n            if (device.autoModeAction.value < 3) \n            {\n                \n                canvasContext.lineWidth = 6;\n                canvasContext.strokeStyle = '#ffff00';\n                var ellipseWidth =  device.faceRegionWidth.value * canvasWidth / pgm.ncols;\n                var ellipseHeight =  device.faceRegionHeight.value * canvasHeight / pgm.nrows;\n                \n                drawEllipse(canvasContext, (canvasWidth - ellipseWidth) / 2, (canvasHeight -  ellipseHeight)/ 2, ellipseWidth, ellipseHeight);\n\n                canvasContext.beginPath();\n                canvasContext.moveTo((canvasWidth - 0.3 * ellipseWidth) / 2, canvasHeight / 2);\n                canvasContext.lineTo((canvasWidth + 0.3 * ellipseWidth) / 2, canvasHeight / 2);\n                canvasContext.stroke();\n                canvasContext.beginPath();\n                canvasContext.moveTo(canvasWidth / 2, (canvasHeight -  0.3 * ellipseHeight) / 2);\n                canvasContext.lineTo(canvasWidth / 2, (canvasHeight +  0.3 * ellipseHeight) / 2);\n                canvasContext.stroke();\n\n               \n                canvasContext.strokeStyle = '#00ff00';\n                if (device.autoModeAction.value < 3) canvasContext.strokeStyle = '#ff0000';\n                var faceEllipseWidth  =  device.faceLocation.value[1][1] -  device.faceLocation.value[0][1];\n                var faceEllipseHeight =  device.faceLocation.value[1][0] -  device.faceLocation.value[0][0] ;\n                var faceEllipseCol    = (device.faceLocation.value[1][1] +  device.faceLocation.value[0][1]) / 2 ;\n                var faceEllipseRow    = (device.faceLocation.value[1][0] +  device.faceLocation.value[0][0]) / 2 ;\n                faceEllipseCol = faceEllipseCol - faceEllipseWidth  / 2.0;\n                faceEllipseRow = pgm.nrows - (faceEllipseRow + faceEllipseHeight / 2.0);\n                faceEllipseWidth  =  faceEllipseWidth  * canvasWidth  / pgm.ncols;\n                faceEllipseHeight =  faceEllipseHeight * canvasHeight / pgm.nrows;\n                faceEllipseCol    =  faceEllipseCol    * canvasWidth  / pgm.ncols;\n                faceEllipseRow    =  faceEllipseRow    * canvasHeight / pgm.nrows;\n                drawEllipse(canvasContext, faceEllipseCol, faceEllipseRow, faceEllipseWidth, faceEllipseHeight);\n\n                canvasContext.beginPath();\n                canvasContext.moveTo(faceEllipseCol + (faceEllipseWidth / 2) - 0.15 * faceEllipseWidth, faceEllipseRow + faceEllipseHeight / 2);\n                canvasContext.lineTo(faceEllipseCol + (faceEllipseWidth / 2) + 0.15 * faceEllipseWidth, faceEllipseRow + faceEllipseHeight / 2);\n                canvasContext.stroke();\n                canvasContext.beginPath();\n                canvasContext.moveTo(faceEllipseCol + faceEllipseWidth / 2, faceEllipseRow + (faceEllipseHeight / 2) - 0.15 * faceEllipseHeight);\n                canvasContext.lineTo(faceEllipseCol + faceEllipseWidth / 2, faceEllipseRow + (faceEllipseHeight / 2) + 0.15 * faceEllipseHeight);\n                canvasContext.stroke();\n\n            }\n        }\n        function getRGB(intensity)\n        {\n          var rgb = [0,0,0];\n//plasma\n          var rgbCoeff = [\n              [  48.6, 349.0,    5.72, -172.0],\n              [-164.0, 705.0, -667.0 ,  379.0],\n              [ 135.0, 332.0, -976.0,   536.0]];\n          var intensityStart = [0.0, 0.3176, 0.0];\n//viridis\n/*\n          var rgbCoeff = [\n              [  72.7, 161.0, -928.0,  962.0],\n              [-0.316, 334.0,  -62.8 , -35.3],\n              [  89.3, 296.0, -379.0,  -11.5]];\n          var intensityStart = [0.0, 0.0117, 0.0];\n*/\n//inferno\n/* \n          var rgbCoeff = [\n              [   0,0,  343.0,  264.0, -376.0],\n              [   5.0,  -69.7,  320.0,   -1.1],\n              [   0.0, 1193.0,-2957.0, 1939.0]];\n          var intensityStart = [0.0, 0.0, 0.0];\n*/\n          var power = [1.0, 0.0, 0.0, 0.0];\n          for (var ii = 1; ii < 4; ++ii) power[ii] = power[ii - 1] * intensity;\n          for (var irgb = 0; irgb < 3; ++irgb)\n          {\n              if (intensity >= intensityStart[irgb])\n              {\n                  for (var ipow = 0; ipow < 4; ++ipow)\n                  {\n                      rgb[irgb] = rgb[irgb] + rgbCoeff[irgb][ipow] * power[ipow];\n                  }\n              }\n              if (rgb[irgb] <   0) rgb[irgb] =   0;\n              if (rgb[irgb] > 255) rgb[irgb] = 255;\n         }\n          return rgb;\n        }\n        function getRGBRainBow(intensity)\n        {\n          var rgb = [0,0,0];\n          if ( (0 <= intensity) && (intensity <= 0.25) )\n          {\n            rgb[0] = 0;\n            rgb[1] = Math.floor(255 * intensity * 4);    \n            rgb[2] = 255;\n          }\n          if ( (0.25 < intensity) && (intensity <= 0.50) )\n          {\n            rgb[0] = 0;\n            rgb[1] = 255;    \n            rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n          }\n          if ( (0.50 < intensity) && (intensity <= 0.75) )\n          {\n            rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n            rgb[1] = 255;    \n            rgb[2] = 0;\n          }\n          if ( (0.75 < intensity) && (intensity <= 1.0) )\n          {\n            rgb[0] = 255;\n            rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n            rgb[2] = 0;\n          }\n          return rgb;\n        }\n        function clearImage()\n        {\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);        \n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var pbox = 0.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(' ');\n            } \n        }\n        function drawEllipse(ctx, x, y, w, h) \n        {\n            var kappa = .5522848,\n              ox = (w / 2) * kappa, // control point offset horizontal\n              oy = (h / 2) * kappa, // control point offset vertical\n              xe = x + w,           // x-end\n              ye = y + h,           // y-end\n              xm = x + w / 2,       // x-middle\n              ym = y + h / 2;       // y-middle\n            \n            ctx.beginPath();\n            ctx.moveTo(x, ym);\n            ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);\n            ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);\n            ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);\n            ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);\n            //ctx.closePath(); // not used correctly, see comments (use to close off open path)\n            ctx.stroke();\n        }\n",
         "output": "str",
         "x": 470,
         "y": 280,
@@ -4337,7 +3977,7 @@
         "fieldType": "msg",
         "format": "javascript",
         "syntax": "mustache",
-        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var colorScale = true;\n        var enhancementLevel = 0;\n        var pgm = null;\n        var lastUpdate = new Date().getTime();\n        var maxDisplayTime = 10000;\n        var peakHoldTemp = 0;\n        var imageArray =  null;\n        var language = 0;\n        var imeasurementCount = 0;\n        var ioutsideCount = 0;\n        var maxMeasurments = 2;\n        var warnings = [\n            [\"Person outside range\"     ,\"Person utanför räckhåll\"    ,\"Άτομο εκτός εμβέλειας\"   ,\"Persona fuera del alcance\"  ,\"Persona fuori portata\"  ,\"Person außerhalb der Reichweite\"  ,\"Personne hors de portée\"],\n            [\"Normal Temperature\"       ,\"Normal temperatur\"          ,\"Κανονική θερμοκρασία\"    ,\"Temperatura normal\"         ,\"Temperatura normale\"    ,\"Normale Temperatur\"               ,\"Température normale\"],\n            [\"High Temperature\"         ,\"Hög temperatur\"             ,\"Υψηλή θερμοκρασία\"       ,\"Alta temperatura\"           ,\"Alta temperatura\"       ,\"Hohe Temperatur\"                  ,\"Haute température\"],\n            [\"Temperature outside range\",\"Temperatur utanför räckhåll\",\"Θερμοκρασία εκτός εύρους\",\"Temperatura fuera del rango\",\"Temperatura fuori range\",\"Temperatur außerhalb des Bereichs\",\"Température hors plage\"] ];\n        var instructions = [\n            [\"Take off your glasses.\",  \"Please stand straight.\",     \"Align face in the circle.\"],\n            [\"Ta av dig dina glasögon.\",\"Vänligen stå rakt.\",         \"Rikta in ansiktet i cirkeln.\"],\n            [\"Βγάλτε τα γυαλιά σας.\",   \"Παρακαλώ σταθείτε ευθεία.\",  \"Ευθυγραμμίστε το πρόσωπο στον κύκλο.\"],\n            [\"Quítate las gafas.\",      \"Por favor, párese derecho.\", \"Alinear la cara en el círculo.\"],\n            [\"Togliti gli occhiali.\",   \"Per favore, stai dritto.\",   \"Allinea la faccia nel cerchio.\"],\n            [\"Nimm deine Brille ab.\",   \"Bitte stehen Sie gerade.\",   \"Richten Sie das Gesicht im Kreis aus.\"],\n            [\"Enlève tes lunettes.\",    \"Veuillez vous tenir droit.\", \"Alignez le visage dans le cercle.\"]];    \n        var aquireDataInfo = [\"Wait! Measuring...\",\"Vänta! Mätning...\",\"Περίμενε! Μέτρημα...\",\"¡Espere! Medición...\",\"Aspettare! Misurazione ...\",\"Warten! Messung...\",\"Attendez! Mesure...\"];\n        var warningStartTime = 0;\n        var warningOn = false;\n        var warniningDuration = 5000;\n        var holdOn = false;\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n            $('#instructionId').hide();\n            $('#tempBarId').hide();\n            $('#imageId').hide();\n            $('#logoId').show();\n            \n            warningStartTime = 0;\n            warningOn = false;\n            holdOn = false;\n            colorScale = false;\n            setInterval(function() {initProcess();}, 1000);\n        }\n        function initProcess()\n        {\n            if ((new Date().getTime() - lastUpdate) < maxDisplayTime) return;\n            $('#instructionId').hide();\n            $('#tempBarId').hide();\n            $('#imageId').hide();\n            $('#logoId').show();\n            clearImage();\n            peakHoldTemp = 0;\n            imeasurementCount = 0;\n            ioutsideCount = 0;\n            warningStartTime = 0;\n            warningOn = false;\n            holdOn = false;\n            colorScale = false;\n        }\n        function onWebSocketOpen()\n        {\n        }\n        function onWebSocketClose()\n        {\n            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        \n                    }\n                    break;\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            if (device.imageData.value == null) return;\n            if (holdOn) return;\n            lastUpdate = new Date().getTime();\n\n            var style = 'font-size:225%; font-weight:200; color:#ffff00;';\n            if (warningStartTime < 1)\n            {\n                $('#imageId').show();\n                $('#logoId').hide();\n                warningStartTime = lastUpdate;\n                warningOn = true;\n                sendWebSocketMessageObject({topic : 'flashLEDs', userID : userID, payload:true});\n            }\n            else\n            {\n                if ((lastUpdate - warningStartTime) > warniningDuration)\n                {\n                    warningOn = false;\n                }\n            }\n            if (warningOn)\n            {\n                $('#instructionId').show();\n                $('#instruction1Id').text(instructions[device.language.value][0]);\n                $('#instruction2Id').text(instructions[device.language.value][1]);\n                $('#instruction3Id').text(instructions[device.language.value][2]);\n            }\n            else\n            {\n                $('#instructionId').hide();\n                $('#tempBarId').show();\n            }\n            $('#imageId').show();\n            var tempBarConfig = \n                {\n                    lolo            : device.bodyTemp.alarm.limits.lolo, \n                    low             : device.bodyTemp.alarm.limits.low, \n                    high            : device.bodyTemp.alarm.limits.high, \n                    hihi            : device.bodyTemp.alarm.limits.hihi, \n                    value           : device.bodyTemp.value, \n                    unit            : device.bodyTemp.unit, \n                    title           : '',\n                    textsize        : 20,\n                    label           : 'temp', \n                    lowColor        : '#0000ff', \n                    mediumColor     : '#00ff00',\n                    highColor       : '#ff0000', \n                    backgroundColor : '#000000', \n                    labelColor      : '#ffffff', \n                    gridColor       : '#000000',\n                    titleColor      : '#000000',\n                    height          : 120, \n                    width           : 660,\n                    htmlId          : 'tempBarPlot'\n                };\n            if ((device.autoModeAction.value > 0) && !warningOn)\n            {\n                if ((device.bodyTemp.alarm.limits.lolo <=  device.bodyTemp.value) && ( device.bodyTemp.value <= device.bodyTemp.alarm.limits.hihi))\n                {\n                    if (peakHoldTemp < device.bodyTemp.value) peakHoldTemp = device.bodyTemp.value;\n                    imeasurementCount = imeasurementCount + 1;\n                    ioutsideCount = 0;\n                }\n                if ((device.bodyTemp.alarm.limits.lolo <= peakHoldTemp) && (peakHoldTemp <= device.bodyTemp.alarm.limits.hihi))\n                {\n                    var infoText = aquireDataInfo[device.language.value];\n                    if (peakHoldTemp < device.bodyTemp.alarm.limits.low)\n                    {\n                        tempBarConfig.titleColor = '#0000ff';\n                        if (imeasurementCount >= maxMeasurments)\n                        {\n                            style = 'font-size:300%; font-weight:200; background-color:#0000ff;color:black;';\n                            infoText = warnings[1][device.language.value];\n                            sendWebSocketMessageObject({topic : 'resetUltrasound', userID : userID, payload:true});\n                            sendWebSocketMessageObject({topic : 'flashBlueLED', userID : userID, payload:true});\n                        }\n                    }\n                    else\n                    {\n                        if (peakHoldTemp < device.bodyTemp.alarm.limits.high)\n                        {\n                            tempBarConfig.titleColor = '#00ff00';\n                            if (imeasurementCount >= maxMeasurments)\n                            {\n                                style = 'font-size:300%; font-weight:200; background-color:#00ff00;color:black;';\n                                infoText = warnings[1][device.language.value];\n                                holdOn = true;\n                                colorScale = true;\n                                sendWebSocketMessageObject({topic : 'resetUltrasound', userID : userID, payload:true});\n                                sendWebSocketMessageObject({topic : 'flashBlueLED', userID : userID, payload:true});\n                            }\n                        }\n                        else\n                        {\n                            tempBarConfig.titleColor = '#ff0000';\n                            if (imeasurementCount >= maxMeasurments)\n                            {\n                                style = 'font-size:300%; font-weight:200; background-color:#ff0000;color:black;';\n                                infoText = warnings[2][device.language.value];\n                                holdOn = true;\n                                colorScale = true;\n                                sendWebSocketMessageObject({topic : 'resetUltrasound', userID : userID, payload:true});\n                                sendWebSocketMessageObject({topic : 'flashRedLED', userID : userID, payload:true});\n                            }\n                        }\n                    }\n                    $('#tempComment').attr(\"style\", style);\n                    $('#tempComment').text(infoText);\n                    \n                }\n                else\n                {\n                    peakHoldTemp = 0;\n                    imeasurementCount = 0;\n                    ioutsideCount = ioutsideCount + 1;\n                    if (ioutsideCount >= maxMeasurments)\n                    {\n//                        lastUpdate = 0;\n//                        initProcess();\n//                        return;\n                    }\n                    style = 'font-size:300%; font-weight:200; color:#ff00ff;';\n                    $('#tempComment').attr(\"style\", style);\n                    $('#tempComment').text(warnings[3][device.language.value]);\n                    tempBarConfig.titleColor = '#000000';\n                }\n            }\n            else\n            {\n                style = 'font-size:300%; font-weight:200; color:#ff00ff;';\n                 $('#tempComment').attr(\"style\", style);\n                $('#tempComment').text(warnings[0][device.language.value]);\n                peakHoldTemp = 0;\n                imeasurementCount = 0;\n                if (!warningOn)\n                {\n                    ioutsideCount = ioutsideCount + 1;\n                    if (ioutsideCount >= maxMeasurments)\n                    {\n//                        lastUpdate = 0;\n//                        initProcess();\n//                        return;\n                    }\n                }\n                tempBarConfig.lowColor = '#000000';\n                tempBarConfig.mediumColor = '#000000';\n                tempBarConfig.highColor = '#000000';\n                tempBarConfig.labelColor = '#000000';\n                tempBarConfig.titleColor = '#000000';\n            }\n            tempBarConfig.title = peakHoldTemp.toString();\n            setHorzBarWidget(tempBarConfig);\n            pgm = JSON.parse(JSON.stringify(device.imageData.value));\n            imageArray = pgm.imageArray;\n            plotImage();\n        }\n        function plotImage()\n        {\n            var rgb = [];\n            var plow = (pgm.minval - 27315) / 100;\n            var phigh = (pgm.maxval - 27315) / 100;\n            var pdelta = phigh - plow;\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            var rectWidth  = canvasWidth / pgm.ncols;\n            var rectHeight =  canvasHeight / pgm.nrows;\n\n            for (var irow = 0; irow < pgm.nrows; ++irow)\n            {\n                for (var icol = 0; icol < pgm.ncols; ++icol)\n                {\n                    var intensity = imageArray[irow][icol] / 256.0;\n                    if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                    if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                    if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                    if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                    if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                    if (colorScale)\n                    {\n                        rgb = getRGB(intensity);\n                        rgb[0] = Math.floor(rgb[0]);\n                        rgb[1] = Math.floor(rgb[1]);\n                        rgb[2] = Math.floor(rgb[2]);\n                    }\n                    else\n                    {\n                        rgb[0] = Math.floor(255 * intensity);\n                        rgb[1] = Math.floor(255 * intensity);\n                        rgb[2] = Math.floor(255 * intensity);\n                    }\n                    canvasContext.fillStyle = 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                    var wx = icol * canvasWidth / pgm.ncols;\n                    var hy =  canvasHeight - (1 + irow) * canvasHeight / pgm.nrows ;\n                    canvasContext.fillRect(wx, hy, rectWidth, rectHeight);\n                }    \n            }\n            if (!holdOn) \n            {\n                \n                canvasContext.lineWidth = 6;\n                canvasContext.strokeStyle = '#ffff00';\n                var ellipseWidth =  device.faceRegionWidth.value * canvasWidth / pgm.ncols;\n                var ellipseHeight =  device.faceRegionHeight.value * canvasHeight / pgm.nrows;\n                \n                drawEllipse(canvasContext, (canvasWidth - ellipseWidth) / 2, (canvasHeight -  ellipseHeight)/ 2, ellipseWidth, ellipseHeight);\n\n                canvasContext.beginPath();\n                canvasContext.moveTo((canvasWidth - 0.3 * ellipseWidth) / 2, canvasHeight / 2);\n                canvasContext.lineTo((canvasWidth + 0.3 * ellipseWidth) / 2, canvasHeight / 2);\n                canvasContext.stroke();\n                canvasContext.beginPath();\n                canvasContext.moveTo(canvasWidth / 2, (canvasHeight -  0.3 * ellipseHeight) / 2);\n                canvasContext.lineTo(canvasWidth / 2, (canvasHeight +  0.3 * ellipseHeight) / 2);\n                canvasContext.stroke();\n\n               \n                canvasContext.strokeStyle = '#00ff00'\n                if (device.autoModeAction.value == 0) canvasContext.strokeStyle = '#ff0000';\n                var faceEllipseWidth  =  device.faceLocation.value[1][1] -  device.faceLocation.value[0][1];\n                var faceEllipseHeight =  device.faceLocation.value[1][0] -  device.faceLocation.value[0][0] ;\n                var faceEllipseCol    = (device.faceLocation.value[1][1] +  device.faceLocation.value[0][1]) / 2 ;\n                var faceEllipseRow    = (device.faceLocation.value[1][0] +  device.faceLocation.value[0][0]) / 2 ;\n                faceEllipseCol = faceEllipseCol - faceEllipseWidth  / 2.0;\n                faceEllipseRow = pgm.nrows - (faceEllipseRow + faceEllipseHeight / 2.0);\n                faceEllipseWidth  =  faceEllipseWidth  * canvasWidth  / pgm.ncols;\n                faceEllipseHeight =  faceEllipseHeight * canvasHeight / pgm.nrows;\n                faceEllipseCol    =  faceEllipseCol    * canvasWidth  / pgm.ncols;\n                faceEllipseRow    =  faceEllipseRow    * canvasHeight / pgm.nrows;\n                drawEllipse(canvasContext, faceEllipseCol, faceEllipseRow, faceEllipseWidth, faceEllipseHeight);\n\n                canvasContext.beginPath();\n                canvasContext.moveTo(faceEllipseCol + (faceEllipseWidth / 2) - 0.15 * faceEllipseWidth, faceEllipseRow + faceEllipseHeight / 2);\n                canvasContext.lineTo(faceEllipseCol + (faceEllipseWidth / 2) + 0.15 * faceEllipseWidth, faceEllipseRow + faceEllipseHeight / 2);\n                canvasContext.stroke();\n                canvasContext.beginPath();\n                canvasContext.moveTo(faceEllipseCol + faceEllipseWidth / 2, faceEllipseRow + (faceEllipseHeight / 2) - 0.15 * faceEllipseHeight);\n                canvasContext.lineTo(faceEllipseCol + faceEllipseWidth / 2, faceEllipseRow + (faceEllipseHeight / 2) + 0.15 * faceEllipseHeight);\n                canvasContext.stroke();\n\n/*\n                if (device.autoModeAction.value > 0)\n                {\n                    canvasContext.fillStyle = '#000000';\n                    for (var ipt = 0; ipt < 2; ++ipt)\n                    {\n                        var wx =  Math.round(device.eyeLocation.value[ipt][1] * canvasWidth / pgm.ncols);\n                        var hy =  Math.round(canvasHeight - (1 + device.eyeLocation.value[ipt][0]) * canvasHeight / pgm.nrows) ;\n//                        canvasContext.fillRect(wx - rectWidth, hy - rectHeight, 3 * rectWidth, 3 * rectHeight);\n                        canvasContext.strokeStyle = '#000000'\n                        canvasContext.lineWidth = 3;\n                        canvasContext.beginPath();\n                        canvasContext.arc(wx + 0.5 * rectWidth, hy + 0.5 * rectHeight,  rectWidth, 0, 6.2831854);\n                        canvasContext.stroke();\n                    }\n                }\n*/\n            }\n        }\n        function getRGB(intensity)\n        {\n          var rgb = [0,0,0];\n//plasma\n          var rgbCoeff = [\n              [  48.6, 349.0,    5.72, -172.0],\n              [-164.0, 705.0, -667.0 ,  379.0],\n              [ 135.0, 332.0, -976.0,   536.0]];\n          var intensityStart = [0.0, 0.3176, 0.0];\n//viridis\n/*\n          var rgbCoeff = [\n              [  72.7, 161.0, -928.0,  962.0],\n              [-0.316, 334.0,  -62.8 , -35.3],\n              [  89.3, 296.0, -379.0,  -11.5]];\n          var intensityStart = [0.0, 0.0117, 0.0];\n*/\n//inferno\n/* \n          var rgbCoeff = [\n              [   0,0,  343.0,  264.0, -376.0],\n              [   5.0,  -69.7,  320.0,   -1.1],\n              [   0.0, 1193.0,-2957.0, 1939.0]];\n          var intensityStart = [0.0, 0.0, 0.0];\n*/\n          var power = [1.0, 0.0, 0.0, 0.0];\n          for (var ii = 1; ii < 4; ++ii) power[ii] = power[ii - 1] * intensity;\n          for (var irgb = 0; irgb < 3; ++irgb)\n          {\n              if (intensity >= intensityStart[irgb])\n              {\n                  for (var ipow = 0; ipow < 4; ++ipow)\n                  {\n                      rgb[irgb] = rgb[irgb] + rgbCoeff[irgb][ipow] * power[ipow];\n                  }\n              }\n              if (rgb[irgb] <   0) rgb[irgb] =   0;\n              if (rgb[irgb] > 255) rgb[irgb] = 255;\n         }\n          return rgb;\n        }\n        function getRGBRainBow(intensity)\n        {\n          var rgb = [0,0,0];\n          if ( (0 <= intensity) && (intensity <= 0.25) )\n          {\n            rgb[0] = 0;\n            rgb[1] = Math.floor(255 * intensity * 4);    \n            rgb[2] = 255;\n          }\n          if ( (0.25 < intensity) && (intensity <= 0.50) )\n          {\n            rgb[0] = 0;\n            rgb[1] = 255;    \n            rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n          }\n          if ( (0.50 < intensity) && (intensity <= 0.75) )\n          {\n            rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n            rgb[1] = 255;    \n            rgb[2] = 0;\n          }\n          if ( (0.75 < intensity) && (intensity <= 1.0) )\n          {\n            rgb[0] = 255;\n            rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n            rgb[2] = 0;\n          }\n          return rgb;\n        }\n        function clearImage()\n        {\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);        \n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var pbox = 0.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(' ');\n            } \n        }\n        function drawEllipse(ctx, x, y, w, h) \n        {\n            var kappa = .5522848,\n              ox = (w / 2) * kappa, // control point offset horizontal\n              oy = (h / 2) * kappa, // control point offset vertical\n              xe = x + w,           // x-end\n              ye = y + h,           // y-end\n              xm = x + w / 2,       // x-middle\n              ym = y + h / 2;       // y-middle\n            \n            ctx.beginPath();\n            ctx.moveTo(x, ym);\n            ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);\n            ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);\n            ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);\n            ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);\n            //ctx.closePath(); // not used correctly, see comments (use to close off open path)\n            ctx.stroke();\n        }\n",
+        "template": "// Global Javascript\n        var restfulDevice = \n        {\n            deviceType  : '{{{payload.script.deviceType}}}',\n            name        : '{{{payload.script.name}}}',\n            project     : '{{{payload.script.project}}}'\n        };\n        var mqttDevice = null;\n        var device = null;\n        var colorScale = true;\n        var enhancementLevel = 0;\n        var pgm = null;\n        var lastUpdate = new Date().getTime();\n        var maxDisplayTime = 10000;\n        var peakHoldTemp = 0;\n        var imageArray =  null;\n        var language = 0;\n        var imeasurementCount = 0;\n        var ioutsideCount = 0;\n        var maxMeasurments = 2;\n        var warnings = [\n            [\"Person outside range\"     ,\"Person utanför räckhåll\"    ,\"Άτομο εκτός εμβέλειας\"   ,\"Persona fuera del alcance\"  ,\"Persona fuori portata\"  ,\"Person außerhalb der Reichweite\"  ,\"Personne hors de portée\"],\n            [\"Normal Temperature\"       ,\"Normal temperatur\"          ,\"Κανονική θερμοκρασία\"    ,\"Temperatura normal\"         ,\"Temperatura normale\"    ,\"Normale Temperatur\"               ,\"Température normale\"],\n            [\"High Temperature\"         ,\"Hög temperatur\"             ,\"Υψηλή θερμοκρασία\"       ,\"Alta temperatura\"           ,\"Alta temperatura\"       ,\"Hohe Temperatur\"                  ,\"Haute température\"],\n            [\"Temperature outside range\",\"Temperatur utanför räckhåll\",\"Θερμοκρασία εκτός εύρους\",\"Temperatura fuera del rango\",\"Temperatura fuori range\",\"Temperatur außerhalb des Bereichs\",\"Température hors plage\"] ];\n        var instructions = [\n            [\"Take off your glasses.\",  \"Please stand straight.\",     \"Align face in the circle.\"],\n            [\"Ta av dig dina glasögon.\",\"Vänligen stå rakt.\",         \"Rikta in ansiktet i cirkeln.\"],\n            [\"Βγάλτε τα γυαλιά σας.\",   \"Παρακαλώ σταθείτε ευθεία.\",  \"Ευθυγραμμίστε το πρόσωπο στον κύκλο.\"],\n            [\"Quítate las gafas.\",      \"Por favor, párese derecho.\", \"Alinear la cara en el círculo.\"],\n            [\"Togliti gli occhiali.\",   \"Per favore, stai dritto.\",   \"Allinea la faccia nel cerchio.\"],\n            [\"Nimm deine Brille ab.\",   \"Bitte stehen Sie gerade.\",   \"Richten Sie das Gesicht im Kreis aus.\"],\n            [\"Enlève tes lunettes.\",    \"Veuillez vous tenir droit.\", \"Alignez le visage dans le cercle.\"]];    \n        var aquireDataInfo = [\"Wait! Measuring...\",\"Vänta! Mätning...\",\"Περίμενε! Μέτρημα...\",\"¡Espere! Medición...\",\"Aspettare! Misurazione ...\",\"Warten! Messung...\",\"Attendez! Mesure...\"];\n        var warningStartTime = 0;\n        var warningOn = false;\n        var warniningDuration = 5000;\n        var holdOn = false;\n\n        useWebSockets(true);\n        function onDocumentReady()\n        {\n            $('#instructionId').hide();\n            $('#tempBarId').hide();\n            $('#imageId').hide();\n            $('#logoId').show();\n            \n            warningStartTime = 0;\n            warningOn = false;\n            holdOn = false;\n            colorScale = false;\n            setInterval(function() {initProcess();}, 1000);\n        }\n        function initProcess()\n        {\n            if ((new Date().getTime() - lastUpdate) < maxDisplayTime) return;\n            $('#instructionId').hide();\n            $('#tempBarId').hide();\n            $('#imageId').hide();\n            $('#logoId').show();\n            clearImage();\n            peakHoldTemp = 0;\n            imeasurementCount = 0;\n            ioutsideCount = 0;\n            warningStartTime = 0;\n            warningOn = false;\n            holdOn = false;\n            colorScale = false;\n        }\n        function onWebSocketOpen()\n        {\n        }\n        function onWebSocketClose()\n        {\n            wsConnectC();\n        }\n        function onWebSocketMessage(msg)\n        {\n            switch(msg.topic)\n            {\n                case 'readings':\n                    if (msg.mqttDevice.name == restfulDevice.name)\n                    {\n                        heartbeat();\n                        device = msg.payload;\n                        mqttDevice = msg.mqttDevice;\n                        updateDmaReadings();\n                        \n                    }\n                    break;\n                case 'stopSeq':\n                    {\n                        \n                    }\n                default:\n                // code block\n            }\n        }\n// Update Readings Javascript\n        function updateDmaReadings()\n        {\n            if (device.imageData.value == null) return;\n            if (holdOn) return;\n            lastUpdate = new Date().getTime();\n\n            var style = 'font-size:225%; font-weight:200; color:#ffff00;';\n            if (warningStartTime < 1)\n            {\n                $('#imageId').show();\n                $('#logoId').hide();\n                warningStartTime = lastUpdate;\n                warningOn = true;\n                sendWebSocketMessageObject({topic : 'flashLEDs', userID : userID, payload:true});\n            }\n            else\n            {\n                if ((lastUpdate - warningStartTime) > warniningDuration)\n                {\n                    warningOn = false;\n                }\n            }\n            if (warningOn)\n            {\n                $('#instructionId').show();\n                $('#instruction1Id').text(instructions[device.language.value][0]);\n                $('#instruction2Id').text(instructions[device.language.value][1]);\n                $('#instruction3Id').text(instructions[device.language.value][2]);\n            }\n            else\n            {\n                $('#instructionId').hide();\n                $('#tempBarId').show();\n            }\n            $('#imageId').show();\n            var tempBarConfig = \n                {\n                    lolo            : device.bodyTemp.alarm.limits.lolo, \n                    low             : device.bodyTemp.alarm.limits.low, \n                    high            : device.bodyTemp.alarm.limits.high, \n                    hihi            : device.bodyTemp.alarm.limits.hihi, \n                    value           : device.bodyTemp.value, \n                    unit            : device.bodyTemp.unit, \n                    title           : '',\n                    textsize        : 20,\n                    label           : 'temp', \n                    lowColor        : '#0000ff', \n                    mediumColor     : '#00ff00',\n                    highColor       : '#ff0000', \n                    backgroundColor : '#000000', \n                    labelColor      : '#ffffff', \n                    gridColor       : '#000000',\n                    titleColor      : '#000000',\n                    height          : 120, \n                    width           : 660,\n                    htmlId          : 'tempBarPlot'\n                };\n            if ((device.autoModeAction.value > 0) && !warningOn)\n            {\n                if ((device.bodyTemp.alarm.limits.lolo <=  device.bodyTemp.value) && ( device.bodyTemp.value <= device.bodyTemp.alarm.limits.hihi))\n                {\n                    if (peakHoldTemp < device.bodyTemp.value) peakHoldTemp = device.bodyTemp.value;\n                    imeasurementCount = imeasurementCount + 1;\n                    ioutsideCount = 0;\n                }\n                if ((device.bodyTemp.alarm.limits.lolo <= peakHoldTemp) && (peakHoldTemp <= device.bodyTemp.alarm.limits.hihi))\n                {\n                    var infoText = aquireDataInfo[device.language.value];\n                    if (peakHoldTemp < device.bodyTemp.alarm.limits.low)\n                    {\n                        tempBarConfig.titleColor = '#0000ff';\n                        if (imeasurementCount >= maxMeasurments)\n                        {\n                            style = 'font-size:300%; font-weight:200; background-color:#0000ff;color:black;';\n                            infoText = warnings[1][device.language.value];\n                            sendWebSocketMessageObject({topic : 'resetUltrasound', userID : userID, payload:true});\n                            sendWebSocketMessageObject({topic : 'flashBlueLED', userID : userID, payload:true});\n                        }\n                    }\n                    else\n                    {\n                        if (peakHoldTemp < device.bodyTemp.alarm.limits.high)\n                        {\n                            tempBarConfig.titleColor = '#00ff00';\n                            if (imeasurementCount >= maxMeasurments)\n                            {\n                                style = 'font-size:300%; font-weight:200; background-color:#00ff00;color:black;';\n                                infoText = warnings[1][device.language.value];\n                                holdOn = true;\n                                colorScale = true;\n                                sendWebSocketMessageObject({topic : 'resetUltrasound', userID : userID, payload:true});\n                                sendWebSocketMessageObject({topic : 'flashBlueLED', userID : userID, payload:true});\n                            }\n                        }\n                        else\n                        {\n                            tempBarConfig.titleColor = '#ff0000';\n                            if (imeasurementCount >= maxMeasurments)\n                            {\n                                style = 'font-size:300%; font-weight:200; background-color:#ff0000;color:black;';\n                                infoText = warnings[2][device.language.value];\n                                holdOn = true;\n                                colorScale = true;\n                                sendWebSocketMessageObject({topic : 'resetUltrasound', userID : userID, payload:true});\n                                sendWebSocketMessageObject({topic : 'flashRedLED', userID : userID, payload:true});\n                            }\n                        }\n                    }\n                    $('#tempComment').attr(\"style\", style);\n                    $('#tempComment').text(infoText);\n                    \n                }\n                else\n                {\n                    peakHoldTemp = 0;\n                    imeasurementCount = 0;\n                    ioutsideCount = ioutsideCount + 1;\n                    if (ioutsideCount >= maxMeasurments)\n                    {\n//                        lastUpdate = 0;\n//                        initProcess();\n//                        return;\n                    }\n                    style = 'font-size:300%; font-weight:200; color:#ff00ff;';\n                    $('#tempComment').attr(\"style\", style);\n                    $('#tempComment').text(warnings[3][device.language.value]);\n                    tempBarConfig.titleColor = '#000000';\n                }\n            }\n            else\n            {\n                style = 'font-size:300%; font-weight:200; color:#ff00ff;';\n                 $('#tempComment').attr(\"style\", style);\n                $('#tempComment').text(warnings[0][device.language.value]);\n                peakHoldTemp = 0;\n                imeasurementCount = 0;\n                if (!warningOn)\n                {\n                    ioutsideCount = ioutsideCount + 1;\n                    if (ioutsideCount >= maxMeasurments)\n                    {\n//                        lastUpdate = 0;\n//                        initProcess();\n//                        return;\n                    }\n                }\n                tempBarConfig.lowColor = '#000000';\n                tempBarConfig.mediumColor = '#000000';\n                tempBarConfig.highColor = '#000000';\n                tempBarConfig.labelColor = '#000000';\n                tempBarConfig.titleColor = '#000000';\n            }\n            tempBarConfig.title = peakHoldTemp.toString();\n            setHorzBarWidget(tempBarConfig);\n            pgm = JSON.parse(JSON.stringify(device.imageData.value));\n            imageArray = pgm.imageArray;\n            plotImage();\n        }\n        function plotImage()\n        {\n            var rgb = [];\n            var plow = (pgm.minval - 27315) / 100;\n            var phigh = (pgm.maxval - 27315) / 100;\n            var pdelta = phigh - plow;\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            var rectWidth  = canvasWidth / pgm.ncols;\n            var rectHeight =  canvasHeight / pgm.nrows;\n\n            for (var irow = 0; irow < pgm.nrows; ++irow)\n            {\n                for (var icol = 0; icol < pgm.ncols; ++icol)\n                {\n                    var intensity = imageArray[irow][icol] / 256.0;\n                    if (enhancementLevel == -2) intensity = Math.pow(intensity, 1/3.0);\n                    if (enhancementLevel == -1) intensity = Math.pow(intensity, 1/2.0);\n                    if (enhancementLevel ==  0) intensity = Math.pow(intensity, 1);\n                    if (enhancementLevel ==  1) intensity = Math.pow(intensity, 2.0);\n                    if (enhancementLevel ==  2) intensity = Math.pow(intensity, 3.0);\n                    if (colorScale)\n                    {\n                        rgb = getRGB(intensity);\n                        rgb[0] = Math.floor(rgb[0]);\n                        rgb[1] = Math.floor(rgb[1]);\n                        rgb[2] = Math.floor(rgb[2]);\n                    }\n                    else\n                    {\n                        rgb[0] = Math.floor(255 * intensity);\n                        rgb[1] = Math.floor(255 * intensity);\n                        rgb[2] = Math.floor(255 * intensity);\n                    }\n                    canvasContext.fillStyle = 'rgb(' + rgb[0].toString() + ', ' + rgb[1].toString() + ', ' + rgb[2].toString() + ')';\n                    var wx = icol * canvasWidth / pgm.ncols;\n                    var hy =  canvasHeight - (1 + irow) * canvasHeight / pgm.nrows ;\n                    canvasContext.fillRect(wx, hy, rectWidth, rectHeight);\n                }    \n            }\n            if (!holdOn) \n            {\n                \n                canvasContext.lineWidth = 6;\n                canvasContext.strokeStyle = '#ffff00';\n                var ellipseWidth =  device.faceRegionWidth.value * canvasWidth / pgm.ncols;\n                var ellipseHeight =  device.faceRegionHeight.value * canvasHeight / pgm.nrows;\n                \n                drawEllipse(canvasContext, (canvasWidth - ellipseWidth) / 2, (canvasHeight -  ellipseHeight)/ 2, ellipseWidth, ellipseHeight);\n\n                canvasContext.beginPath();\n                canvasContext.moveTo((canvasWidth - 0.3 * ellipseWidth) / 2, canvasHeight / 2);\n                canvasContext.lineTo((canvasWidth + 0.3 * ellipseWidth) / 2, canvasHeight / 2);\n                canvasContext.stroke();\n                canvasContext.beginPath();\n                canvasContext.moveTo(canvasWidth / 2, (canvasHeight -  0.3 * ellipseHeight) / 2);\n                canvasContext.lineTo(canvasWidth / 2, (canvasHeight +  0.3 * ellipseHeight) / 2);\n                canvasContext.stroke();\n\n               \n                canvasContext.strokeStyle = '#00ff00'\n                if (device.autoModeAction.value == 0) canvasContext.strokeStyle = '#ff0000';\n                var faceEllipseWidth  =  device.faceLocation.value[1][1] -  device.faceLocation.value[0][1];\n                var faceEllipseHeight =  device.faceLocation.value[1][0] -  device.faceLocation.value[0][0] ;\n                var faceEllipseCol    = (device.faceLocation.value[1][1] +  device.faceLocation.value[0][1]) / 2 ;\n                var faceEllipseRow    = (device.faceLocation.value[1][0] +  device.faceLocation.value[0][0]) / 2 ;\n                faceEllipseCol = faceEllipseCol - faceEllipseWidth  / 2.0;\n                faceEllipseRow = pgm.nrows - (faceEllipseRow + faceEllipseHeight / 2.0);\n                faceEllipseWidth  =  faceEllipseWidth  * canvasWidth  / pgm.ncols;\n                faceEllipseHeight =  faceEllipseHeight * canvasHeight / pgm.nrows;\n                faceEllipseCol    =  faceEllipseCol    * canvasWidth  / pgm.ncols;\n                faceEllipseRow    =  faceEllipseRow    * canvasHeight / pgm.nrows;\n                drawEllipse(canvasContext, faceEllipseCol, faceEllipseRow, faceEllipseWidth, faceEllipseHeight);\n\n                canvasContext.beginPath();\n                canvasContext.moveTo(faceEllipseCol + (faceEllipseWidth / 2) - 0.15 * faceEllipseWidth, faceEllipseRow + faceEllipseHeight / 2);\n                canvasContext.lineTo(faceEllipseCol + (faceEllipseWidth / 2) + 0.15 * faceEllipseWidth, faceEllipseRow + faceEllipseHeight / 2);\n                canvasContext.stroke();\n                canvasContext.beginPath();\n                canvasContext.moveTo(faceEllipseCol + faceEllipseWidth / 2, faceEllipseRow + (faceEllipseHeight / 2) - 0.15 * faceEllipseHeight);\n                canvasContext.lineTo(faceEllipseCol + faceEllipseWidth / 2, faceEllipseRow + (faceEllipseHeight / 2) + 0.15 * faceEllipseHeight);\n                canvasContext.stroke();\n\n/*\n                if (device.autoModeAction.value > 0)\n                {\n                    canvasContext.fillStyle = '#000000';\n                    for (var ipt = 0; ipt < 2; ++ipt)\n                    {\n                        var wx =  Math.round(device.eyeLocation.value[ipt][1] * canvasWidth / pgm.ncols);\n                        var hy =  Math.round(canvasHeight - (1 + device.eyeLocation.value[ipt][0]) * canvasHeight / pgm.nrows) ;\n//                        canvasContext.fillRect(wx - rectWidth, hy - rectHeight, 3 * rectWidth, 3 * rectHeight);\n                        canvasContext.strokeStyle = '#000000'\n                        canvasContext.lineWidth = 3;\n                        canvasContext.beginPath();\n                        canvasContext.arc(wx + 0.5 * rectWidth, hy + 0.5 * rectHeight,  rectWidth, 0, 6.2831854);\n                        canvasContext.stroke();\n                    }\n                }\n*/\n            }\n        }\n        function getRGB(intensity)\n        {\n          var rgb = [0,0,0];\n//plasma\n          var rgbCoeff = [\n              [  48.6, 349.0,    5.72, -172.0],\n              [-164.0, 705.0, -667.0 ,  379.0],\n              [ 135.0, 332.0, -976.0,   536.0]];\n          var intensityStart = [0.0, 0.3176, 0.0];\n//viridis\n/*\n          var rgbCoeff = [\n              [  72.7, 161.0, -928.0,  962.0],\n              [-0.316, 334.0,  -62.8 , -35.3],\n              [  89.3, 296.0, -379.0,  -11.5]];\n          var intensityStart = [0.0, 0.0117, 0.0];\n*/\n//inferno\n/* \n          var rgbCoeff = [\n              [   0,0,  343.0,  264.0, -376.0],\n              [   5.0,  -69.7,  320.0,   -1.1],\n              [   0.0, 1193.0,-2957.0, 1939.0]];\n          var intensityStart = [0.0, 0.0, 0.0];\n*/\n          var power = [1.0, 0.0, 0.0, 0.0];\n          for (var ii = 1; ii < 4; ++ii) power[ii] = power[ii - 1] * intensity;\n          for (var irgb = 0; irgb < 3; ++irgb)\n          {\n              if (intensity >= intensityStart[irgb])\n              {\n                  for (var ipow = 0; ipow < 4; ++ipow)\n                  {\n                      rgb[irgb] = rgb[irgb] + rgbCoeff[irgb][ipow] * power[ipow];\n                  }\n              }\n              if (rgb[irgb] <   0) rgb[irgb] =   0;\n              if (rgb[irgb] > 255) rgb[irgb] = 255;\n         }\n          return rgb;\n        }\n        function getRGBRainBow(intensity)\n        {\n          var rgb = [0,0,0];\n          if ( (0 <= intensity) && (intensity <= 0.25) )\n          {\n            rgb[0] = 0;\n            rgb[1] = Math.floor(255 * intensity * 4);    \n            rgb[2] = 255;\n          }\n          if ( (0.25 < intensity) && (intensity <= 0.50) )\n          {\n            rgb[0] = 0;\n            rgb[1] = 255;    \n            rgb[2] = Math.floor(255 * (0.50 - intensity) * 4);\n          }\n          if ( (0.50 < intensity) && (intensity <= 0.75) )\n          {\n            rgb[0] = Math.floor(255 * (intensity - 0.50) * 4);\n            rgb[1] = 255;    \n            rgb[2] = 0;\n          }\n          if ( (0.75 < intensity) && (intensity <= 1.0) )\n          {\n            rgb[0] = 255;\n            rgb[1] = Math.floor(255 * (1.0 - intensity) * 4);    \n            rgb[2] = 0;\n          }\n          return rgb;\n        }\n        function clearImage()\n        {\n            var canvas = document.getElementById(\"flirCanvas\");\n            var canvasContext = canvas.getContext(\"2d\");\n            var canvasWidth  = Number($('#flirCanvas').attr('width'));\n            var canvasHeight = Number($('#flirCanvas').attr('height'));\n            canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);        \n            for (var ibox = 0; ibox < 9; ++ibox)\n            {\n                var pbox = 0.0;\n                $('#box' + (ibox + 1).toString() + 'Label').text(' ');\n            } \n        }\n        function drawEllipse(ctx, x, y, w, h) \n        {\n            var kappa = .5522848,\n              ox = (w / 2) * kappa, // control point offset horizontal\n              oy = (h / 2) * kappa, // control point offset vertical\n              xe = x + w,           // x-end\n              ye = y + h,           // y-end\n              xm = x + w / 2,       // x-middle\n              ym = y + h / 2;       // y-middle\n            \n            ctx.beginPath();\n            ctx.moveTo(x, ym);\n            ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);\n            ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);\n            ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);\n            ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);\n            //ctx.closePath(); // not used correctly, see comments (use to close off open path)\n            ctx.stroke();\n        }\n",
         "output": "str",
         "x": 470,
         "y": 480,
