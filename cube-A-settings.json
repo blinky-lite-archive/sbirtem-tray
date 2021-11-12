@@ -1,6 +1,6 @@
 {
   "deviceType": "sbirtem",
-  "name": "Demo-04",
+  "name": "Demo-01",
   "arcPeriod": 60000,
   "timeStamp": 1610263288794,
   "lastArchive": 1605297020274,
@@ -36,26 +36,6 @@
         "low": -60,
         "high": 0,
         "hihi": 30
-      },
-      "notify": {
-        "name": "",
-        "number": "",
-        "time": 0
-      }
-    }
-  },
-  "measState": {
-    "action": "reading",
-    "type": "scalar",
-    "value": 0,
-    "unit": "unit",
-    "alarm": {
-      "value": 0,
-      "limits": {
-        "lolo": -1,
-        "low": -1,
-        "high": 5,
-        "hihi": 5
       },
       "notify": {
         "name": "",
