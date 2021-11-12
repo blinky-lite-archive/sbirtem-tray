@@ -2,7 +2,7 @@
   "deviceType": "sbirtem",
   "name": "Demo-01",
   "arcPeriod": 60000,
-  "timeStamp": 1610263288794,
+  "timeStamp": 1636711663727,
   "lastArchive": 1605297020274,
   "linkQuality": {
     "action": "reading",
@@ -27,7 +27,7 @@
   "signalLevel": {
     "action": "reading",
     "type": "scalar",
-    "value": -27,
+    "value": -39,
     "unit": "dBm",
     "alarm": {
       "value": 0,
@@ -47,7 +47,7 @@
   "pixelMin": {
     "action": "reading",
     "type": "scalar",
-    "value": 23.4,
+    "value": 20.8,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -67,7 +67,7 @@
   "pixelMax": {
     "action": "reading",
     "type": "scalar",
-    "value": 34.5,
+    "value": 32.8,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -87,7 +87,7 @@
   "ultraSoundDistance": {
     "action": "reading",
     "type": "scalar",
-    "value": 155,
+    "value": 188,
     "unit": "cm",
     "alarm": {
       "value": 0,
@@ -167,10 +167,10 @@
   "bodyTemp": {
     "action": "reading",
     "type": "scalar",
-    "value": 0,
+    "value": 35.1,
     "unit": "C",
     "alarm": {
-      "value": 3,
+      "value": 0,
       "limits": {
         "lolo": 32,
         "low": 34.5,
@@ -187,7 +187,7 @@
   "offsetTemp": {
     "action": "setting",
     "type": "scalar",
-    "value": 2.5,
+    "value": 3.5,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -433,7 +433,7 @@
   "rawLeftEyeTemp": {
     "action": "reading",
     "type": "scalar",
-    "value": 3363,
+    "value": 3279,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -453,7 +453,7 @@
   "rawRightEyeTemp": {
     "action": "reading",
     "type": "scalar",
-    "value": 3363,
+    "value": 3232,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -473,7 +473,7 @@
   "rawSpareTemp1": {
     "action": "reading",
     "type": "scalar",
-    "value": 3084,
+    "value": 2720,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -493,7 +493,7 @@
   "rawSpareTemp2": {
     "action": "reading",
     "type": "scalar",
-    "value": 3328,
+    "value": 3171,
     "unit": "mS",
     "alarm": {
       "value": 0,
@@ -515,12 +515,12 @@
     "type": "vector",
     "value": [
       [
-        30,
-        18
+        24,
+        21
       ],
       [
-        58,
-        38
+        52,
+        41
       ]
     ]
   },
@@ -529,12 +529,12 @@
     "type": "vector",
     "value": [
       [
-        48,
-        26
+        42,
+        29
       ],
       [
-        48,
-        31
+        42,
+        34
       ]
     ]
   },
