@@ -742,7 +742,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 960,
+        "x": 980,
         "y": 320,
         "wires": []
     },
