@@ -2,12 +2,12 @@
   "deviceType": "sbirtem",
   "name": "Demo-04",
   "arcPeriod": 60000,
-  "timeStamp": 1636711663727,
+  "timeStamp": 1636746690085,
   "lastArchive": 1605297020274,
   "linkQuality": {
     "action": "reading",
     "type": "scalar",
-    "value": 70,
+    "value": 64,
     "unit": "/70",
     "alarm": {
       "value": 0,
@@ -27,7 +27,7 @@
   "signalLevel": {
     "action": "reading",
     "type": "scalar",
-    "value": -39,
+    "value": -46,
     "unit": "dBm",
     "alarm": {
       "value": 0,
@@ -47,7 +47,7 @@
   "pixelMin": {
     "action": "reading",
     "type": "scalar",
-    "value": 20.8,
+    "value": 19.1,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -67,7 +67,7 @@
   "pixelMax": {
     "action": "reading",
     "type": "scalar",
-    "value": 32.8,
+    "value": 34.9,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -87,7 +87,7 @@
   "ultraSoundDistance": {
     "action": "reading",
     "type": "scalar",
-    "value": 188,
+    "value": 101,
     "unit": "cm",
     "alarm": {
       "value": 0,
@@ -113,49 +113,9 @@
       "value": 0,
       "limits": {
         "lolo": 10,
-        "low": 30,
-        "high": 120,
-        "hihi": 21000
-      },
-      "notify": {
-        "name": "",
-        "number": "",
-        "time": 0
-      }
-    }
-  },
-  "imageDelay": {
-    "action": "setting",
-    "type": "scalar",
-    "value": 3000,
-    "unit": "mS",
-    "alarm": {
-      "value": 0,
-      "limits": {
-        "lolo": 1000,
-        "low": 1000,
-        "high": 20000,
-        "hihi": 21000
-      },
-      "notify": {
-        "name": "",
-        "number": "",
-        "time": 0
-      }
-    }
-  },
-  "autoModeAction": {
-    "action": "reading",
-    "type": "scalar",
-    "value": 0,
-    "unit": "unit",
-    "alarm": {
-      "value": 0,
-      "limits": {
-        "lolo": -1,
-        "low": -1,
-        "high": 4,
-        "hihi": 4
+        "low": 20,
+        "high": 40,
+        "hihi": 60
       },
       "notify": {
         "name": "",
@@ -167,15 +127,15 @@
   "bodyTemp": {
     "action": "reading",
     "type": "scalar",
-    "value": 35.1,
+    "value": 0,
     "unit": "C",
     "alarm": {
-      "value": 0,
+      "value": 3,
       "limits": {
         "lolo": 32,
-        "low": 34.5,
-        "high": 38.5,
-        "hihi": 41
+        "low": 36.2,
+        "high": 37.8,
+        "hihi": 42
       },
       "notify": {
         "name": "Dave",
@@ -187,7 +147,7 @@
   "offsetTemp": {
     "action": "setting",
     "type": "scalar",
-    "value": 3.5,
+    "value": 1.5,
     "unit": "C",
     "alarm": {
       "value": 0,
@@ -267,7 +227,7 @@
   "flipVertical": {
     "action": "setting",
     "type": "scalar",
-    "value": 0,
+    "value": 1,
     "unit": "unit",
     "alarm": {
       "value": 0,
@@ -324,50 +284,10 @@
       }
     }
   },
-  "faceRegionWidth": {
-    "action": "setting",
-    "type": "scalar",
-    "value": 40,
-    "unit": "unit",
-    "alarm": {
-      "value": 0,
-      "limits": {
-        "lolo": 0,
-        "low": 0,
-        "high": 181,
-        "hihi": 181
-      },
-      "notify": {
-        "name": "",
-        "number": "",
-        "time": 0
-      }
-    }
-  },
-  "faceRegionHeight": {
-    "action": "setting",
-    "type": "scalar",
-    "value": 50,
-    "unit": "unit",
-    "alarm": {
-      "value": 0,
-      "limits": {
-        "lolo": 0,
-        "low": 0,
-        "high": 121,
-        "hihi": 121
-      },
-      "notify": {
-        "name": "",
-        "number": "",
-        "time": 0
-      }
-    }
-  },
   "transpose": {
     "action": "setting",
     "type": "scalar",
-    "value": 1,
+    "value": 0,
     "unit": "unit",
     "alarm": {
       "value": 0,
@@ -404,146 +324,10 @@
       }
     }
   },
-  "keepAliveTime": {
-    "action": "setting",
-    "type": "scalar",
-    "value": 20000,
-    "unit": "mS",
-    "alarm": {
-      "value": 0,
-      "limits": {
-        "lolo": 2000,
-        "low": 3000,
-        "high": 300000,
-        "hihi": 400000
-      },
-      "notify": {
-        "name": "",
-        "number": "",
-        "time": 0
-      }
-    }
-  },
   "imageData": {
     "action": "reading",
     "type": "pgm",
     "value": null,
     "unit": "unit"
-  },
-  "rawLeftEyeTemp": {
-    "action": "reading",
-    "type": "scalar",
-    "value": 3279,
-    "unit": "mS",
-    "alarm": {
-      "value": 0,
-      "limits": {
-        "lolo": 2000,
-        "low": 2500,
-        "high": 5000,
-        "hihi": 6000
-      },
-      "notify": {
-        "name": "",
-        "number": "",
-        "time": 0
-      }
-    }
-  },
-  "rawRightEyeTemp": {
-    "action": "reading",
-    "type": "scalar",
-    "value": 3232,
-    "unit": "mS",
-    "alarm": {
-      "value": 0,
-      "limits": {
-        "lolo": 2000,
-        "low": 2500,
-        "high": 5000,
-        "hihi": 6000
-      },
-      "notify": {
-        "name": "",
-        "number": "",
-        "time": 0
-      }
-    }
-  },
-  "rawSpareTemp1": {
-    "action": "reading",
-    "type": "scalar",
-    "value": 2720,
-    "unit": "mS",
-    "alarm": {
-      "value": 0,
-      "limits": {
-        "lolo": 2000,
-        "low": 2500,
-        "high": 5000,
-        "hihi": 6000
-      },
-      "notify": {
-        "name": "",
-        "number": "",
-        "time": 0
-      }
-    }
-  },
-  "rawSpareTemp2": {
-    "action": "reading",
-    "type": "scalar",
-    "value": 3171,
-    "unit": "mS",
-    "alarm": {
-      "value": 0,
-      "limits": {
-        "lolo": 2000,
-        "low": 2500,
-        "high": 5000,
-        "hihi": 6000
-      },
-      "notify": {
-        "name": "",
-        "number": "",
-        "time": 0
-      }
-    }
-  },
-  "faceLocation": {
-    "action": "reading",
-    "type": "vector",
-    "value": [
-      [
-        24,
-        21
-      ],
-      [
-        52,
-        41
-      ]
-    ]
-  },
-  "eyeLocation": {
-    "action": "reading",
-    "type": "vector",
-    "value": [
-      [
-        42,
-        29
-      ],
-      [
-        42,
-        34
-      ]
-    ]
-  },
-  "faceVertSlice": {
-    "action": "reading",
-    "type": "vector",
-    "value": [
-      [],
-      []
-    ]
   }
 }
