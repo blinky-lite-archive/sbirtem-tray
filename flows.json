@@ -898,8 +898,8 @@
         "type": "function",
         "z": "5f562f66.a301e",
         "name": "Process Data",
-        "func": "device = flow.get('device');\ndevice.imageData.value = null;\ndevice.archiveData.value = 0;\ndevice.bodyTemp.value = 0;\n\nif (msg.payload.length < 1)\n{\n    var errCount = context.get('errCount');\n    if (errCount == undefined) errCount = 0;\n    ++errCount\n    if (errCount < 3)\n    {\n        context.set('errCount',errCount);\n        return [null, null];\n    }\n    else\n    {\n        context.set('errCount',0);\n        node.warn(\"Resetting Camera\");\n        flow.set('resettingCamera',true);\n        return [null, {topic:'resetCamera',payload:true}];\n    }\n}\nelse\n{\n    context.set('errCount',0);\n}\nvar imgArray = [];\nvar dataView     = new DataView(new ArrayBuffer(2));\nvar ndataPts = 4800 * device.resMode.value * device.resMode.value;\nvar nrows = 60 * device.resMode.value;\nvar ncols = 80 * device.resMode.value;\nfor (var irow = 0; irow < ndataPts; ++irow)\n{\n        dataView.setUint8(0, msg.payload[irow * 2]);\n        dataView.setUint8(1, msg.payload[irow * 2 + 1]);\n        imgArray[irow] = dataView.getUint16(0);\n}\nvar minval = imgArray[0];\nvar maxval = imgArray[0];\nfor (var irow = 0; irow < ndataPts; ++irow)\n{\n        if ( minval > imgArray[irow]) minval = imgArray[irow];\n        if ( maxval < imgArray[irow]) maxval = imgArray[irow];\n}\nif (minval == 0) return [null, null];\nvar deltatTcal = (new Date().getTime() - flow.get('calTime')) / 1000.0;\nvar tCorr = 0.0;\nvar trise = 4.0;\nvar tdecay = 12.0;\nif ((0.0 < deltatTcal) &&(deltatTcal < 60.0))\n{\n    tCorr = Math.round(-100.0 * (deltatTcal / trise) * Math.exp(-deltatTcal / tdecay));\n    for (var irow = 0; irow < ndataPts; ++irow)\n    {\n        imgArray[irow] = imgArray[irow] + tCorr;\n    }\n    minval = minval + tCorr;\n    maxval = maxval + tCorr;\n}\n\nvar imgArray2D = [];\nvar deltaVal = maxval - minval;\nif (deltaVal == 0) deltaVal = 1;\nvar numPix = 0;\nvar tempThreshold = device.archiveMinTemp.value * 100 + 27315;\nfor (var irow = 0; irow < nrows; ++irow)\n{\n    imgArray2D[irow] = [];\n    for (var icol = 0; icol < ncols; ++icol)\n    {\n        imgArray2D[irow][icol] = Math.floor(256.0 * (imgArray[irow * ncols + icol] - minval) / deltaVal);\n        if (imgArray[irow * ncols + icol] >= tempThreshold) ++numPix;\n    }    \n}\nvar imgArray2DT = [];\nif (device.transpose.value == 1)\n{\n    for (var icol = 0; icol < ncols; ++icol)\n    {\n        imgArray2DT[icol] = [];\n        for (var irow = 0; irow < nrows; ++irow)\n        {\n            imgArray2DT[icol][irow] = imgArray2D[irow][icol];\n        }\n    }\n    imgArray2D = imgArray2DT;\n    var tempNrows = nrows;\n    nrows = ncols;\n    ncols = tempNrows; \n}\nvar imgArray2DFV = [];\nif (device.flipVertical.value == 1)\n{\n    for (var irow = 0; irow < nrows; ++irow)\n    {\n        imgArray2DFV[irow] = [];\n        for (var icol = 0; icol < ncols; ++icol)\n        {\n            imgArray2DFV[irow][icol] = imgArray2D[nrows - irow - 1][icol];\n        }    \n    }\n    imgArray2D = imgArray2DFV;\n}\nvar imgArray2DFH = [];\nif (device.flipHorizontal.value == 1)\n{\n    for (var irow = 0; irow < nrows; ++irow)\n    {\n        imgArray2DFH[irow] = [];\n        for (var icol = 0; icol < ncols; ++icol)\n        {\n            imgArray2DFH[irow][icol] = imgArray2D[irow][ncols - icol - 1];\n        }    \n    }\n    imgArray2D = imgArray2DFH;\n}\nvar pgm = \n{\n    'type'      : 'P2',\n    'timeStamp' : new Date().getTime(),\n    'nrows'     : nrows,\n    'ncols'     : ncols,\n    'minval'    : minval,\n    'maxval'    : maxval,\n    'imageArray': imgArray2D\n};\nif (numPix > 10)\n{\n    device.archiveData.value = 1;\n}\ndevice.imageData.value = pgm;\ndevice.pixelMin.value = Math.round(0.1 *  (pgm.minval - 27315) ) / 10;\ndevice.pixelMax.value  = Math.round(0.1 *  (pgm.maxval - 27315) ) / 10;\ndevice.bodyTemp.value = device.pixelMax.value + device.offsetTemp.value; \nnode.warn(device.bodyTemp.value);\ndevice.timeStamp = pgm.timeStamp;\nvar toppy = global.get('project') + '/' + global.get('deviceTypeA') + '/' + global.get('deviceNameA') + '/reading';\n\nreturn [{topic:toppy,payload:device}, null];",
-        "outputs": 2,
+        "func": "device = flow.get('device');\ndevice.imageData.value = null;\ndevice.archiveData.value = 0;\ndevice.bodyTemp.value = 0;\n\nif (msg.payload.length < 1)\n{\n    var errCount = context.get('errCount');\n    if (errCount == undefined) errCount = 0;\n    ++errCount\n    if (errCount < 3)\n    {\n        context.set('errCount',errCount);\n        return null;\n    }\n    else\n    {\n        context.set('errCount',0);\n        node.warn(\"Bad Image three times in a row\");\n        return null;\n    }\n}\nelse\n{\n    context.set('errCount',0);\n}\nvar imgArray = [];\nvar dataView     = new DataView(new ArrayBuffer(2));\nvar ndataPts = 4800 * device.resMode.value * device.resMode.value;\nvar nrows = 60 * device.resMode.value;\nvar ncols = 80 * device.resMode.value;\nfor (var irow = 0; irow < ndataPts; ++irow)\n{\n        dataView.setUint8(0, msg.payload[irow * 2]);\n        dataView.setUint8(1, msg.payload[irow * 2 + 1]);\n        imgArray[irow] = dataView.getUint16(0);\n}\nvar minval = imgArray[0];\nvar maxval = imgArray[0];\nfor (var irow = 0; irow < ndataPts; ++irow)\n{\n        if ( minval > imgArray[irow]) minval = imgArray[irow];\n        if ( maxval < imgArray[irow]) maxval = imgArray[irow];\n}\nif (minval == 0) return null;\n\nvar deltatTcal = (new Date().getTime() - flow.get('calTime')) / 1000.0;\nvar tCorr = 0.0;\nvar trise = 4.0;\nvar tdecay = 12.0;\nif ((0.0 < deltatTcal) &&(deltatTcal < 60.0))\n{\n    tCorr = Math.round(-100.0 * (deltatTcal / trise) * Math.exp(-deltatTcal / tdecay));\n    for (var irow = 0; irow < ndataPts; ++irow)\n    {\n        imgArray[irow] = imgArray[irow] + tCorr;\n    }\n    minval = minval + tCorr;\n    maxval = maxval + tCorr;\n}\n\nvar imgArray2D = [];\nvar deltaVal = maxval - minval;\nif (deltaVal == 0) deltaVal = 1;\nvar numPix = 0;\nvar tempThreshold = device.archiveMinTemp.value * 100 + 27315;\nfor (var irow = 0; irow < nrows; ++irow)\n{\n    imgArray2D[irow] = [];\n    for (var icol = 0; icol < ncols; ++icol)\n    {\n        imgArray2D[irow][icol] = Math.floor(256.0 * (imgArray[irow * ncols + icol] - minval) / deltaVal);\n        if (imgArray[irow * ncols + icol] >= tempThreshold) ++numPix;\n    }    \n}\nvar imgArray2DT = [];\nif (device.transpose.value == 1)\n{\n    for (var icol = 0; icol < ncols; ++icol)\n    {\n        imgArray2DT[icol] = [];\n        for (var irow = 0; irow < nrows; ++irow)\n        {\n            imgArray2DT[icol][irow] = imgArray2D[irow][icol];\n        }\n    }\n    imgArray2D = imgArray2DT;\n    var tempNrows = nrows;\n    nrows = ncols;\n    ncols = tempNrows; \n}\nvar imgArray2DFV = [];\nif (device.flipVertical.value == 1)\n{\n    for (var irow = 0; irow < nrows; ++irow)\n    {\n        imgArray2DFV[irow] = [];\n        for (var icol = 0; icol < ncols; ++icol)\n        {\n            imgArray2DFV[irow][icol] = imgArray2D[nrows - irow - 1][icol];\n        }    \n    }\n    imgArray2D = imgArray2DFV;\n}\nvar imgArray2DFH = [];\nif (device.flipHorizontal.value == 1)\n{\n    for (var irow = 0; irow < nrows; ++irow)\n    {\n        imgArray2DFH[irow] = [];\n        for (var icol = 0; icol < ncols; ++icol)\n        {\n            imgArray2DFH[irow][icol] = imgArray2D[irow][ncols - icol - 1];\n        }    \n    }\n    imgArray2D = imgArray2DFH;\n}\nvar pgm = \n{\n    'type'      : 'P2',\n    'timeStamp' : new Date().getTime(),\n    'nrows'     : nrows,\n    'ncols'     : ncols,\n    'minval'    : minval,\n    'maxval'    : maxval,\n    'imageArray': imgArray2D\n};\nif (numPix > 10)\n{\n    device.archiveData.value = 1;\n}\ndevice.imageData.value = pgm;\ndevice.pixelMin.value = Math.round(0.1 *  (pgm.minval - 27315) ) / 10;\ndevice.pixelMax.value  = Math.round(0.1 *  (pgm.maxval - 27315) ) / 10;\ndevice.bodyTemp.value = device.pixelMax.value + device.offsetTemp.value; \n//node.warn(device.bodyTemp.value);\ndevice.timeStamp = pgm.timeStamp;\nvar toppy = global.get('project') + '/' + global.get('deviceTypeA') + '/' + global.get('deviceNameA') + '/reading';\n\nreturn {topic:toppy,payload:device};",
+        "outputs": 1,
         "noerr": 0,
         "initialize": "// Code added here will be run once\n// whenever the node is started.\ncontext.set('autoModeAction1Count',0);",
         "finalize": "",
@@ -909,9 +909,6 @@
         "wires": [
             [
                 "94b1b6c9.79fca8"
-            ],
-            [
-                "7079fa00.acfb14"
             ]
         ]
     },
@@ -1010,80 +1007,12 @@
         "func": "var newMsg = {fill: msg.status.fill, pid:msg.status.text}\nflow.set('cameraProcess', newMsg);\nreturn null;",
         "outputs": 0,
         "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
         "x": 300,
         "y": 740,
         "wires": []
-    },
-    {
-        "id": "64edca1f.282284",
-        "type": "delay",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "5",
-        "timeoutUnits": "seconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "allowrate": false,
-        "outputs": 1,
-        "x": 660,
-        "y": 740,
-        "wires": [
-            [
-                "e68a810e.f7863",
-                "cc69cc921213511e"
-            ]
-        ]
-    },
-    {
-        "id": "e68a810e.f7863",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "Check if Process hung",
-        "func": "var process = flow.get('cameraProcess');\nvar killMsg = null;\nvar restartMsg = null;\nvar hangCount = context.get('hangCount');\nif (process.pid != undefined)\n{\n    var pid = Number(process.pid.substring(4)) + 1;\n    killMsg = {topic:'killProcess',payload:pid}\n    node.warn('Camera Hang');\n    hangCount = hangCount + 1;\n    if (hangCount > 3)\n    {\n        restartMsg = {topic:'resetCamera',payload:true};\n        hangCount = 0;\n        node.warn(\"Resetting Camera\");\n        flow.set('resettingCamera',true);\n    }\n}\nelse\n{\n    hangCount = 0;\n}\ncontext.set('hangCount',hangCount);\nreturn [restartMsg, killMsg];\n",
-        "outputs": 2,
-        "noerr": 0,
-        "initialize": "// Code added here will be run once\n// whenever the node is started.\ncontext.set('hangCount',0);",
-        "finalize": "",
-        "libs": [],
-        "x": 860,
-        "y": 740,
-        "wires": [
-            [
-                "9067a4c6.5d4488"
-            ],
-            [
-                "3132ba84.59a1f6",
-                "fba8c882bfdd1cf2",
-                "b6daa7d1d182c504"
-            ]
-        ]
-    },
-    {
-        "id": "3132ba84.59a1f6",
-        "type": "exec",
-        "z": "5f562f66.a301e",
-        "command": "kill -9",
-        "addpay": true,
-        "append": "",
-        "useSpawn": "false",
-        "timer": "",
-        "oldrc": false,
-        "name": "",
-        "x": 1050,
-        "y": 740,
-        "wires": [
-            [
-                "76f63e2eb32b8aea"
-            ],
-            [],
-            []
-        ]
     },
     {
         "id": "a413542a.4b41a8",
@@ -1230,12 +1159,8 @@
         "y": 1380,
         "wires": [
             [],
-            [
-                "7979ee40b7559f9c"
-            ],
-            [
-                "f08fb8a6549510f5"
-            ]
+            [],
+            []
         ]
     },
     {
@@ -1567,111 +1492,26 @@
         "name": "",
         "props": [
             {
-                "p": "payload",
-                "v": "",
-                "vt": "date"
+                "p": "payload"
             },
             {
                 "p": "topic",
-                "v": "Init FFC",
                 "vt": "str"
             }
         ],
-        "repeat": "120",
+        "repeat": "600",
         "crontab": "",
         "once": true,
         "onceDelay": "60",
-        "topic": "Init FFC",
-        "payload": "",
+        "topic": "initCal",
         "payloadType": "date",
-        "x": 160,
+        "x": 150,
         "y": 540,
         "wires": [
             [
-                "1ee58b30.404be5",
-                "38ff25f5.65419a"
+                "84a7c33541b16e76"
             ]
         ]
-    },
-    {
-        "id": "1ee58b30.404be5",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "hold capture",
-        "func": "flow.set('resettingCamera',true);\nflow.set('calTime',new Date().getTime());\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 350,
-        "y": 540,
-        "wires": [
-            [
-                "887fb8c32c66838f"
-            ]
-        ]
-    },
-    {
-        "id": "2fcf61df.b03cce",
-        "type": "delay",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "pauseType": "delay",
-        "timeout": "1500",
-        "timeoutUnits": "milliseconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": false,
-        "outputs": 1,
-        "x": 880,
-        "y": 520,
-        "wires": [
-            [
-                "bef6edc2.3d633",
-                "c9309be.7782e68"
-            ]
-        ]
-    },
-    {
-        "id": "808c8caf.d76fb",
-        "type": "exec",
-        "z": "5f562f66.a301e",
-        "command": "flirLepton25i2c/flirLepton25i2c.exe performFfc",
-        "addpay": false,
-        "append": "",
-        "useSpawn": "false",
-        "timer": "",
-        "oldrc": false,
-        "name": "performFfc",
-        "x": 690,
-        "y": 540,
-        "wires": [
-            [
-                "2fcf61df.b03cce"
-            ],
-            [],
-            []
-        ]
-    },
-    {
-        "id": "bef6edc2.3d633",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "resume capture",
-        "func": "flow.set('resettingCamera',false);\nreturn msg;",
-        "outputs": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 1100,
-        "y": 520,
-        "wires": []
     },
     {
         "id": "f3ff0af9.c4fdb8",
@@ -1778,38 +1618,6 @@
         ]
     },
     {
-        "id": "38ff25f5.65419a",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "set to 1",
-        "func": "msg.payload = 1;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 360,
-        "y": 600,
-        "wires": [
-            [
-                "e880ae95.bdd76"
-            ]
-        ]
-    },
-    {
-        "id": "c9309be.7782e68",
-        "type": "function",
-        "z": "5f562f66.a301e",
-        "name": "set to 0",
-        "func": "msg.payload = 0;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 1100,
-        "y": 560,
-        "wires": [
-            [
-                "e880ae95.bdd76"
-            ]
-        ]
-    },
-    {
         "id": "2175bcc8.921b04",
         "type": "delay",
         "z": "5f562f66.a301e",
@@ -1834,22 +1642,6 @@
         ]
     },
     {
-        "id": "9067a4c6.5d4488",
-        "type": "link out",
-        "z": "5f562f66.a301e",
-        "name": "Process hung out",
-        "links": [
-            "fd2fd36.4a5dc3",
-            "98bf10f8.a2f3e",
-            "fa4c03a8.f4ffe",
-            "7ff0de00.271384",
-            "ffc2fa3d.3054d8"
-        ],
-        "x": 1015,
-        "y": 680,
-        "wires": []
-    },
-    {
         "id": "30a567e5.1d7ed8",
         "type": "link out",
         "z": "5f562f66.a301e",
@@ -1862,19 +1654,6 @@
         "wires": []
     },
     {
-        "id": "e880ae95.bdd76",
-        "type": "link out",
-        "z": "5f562f66.a301e",
-        "name": "FFC Toggle Out",
-        "mode": "link",
-        "links": [
-            "316e94c2.271bec"
-        ],
-        "x": 1235,
-        "y": 600,
-        "wires": []
-    },
-    {
         "id": "316e94c2.271bec",
         "type": "link in",
         "z": "5f562f66.a301e",
@@ -1884,7 +1663,8 @@
             "d9b1bb3f.ca7528",
             "a325a9ec.7e9188",
             "7979ee40b7559f9c",
-            "e880ae95.bdd76"
+            "e880ae95.bdd76",
+            "3821c931c426c420"
         ],
         "x": 1215,
         "y": 2260,
@@ -1910,8 +1690,7 @@
         "wires": [
             [
                 "de65ab7c.eced98",
-                "756aff3b.081cc",
-                "64edca1f.282284"
+                "756aff3b.081cc"
             ]
         ]
     },
@@ -2110,16 +1889,6 @@
         ]
     },
     {
-        "id": "7079fa00.acfb14",
-        "type": "link out",
-        "z": "5f562f66.a301e",
-        "name": "Reset Out",
-        "links": [],
-        "x": 1035,
-        "y": 920,
-        "wires": []
-    },
-    {
         "id": "94b1b6c9.79fca8",
         "type": "function",
         "z": "5f562f66.a301e",
@@ -2215,8 +1984,8 @@
         "z": "5f562f66.a301e",
         "name": "",
         "pauseType": "delay",
-        "timeout": "1",
-        "timeoutUnits": "seconds",
+        "timeout": "500",
+        "timeoutUnits": "milliseconds",
         "rate": "1",
         "nbRateUnits": "1",
         "rateUnits": "second",
@@ -2224,9 +1993,10 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
+        "allowrate": false,
         "outputs": 1,
-        "x": 1180,
-        "y": 820,
+        "x": 1070,
+        "y": 800,
         "wires": [
             [
                 "1ac28b114cb00a17"
@@ -2244,8 +2014,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1360,
-        "y": 820,
+        "x": 1280,
+        "y": 800,
         "wires": []
     },
     {
@@ -2519,19 +2289,6 @@
         ]
     },
     {
-        "id": "fba8c882bfdd1cf2",
-        "type": "link out",
-        "z": "5f562f66.a301e",
-        "name": "kill Process in",
-        "mode": "link",
-        "links": [
-            "23f0836ff3bba73a"
-        ],
-        "x": 1015,
-        "y": 800,
-        "wires": []
-    },
-    {
         "id": "7979ee40b7559f9c",
         "type": "link out",
         "z": "5f562f66.a301e",
@@ -2608,7 +2365,7 @@
                 "vt": "str"
             }
         ],
-        "repeat": "6",
+        "repeat": "2",
         "crontab": "",
         "once": true,
         "onceDelay": "20",
@@ -2636,17 +2393,6 @@
         "wires": []
     },
     {
-        "id": "cc69cc921213511e",
-        "type": "link out",
-        "z": "5f562f66.a301e",
-        "name": "",
-        "mode": "link",
-        "links": [],
-        "x": 765,
-        "y": 680,
-        "wires": []
-    },
-    {
         "id": "03c7f747b005bf10",
         "type": "function",
         "z": "5f562f66.a301e",
@@ -2667,23 +2413,155 @@
         ]
     },
     {
-        "id": "b6daa7d1d182c504",
-        "type": "debug",
+        "id": "84a7c33541b16e76",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Setup Cal Camera timing",
+        "func": "if (msg.topic == 'initCal')\n{\n    flow.set('resettingCamera',true);\n}\nvar cameraInUseMsg = null;\nif (flow.get('cameraInUse'))\n{\n    cameraInUseMsg = {topic:'delayCal',payload:true};\n    node.warn('delay');\n    return [null,cameraInUseMsg];\n}\nnode.warn('calCamera');\nreturn [{topic:'calCamera',payload:true},null];\n",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 540,
+        "wires": [
+            [
+                "0af3bd41aa8be443",
+                "16d6660c2315a380"
+            ],
+            [
+                "01c853aa1cfdac90"
+            ]
+        ]
+    },
+    {
+        "id": "0af3bd41aa8be443",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "hold capture",
+        "func": "flow.set('resettingCamera',true);\nflow.set('calTime',new Date().getTime());\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 650,
+        "y": 540,
+        "wires": [
+            [
+                "8a3ace65d2bcd3ad"
+            ]
+        ]
+    },
+    {
+        "id": "f5473977c0bf8477",
+        "type": "delay",
         "z": "5f562f66.a301e",
         "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1200,
-        "y": 680,
+        "pauseType": "delay",
+        "timeout": "1500",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "outputs": 1,
+        "x": 1180,
+        "y": 520,
+        "wires": [
+            [
+                "3167ed8c93d08d45",
+                "9a653c8ff2bc2a70"
+            ]
+        ]
+    },
+    {
+        "id": "dc50b8c2e0d21680",
+        "type": "exec",
+        "z": "5f562f66.a301e",
+        "command": "flirLepton25i2c/flirLepton25i2c.exe performFfc",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "performFfc",
+        "x": 990,
+        "y": 540,
+        "wires": [
+            [
+                "f5473977c0bf8477"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "3167ed8c93d08d45",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "resume capture",
+        "func": "flow.set('resettingCamera',false);\nreturn msg;",
+        "outputs": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1400,
+        "y": 520,
         "wires": []
     },
     {
-        "id": "887fb8c32c66838f",
+        "id": "16d6660c2315a380",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 1",
+        "func": "msg.payload = 1;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 660,
+        "y": 600,
+        "wires": [
+            [
+                "3821c931c426c420"
+            ]
+        ]
+    },
+    {
+        "id": "9a653c8ff2bc2a70",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "set to 0",
+        "func": "msg.payload = 0;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1400,
+        "y": 560,
+        "wires": [
+            [
+                "3821c931c426c420"
+            ]
+        ]
+    },
+    {
+        "id": "3821c931c426c420",
+        "type": "link out",
+        "z": "5f562f66.a301e",
+        "name": "FFC Toggle Out",
+        "mode": "link",
+        "links": [
+            "316e94c2.271bec"
+        ],
+        "x": 1535,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "8a3ace65d2bcd3ad",
         "type": "delay",
         "z": "5f562f66.a301e",
         "name": "",
@@ -2699,12 +2577,102 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 520,
+        "x": 820,
         "y": 540,
         "wires": [
             [
-                "808c8caf.d76fb"
+                "dc50b8c2e0d21680"
             ]
+        ]
+    },
+    {
+        "id": "01c853aa1cfdac90",
+        "type": "delay",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "outputs": 1,
+        "x": 440,
+        "y": 600,
+        "wires": [
+            [
+                "84a7c33541b16e76"
+            ]
+        ]
+    },
+    {
+        "id": "c326433d566b3893",
+        "type": "function",
+        "z": "5f562f66.a301e",
+        "name": "Check if Process hung",
+        "func": "var process = flow.get('cameraProcess');\nvar oldProcess = context.get('pidProcess');\nvar killMsg = null;\nif (process.pid != undefined)\n{\n    var pid = Number(process.pid.substring(4)) + 1;\n    if (oldProcess.process < 0)\n    {\n        oldProcess.process = pid;\n        oldProcess.time = new Date().getTime();\n    }\n    else\n    {\n        if (oldProcess.process != pid)\n        {\n            oldProcess.process = pid;\n            oldProcess.time = new Date().getTime();\n        }\n        else\n        {\n            node.warn('Stale process ' + pid.toString());\n            if ((new Date().getTime() - oldProcess.time) > 5000)\n            {\n                killMsg = {topic:'killProcess',payload:pid};\n                node.warn('Killing process ' + pid.toString());\n            }\n        }\n    }\n}\nelse\n{\n    oldProcess.process = -1;\n    oldProcess.time = 0;\n}\ncontext.set('pidProcess',oldProcess);\nreturn killMsg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\ncontext.set('hangCount',0);\nvar pidProcess = \n{\n    process : -1,\n    time    : 0\n};\ncontext.set('pidProcess',pidProcess);",
+        "finalize": "",
+        "libs": [],
+        "x": 720,
+        "y": 720,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d3e12d3798fb4929",
+        "type": "inject",
+        "z": "5f562f66.a301e",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "15",
+        "topic": "",
+        "payloadType": "date",
+        "x": 530,
+        "y": 720,
+        "wires": [
+            [
+                "c326433d566b3893"
+            ]
+        ]
+    },
+    {
+        "id": "41ec5d58c0ec5989",
+        "type": "exec",
+        "z": "5f562f66.a301e",
+        "command": "kill -9",
+        "addpay": true,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "",
+        "x": 910,
+        "y": 720,
+        "wires": [
+            [
+                "76f63e2eb32b8aea"
+            ],
+            [],
+            []
         ]
     },
     {
